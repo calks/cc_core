@@ -1,6 +1,6 @@
 <?php
 
-	class adminMiscPkgMessageStackBlock extends coreBaseBlock {
+	class coreMessageStackBlock extends coreBaseBlock {
 
 		public function __construct() {
 			$page = Application::getPage();			

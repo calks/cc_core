@@ -1,6 +1,6 @@
 <?php
 
-	class adminMiscPkgPageHeadingBlock extends coreBaseBlock {
+	class corePageHeadingBlock extends coreBaseBlock {
 		
 		protected $title;
 		protected $subtitle;

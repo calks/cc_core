@@ -1,6 +1,6 @@
 <?php
 
-	class adminMiscPkgPagenavBlock extends coreBaseBlock {
+	class corePagenavBlock extends coreBaseBlock {
 		
 		protected $page_link_template;
 		protected $first_page_link_template;
