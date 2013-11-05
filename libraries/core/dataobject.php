@@ -27,19 +27,18 @@
         		}
         		closedir($dir);
         		if (!rmdir($path)) die("DataObject::delete_path(): Can't delete directory $path");
-        	}
-        	        	
+        	}       	
         }
         
-        public function delete_image_dir($id=null) {
-        	if (!$id) $id = (int)$this->id;
-        	if (!$id) return;
-        	$img_dir = UPLOAD_PHOTOS . '/' . get_class($this) . '/' . $id;
-        	$this->delete_path($img_dir);
-        }
         
         public function delete($_id=null) {
-        	$this->delete_image_dir($_id);
+        	if (class_exists('filePkgHelperLibrary')) {
+        		filePkgHelperLibrary::deleteFiles($this);	
+        	}
+        	if (class_exists('imagePkgHelperLibrary')) {
+        		imagePkgHelperLibrary::deleteFiles($this, 'image');	
+        	}
+        	        	
         	return parent::delete($_id);
         }
         

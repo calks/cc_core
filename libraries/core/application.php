@@ -259,8 +259,8 @@
 			return self::getApplicationName() == 'admin';
 		}
 
-		// TODO: есть ли смысл делать метод открытым?
-		public static function getPossibleClasses($resource_name, $resource_type) {
+
+		protected static function getPossibleClasses($resource_name, $resource_type) {
 			$is_admin_application = false;
 			$admin_application_name = $front_application_name = $application_name = Application::getApplicationName();
 			if (strpos($application_name, '_admin') !== false) {
@@ -273,7 +273,7 @@
 
 			$resource_routing = isset(self::$config['resource_routing']) ? self::$config['resource_routing'] : array();
 
-			if (!$resource_routing) {
+			if (!isset($resource_routing['default'])) {
 				$resource_routing['default'] = array(
 					APP_RESOURCE_CONTAINER_FRONT_APPLICATION,
 					APP_RESOURCE_CONTAINER_PACKAGES,

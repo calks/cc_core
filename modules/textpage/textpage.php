@@ -16,7 +16,7 @@
             	return Application::runModule('page404');
             }
             
-            pagePropertiesHelper::setTitleDescKeysFromObject($page);
+            corePagePropertiesHelperLibrary::setTitleDescKeysFromObject($page);
             
             $breadcrumbs = Application::getBreadcrumbs();
             if ($page->parent_id ) {
