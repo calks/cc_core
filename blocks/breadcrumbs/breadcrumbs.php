@@ -1,15 +1,7 @@
 <?php
 
 	class coreBreadcrumbsBlock extends coreBaseBlock {
-		public function run($params = array()) {
-						
-			if (in_array(Router::getSourceUrl(), array('start.html', ''))) {
-				return $this->terminate();
-			}
-	
-			if (Request::get('content_only')) {
-				return;
-			}
+		public function render() {
 	
 			$smarty = Application::getSmarty();
 			$breadcrumbs = Application::getBreadcrumbs();

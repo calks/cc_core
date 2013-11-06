@@ -59,7 +59,7 @@
 			$prev = $this->current_page == 1 ? 1 : $this->current_page-1;
 			$next = $this->current_page == $this->total_pages ? $this->total_pages : $this->current_page+1;
 			
-			$show_prev_next = count($page_numbers) < $this->total_pages; 
+			$show_prev_next = $this->getPrevNextVisibility(); 
 			
 			if ($show_prev_next) {
 				$page_links[] = $this->getLinkObj(1, '&lt;&lt;', 'to_first');
@@ -85,6 +85,11 @@
 			
 		}
 		
+		protected function getPrevNextVisibility() {
+			$page_numbers = $this->getPageNumbers();
+			return count($page_numbers) < $this->total_pages;
+			
+		}
 		
 		protected function getSpacer($caption='...') {
 			$obj = new stdClass();

@@ -147,7 +147,7 @@
 		
 		public static function truncate($str, $max_length, $keep_whole_words=true, $addition='...') {
 			$str = self::plaintext($str);
-			if (strlen($str) <= $max_length) return $str;
+			if (mb_strlen($str) <= $max_length) return $str;
 			if (!$max_length) return $str;
 			
 			if (!$keep_whole_words) {
@@ -162,7 +162,7 @@
 				$out[] = $word;
 				$out_length += mb_strlen($word)+1;
 			}
-			
+
 			return implode(' ', $out) . ' ' . $addition;
 		}
 		

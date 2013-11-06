@@ -391,7 +391,7 @@
 			if (!self::$breadcrumbs) {
 				self::loadLibrary('core/breadcrumbs');
 				self::$breadcrumbs = new Breadcrumbs();
-				self::$breadcrumbs->addNode('/', 'Главная');
+				//self::$breadcrumbs->addNode('/', 'Главная');
 			}
 			return self::$breadcrumbs;
 		}
