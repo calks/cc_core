@@ -3,8 +3,9 @@
     class coreUserSessionLibrary {
     	static $user_id;
     	static $user_account;    	
-    	static $live;    	
-    	var $auto_save;
+    	static $live;
+    	    	
+    	var $auto_save;    	
     	
     	function getSessionKey() {
     		return Application::getApplicationName() . "UserSession"; 
@@ -38,7 +39,6 @@
     			return;
     		}
     		
-    		
     	}
     	
     	function __destruct() {    		
@@ -63,7 +63,7 @@
     		$db = Application::getDb();
 
     		$login = addslashes($login);
-    		$pass = md5($pass);
+    		$pass = $user->encriptPassword($pass);
     		
     		$user_id = $db->executeScalar("
     			SELECT id
@@ -110,6 +110,7 @@
         function getUserID() {
         	return self::$user_id;
         }
+        
         
     	/*function register_ownership($object_type, $object_id, $user_id=null) {    		
     		if (!$user_id) $user_id = $this->getUserID();

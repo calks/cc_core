@@ -27,7 +27,8 @@
 		private static $db;
 		private static $dbEngine;
 		private static $smarty;
-		private static $breadcrumbs;		
+		private static $breadcrumbs;
+		private static $message_stack;
 		private static $page;
 		private static $user_session;
 
@@ -53,6 +54,7 @@
 
 			self::$db = null;
 			self::$breadcrumbs = null;
+			self::$message_stack = null;
 
 			self::$mobile = (int) ((bool) (self::detectMobileBrowser()));
 
@@ -87,12 +89,6 @@
 			return self::$mobile;
 		}
 
-		
-		// TODO: удалить. Может быть заменен на Module::getStaticFileUrl()
-		public static function getModuleUrl($module_name) {
-			return self::getSiteUrl().self::getResourceDirectory($module_name, APP_RESOURCE_TYPE_MODULE);
-		}
-
 		public static function loadLibrary($library_name) {			
 			$library_name = explode('/', $library_name);
 			$path = self::$site_root.'/core/libraries';
@@ -119,21 +115,6 @@
 
 		}
 
-		// TODO: Удалить. Блоки выводить вызовом Block::render()
-		public static function getBlockContent($block_name, $params = array()) {
-			$block = Application::getBlock($block_name);
-
-			if (USE_PROFILER) {
-				$profiler = new profiler("Block $block_name");
-				$profiler->start();
-			}
-
-			$out = $block->render($params);
-
-			if (USE_PROFILER) $profiler->stop();
-
-			return $out;
-		}
 
 		public static function getDb() {
 			if (!self::$db) {
@@ -154,9 +135,6 @@
 			return self::$dbEngine;
 		}
 
-		/*
-		 * @return corePageLibrary
-		 */
 		public static function getPage() {
 			if (!self::$page) {
 				self::$page = corePageLibrary::getInstance();
@@ -224,10 +202,6 @@
 
 		public static function getResourceInstance($resource_name, $resource_type) {
 			$resource_class = self::getResourceClass($resource_name, $resource_type);
-
-			/*if (!$resource_class && $resource_type == APP_RESOURCE_TYPE_ENTITY) {
-				die('$resource_class = self::getResourceClass(APP_RESOURCE_TYPE_OBJECT, $resource_name);');
-			}*/
 
 			if ($resource_class) return new $resource_class();
 			else die("Can't instantiate $resource_name $resource_type" );
@@ -335,6 +309,7 @@
 		}
 		
 		
+		// TODO: убрать. В тех местах, где использовалось, перевести на coreResourceLibrary
 		public static function getFilePathForResource($resource_name, $resource_type, $relative_path) {
 			
 			$relative_path = trim($relative_path, ' /');
@@ -391,10 +366,34 @@
 			if (!self::$breadcrumbs) {
 				self::loadLibrary('core/breadcrumbs');
 				self::$breadcrumbs = new Breadcrumbs();
-				//self::$breadcrumbs->addNode('/', 'Главная');
 			}
 			return self::$breadcrumbs;
 		}
+		
+		
+		public static function getMessageStack() {
+			if (!self::$message_stack) {				
+				self::$message_stack = new coreMessageStackLibrary();
+			}
+			return self::$message_stack;
+		}
+		
+		
+		public static function stackMessage($message, $type='message') {
+			$message_stack = self::getMessageStack();
+			$message_stack->add($message, $type);
+		}
+		
+		public static function stackError($message) {
+			$message_stack = self::getMessageStack();
+			$message_stack->add($message, 'error');
+		}
+		
+		public static function stackWarning($message) {
+			$message_stack = self::getMessageStack();
+			$message_stack->add($message, 'warning');
+		}
+		
 
 		public static function getHost() {
 			return self::$host;
@@ -417,40 +416,12 @@
 			return UrlRewriter::internalToSeo($internal_url);
 		}
 
-
-		// TODO: убрать
-		public static function getApplicationUrl() {
-			return self::getSiteUrl()."/applications/".self::getApplicationName();
-		}
-
 		public static function getTempDirectory() {
 			return isset(self::$config['temp_directory']) ? self::$config['temp_directory'] : '/temp/'.self::getApplicationName();
 		}
 
 		public static function getVarDirectory() {
 			return isset(self::$config['var_directory']) ? self::$config['var_directory'] : '/var/'.self::getApplicationName();
-		}
-
-		
-		// TODO: Искать ресурсы в других приложениях
-		public static function getStaticResourceUrl($relative_path) {
-			
-			die('replace with coreResourceLibrary method');
-			
-			$relative_path = trim($relative_path, ' /');
-
-			$application_name = self::getApplicationName();
-
-			$standard_path = "/core/static/$relative_path";
-			$override_path = "/applications/$application_name/static/$relative_path";
-
-			if (is_file(self::getSitePath().$override_path)) {
-				return self::getSiteUrl().$override_path;
-
-			}
-			else {
-				return self::getSiteUrl().$standard_path;
-			}
 		}
 
 		protected static function detectMobileBrowser() {

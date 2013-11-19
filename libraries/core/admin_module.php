@@ -60,7 +60,7 @@
 			$smarty = Application::getSmarty();
 			$smarty->assign('errors', $this->errors);
 			$smarty->assign('action', $this->action);
-			$smarty->assign('app_img_dir', Application::getApplicationUrl() . '/static/img');
+			$smarty->assign('app_img_dir', Application::getSiteUrl()."/applications/".Application::getApplicationName() . '/static/img');
 						
 			$template_path = $this->getTemplatePath($this->action);									
 			return $smarty->fetch($template_path);

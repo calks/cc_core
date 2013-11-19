@@ -7,42 +7,32 @@
 		protected $login_form;
 		protected $errors;
 		
-		public function getPageTitle() {
-			return 'Вход в систему';
-		}
-		
-		public function getPageSubtitle() {
-			return '';
-		}
-		
-		public function getPageActions() {
-			return array();
-		}
-		
-		
 		public function run($params=array()) {
-			$this->action = Request::get('action', 'login');
+			
+			$this->action = @array_shift($params);
+			if (!$this->action) $this->action = 'login';
 			$this->user_session = Application::getUserSession();
 			$this->errors = array();
 			
-			$method_name = 'task' . ucfirst($this->action);
+			$method_name = coreNameUtilsLibrary::underscoredToCamel('task_' . $this->action);			
 			if (!method_exists($this, $method_name)) return $this->terminate();
 
 			call_user_func(array($this, $method_name), $params);
 			
 			$smarty = Application::getSmarty();
 			$smarty->assign('errors', $this->errors);
-			$smarty->assign('message_stack', Application::getBlock('message_stack'));
+			$smarty->assign('message_stack_block', Application::getBlock('message_stack'));
 			
 			
 			$template_path = $this->getTemplatePath($this->action);
 						
-			//die($template_path);
 			return $smarty->fetch($template_path);			
 		}
 		
 		protected function taskLogin() {
-			if ($this->user_session->userLogged()) Redirector::redirect('/');
+			if ($this->user_session->userLogged()) {
+				return $this->ifLoggedIn();	
+			}
 			
 			$this->login_form = array(
 				'login' => isset($_POST['login_form']['login']) ? $_POST['login_form']['login'] : '',
@@ -55,10 +45,11 @@
 				$pass = $this->login_form['pass'];
 				
 				if($this->user_session->auth($login, $pass)) {
-					Redirector::redirect('/');
+					return $this->onSuccessLogin();
 				}
-				else $this->errors[] = "Неправильный Email/телефон и/или пароль"; 
+				else Application::stackError("Неправильный Email и/или пароль"); 
 			}
+			
 			
 			$smarty = Application::getSmarty();
 			$smarty->assign('login_form', $this->login_form);
@@ -68,8 +59,20 @@
 			
 		}
 		
-		protected function taskLogout() {
+		protected function taskLogout() {			
 			$this->user_session->logout();
+			return $this->onSuccessLogout();
+		}
+		
+		protected function ifLoggedIn() {
+			Redirector::redirect(Application::getSeoUrl("/profile"));
+		}
+		
+		protected function onSuccessLogin() {
+			Redirector::redirect(Application::getSeoUrl("/profile"));
+		}
+		
+		protected function onSuccessLogout() {
 			Redirector::redirect(Application::getSeoUrl("/{$this->getName()}"));
 		}
 		

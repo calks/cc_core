@@ -4,7 +4,8 @@
 
 	class coreUserEntity extends coreBaseEntity {		
 		
-		public $name;
+		public $name;		
+		public $family_name;
 		public $email;
 		public $login;
 		public $pass;
@@ -56,7 +57,7 @@
 			$form->addField(new TEditField('email', '', 30, 100));
 			$form->addField(new TEditField('login', '', 30, 100));
 			$form->addField(new TEditField('pass', '', 30, 100));
-			//$form->addField(new TCheckboxField('active', 1, null, 'class="uniform"'));
+
 			$form->addField(new TCheckboxField('active', ''));
 			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles', array(
 				'options' => $this->getRoleSelect()
@@ -159,6 +160,28 @@
 			
 			return $out;
 		}
+		
+		public function getIdByEmail($email) {
+			$table = $this->getTableName();
+			$db = Application::getDb();
+			$email = addslashes($email);
+			$sql = "
+				SELECT id FROM $table
+				WHERE email = '$email'
+			";
+			return $db->executeScalar($sql);
+		}
+		
+		
+		public function encriptPassword($password) {
+			return md5($password); 
+		}
+		
+		
+		public function setPassword($password) {
+			$this->pass = $this->encriptPassword($password);
+		}
+		
 		
 		
 	}

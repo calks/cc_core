@@ -94,9 +94,6 @@
             }
         }
 
-        public function getUrl() {
-            return Application::getModuleUrl($this->getName());
-        }
 
 
     }

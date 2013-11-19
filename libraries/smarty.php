@@ -9,4 +9,5 @@
 			return parent::fetch($template_path, $cache_id, $compile_id, $display);
 		}
 		
+		
 	}

@@ -27,11 +27,10 @@
 
             $breadcrumbs->addNode(Application::getSeoUrl("/{$page->url}" ), $page->title );
             
-            $breadcrumbs_html = Application::getBlockContent('breadcrumbs');
-
+            
             $smarty = Application::getSmarty();
             $smarty->assign('page', $page);
-            $smarty->assign('breadcrumbs', $breadcrumbs_html);
+            $smarty->assign('breadcrumbs', Application::getBlock('breadcrumbs'));
 
             $template_path = $this->getTemplatePath();
             return $smarty->fetch($template_path);

@@ -1,26 +1,12 @@
 			
-			
-		<div id="message_stack-block">	
-			{if $errors || $message}
-				
-				{if $errors}
-					{foreach item=error from=$errors}
-					
-						<div class="albox errorbox">
-							{$error}
-							<a class="close tips" href="#" original-title="закрыть">закрыть</a>
-						</div>
-					{/foreach}
-				{/if}
-			
-				{if $message}					
-					<div class="albox succesbox">
-						{$message}
-						<a class="close tips" href="#" original-title="закрыть">закрыть</a>
+		
+		{if $stack_messages}
+			<div class="message-stack">
+				{foreach item=item from=$stack_messages}
+					<div class="message message-{$item.type}">
+						<p>{$item.message}</p>
 					</div>
-				{/if}
-			
-			{/if}
-		</div>	
-			
+				{/foreach}
+			</div>
+		{/if}
 			
