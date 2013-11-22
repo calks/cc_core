@@ -85,7 +85,7 @@
 
         public function order_by() {
             $table = self::getTableName();
-            return "{$table}.`id`";
+            return "`$table`.`id`";
         }
 
         protected function wrap_term($term) {
@@ -314,10 +314,9 @@
             }
 
             $table = $this->get_table_name();
-            $abr = $this->get_table_abr($table);
-
-            $params['where'][] = "$table.id=$id";
-            $params['group_by'] = "$table.id";
+            
+            $params['where'][] = "`$table`.id=$id";
+            
             $list = $this->load_list($params);
 
             return $list ? $list[0] : null;
