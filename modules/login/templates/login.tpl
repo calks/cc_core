@@ -15,6 +15,7 @@
 				<div class="ui-body ui-body-b" >
 					<input type="submit" name="button" id="button" value="Войти" data-theme="b" />
 					<a href={$register_link} data-role="button" data-theme="c">Регистрация</a>
+					<a href={$remind_link} data-role="button" data-theme="c">Восстановление пароля</a>
 				</div>	
 			</form>
 			
