@@ -299,7 +299,7 @@
 		// TODO: Подумать над переносом в coreNameUtils
 		public static function getResourceClass($resource_name, $resource_type) {
 			$possible_classes = self::getPossibleClasses($resource_name, $resource_type);
-
+			
 			$class_name = null;
 			foreach ($possible_classes as $class) {
 				if (class_exists($class)) return $class;

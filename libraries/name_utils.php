@@ -1,5 +1,13 @@
 <?php
 
+	if(!function_exists('lcfirst')) {
+	    function lcfirst($str) {
+	    	if (!$str) return $str;
+	        $str[0] = strtolower($str[0]);
+	        return (string)$str;
+	    }
+	}
+
 	class coreNameUtilsLibrary {
 		
 		public static function underscoredToCamel ($underscored_name) {

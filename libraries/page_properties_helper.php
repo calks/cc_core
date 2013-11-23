@@ -24,7 +24,7 @@ class corePagePropertiesHelperLibrary {
 		$doc = Application::getEntityInstance('document');
 
 
-		$url = trim(Router::getSourceUrl(), ' /');
+		$url = trim(Router::getRewrittenUrl(), ' /');
 
 		// removing GET params
 		if (($qmark = strpos($url, '?')) !== false)
