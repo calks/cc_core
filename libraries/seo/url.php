@@ -76,14 +76,14 @@
                     $url .= '/';
                 $url .= $this->params;
             }
-            if ($this->get) {
+            if ($this->get) {            	
                 $get = '';
                 foreach ($this->get as $name => $value) {
                     $get .= empty($get) ? '?' : '&';
                     $get .= $name.'='.urlencode($value);
                 }
                 $url .= $get;
-            }
+            }            
             return $url;
         }
 

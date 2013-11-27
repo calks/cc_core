@@ -59,11 +59,7 @@
         }
 
         public function internalToSeo($internal_url) {
-            //return $internal_url;
-            
         	$internal_url = trim($internal_url, ' /');
-
-            //if (!$internal_url) return '/';
 
             $parts = explode('/', $internal_url);
             $module_name = array_shift($parts);
@@ -84,13 +80,13 @@
             $common_rule = isset($rules['common_rule']) ? $rules['common_rule'] : null;
             if ($common_rule) {
             	$url = new URL($internal_url);
+            	
             	$new_url = $common_rule->internalToSeo($url);
-            	if (false !== $new_url) {
+            	if (false !== $new_url) {            		
             		$internal_url = $new_url->toString();
             	}
             }
-            
-            
+
             return '/' . $internal_url;
         }
 

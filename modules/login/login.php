@@ -6,6 +6,7 @@
 		protected $user_session;
 		protected $login_form;
 		protected $errors;
+		protected $back_url;
 		
 		public function run($params=array()) {
 			
@@ -14,6 +15,8 @@
 			$this->user_session = Application::getUserSession();
 			$this->errors = array();
 			
+			$this->back_url = Request::get('back');
+						
 			$method_name = coreNameUtilsLibrary::underscoredToCamel('task_' . $this->action);			
 			if (!method_exists($this, $method_name)) return $this->terminate();
 
@@ -53,9 +56,19 @@
 			
 			$smarty = Application::getSmarty();
 			$smarty->assign('login_form', $this->login_form);
-			$smarty->assign('recover_link', Application::getSeoUrl("/{$this->getName()}/recover"));
-			$smarty->assign('form_action', Application::getSeoUrl("/{$this->getName()}"));
-			$smarty->assign('register_link', Application::getSeoUrl("/register"));
+			
+			$recover_link = "/{$this->getName()}/recover";			
+			if ($this->back_url) $recover_link .= '?back=' . rawurlencode($this->back_url);
+			$smarty->assign('recover_link', Application::getSeoUrl($recover_link));
+			
+			$register_link = "/register";			
+			if ($this->back_url) $register_link .= '?back=' . rawurlencode($this->back_url);
+			$smarty->assign('register_link', Application::getSeoUrl($register_link));
+			
+			$form_action = "/{$this->getName()}";
+			if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
+			$smarty->assign('form_action', Application::getSeoUrl($form_action));
+			
 		}
 		
 		
@@ -105,8 +118,14 @@
 			
 			$smarty = Application::getSmarty();
 			$smarty->assign('email', $email);
-			$smarty->assign('login_link', Application::getSeoUrl("/{$this->getName()}"));
-			$smarty->assign('form_action', Application::getSeoUrl("/{$this->getName()}/$this->action"));
+			
+			$login_link = "/{$this->getName()}";
+			if ($this->back_url) $login_link .= '?back=' . rawurlencode($this->back_url);
+			$smarty->assign('login_link', Application::getSeoUrl($login_link));
+			
+			$form_action = "/{$this->getName()}/$this->action";
+			if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
+			$smarty->assign('form_action', Application::getSeoUrl($form_action));
 
 		}
 		
@@ -158,11 +177,11 @@
 		}
 		
 		protected function ifLoggedIn() {
-			Redirector::redirect(Application::getSeoUrl("/profile"));
+			Redirector::redirect($this->back_url ? $this->back_url : Application::getSeoUrl("/profile"));
 		}
 		
 		protected function onSuccessLogin() {
-			Redirector::redirect(Application::getSeoUrl("/profile"));
+			Redirector::redirect($this->back_url ? $this->back_url : Application::getSeoUrl("/profile"));
 		}
 		
 		protected function onSuccessLogout() {

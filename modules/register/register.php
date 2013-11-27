@@ -4,9 +4,12 @@
 		
 		protected $task;		
 		protected $user_form;
+		protected $back_url;
 		
 		
 		public function run($params=array()) {
+			
+			$this->back_url = Request::get('back');
 			
 			$user_session = Application::getUserSession();
 			if ($user_session->userLogged()) {
@@ -27,8 +30,16 @@
 				$smarty->assign('task', $this->task);
 				
 				$smarty->assign('user_form', $this->user_form);
-				$smarty->assign('reg_form_action', Application::getSeoUrl("/{$this->getName()}/save"));
-				$smarty->assign('login_link', Application::getSeoUrl("/login"));
+				
+				$login_link = "/login";
+				if ($this->back_url) $login_link .= '?back=' . rawurlencode($this->back_url);
+				$smarty->assign('login_link', Application::getSeoUrl($login_link));
+				
+				$form_action = "/{$this->getName()}/$this->task";
+				if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
+				$smarty->assign('reg_form_action', Application::getSeoUrl($form_action));
+				
+				
 				$smarty->assign('message_stack_block', Application::getBlock('message_stack'));
 				
 				$template_path = $this->getTemplatePath();
@@ -144,13 +155,13 @@
 		protected function onSuccess($registered_user_id) {
 			$user_session = Application::getUserSession();
 			$user_session->forceLogin($registered_user_id);
-			Application::stackMessage("Вы успешно зарегистрировались на сайте");
-			Redirector::redirect(Application::getSeoUrl("/profile"));
+			Application::stackMessage("Вы успешно зарегистрировались на сайте");			
+			Redirector::redirect($this->back_url ? $this->back_url : Application::getSeoUrl("/profile"));
 		}
 		
 		
-		protected function ifLoggedIn() {
-			Redirector::redirect(Application::getSeoUrl("/profile"));
+		protected function ifLoggedIn() {			
+			Redirector::redirect($this->back_url ? $this->back_url : Application::getSeoUrl("/profile"));
 		}
 		
 		

@@ -94,7 +94,12 @@ class Request {
    */
   function get($name, $default = NULL) {
     if (array_key_exists($name, $_REQUEST)) {
-      return $_REQUEST[$name];
+    	$value = $_REQUEST[$name];
+    	if (!is_array($value)) {
+    		$is_url_encoded = preg_match('/%[a-h0-9]{2}/is', $value);
+    		if ($is_url_encoded) $value = rawurldecode($value);
+    	}    	
+    	return $value;
     }
     else {
       return $default;
