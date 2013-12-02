@@ -266,7 +266,7 @@
             FROM $from
             $where $group_by $having $order_by $limit_offset";
 
-            //echo '<pre>' . $sql . '</pre>'."\n\n";
+//echo '<pre>' . $sql . '</pre>'."\n\n";
 
             $raw_list = $db->executeSelectAllObjects($sql);
             if (!$raw_list) {
