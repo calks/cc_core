@@ -109,9 +109,6 @@ class Redirector {
       Logger::message('redirectLocation('.$url.')');
     }
     header("Location: ".$url);
-    if (!Request::isHeadMethod() && !defined('REDIRECT_QUIET')) {
-      print "Redirecting to ".Redirector::getHyperlink($url)." ...\n";
-    }
   }
 
   function makeCompleteUrl($url) {
