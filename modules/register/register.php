@@ -35,7 +35,7 @@
 				if ($this->back_url) $login_link .= '?back=' . rawurlencode($this->back_url);
 				$smarty->assign('login_link', Application::getSeoUrl($login_link));
 				
-				$form_action = "/{$this->getName()}/$this->task";
+				$form_action = "/{$this->getName()}/save";
 				if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
 				$smarty->assign('reg_form_action', Application::getSeoUrl($form_action));
 				
@@ -152,7 +152,7 @@
 		}
 		
 		
-		protected function onSuccess($registered_user_id) {
+		protected function onSuccess($registered_user_id) {			
 			$user_session = Application::getUserSession();
 			$user_session->forceLogin($registered_user_id);
 			Application::stackMessage("Вы успешно зарегистрировались на сайте");			
