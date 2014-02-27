@@ -93,7 +93,7 @@
 				}
 				elseif (strpos($rule, 'packages/') === 0) {
 					$pkg_name = str_replace('packages/', '', $rule);
-					$paths[] = '/applications/' . $pkg_name . $dir;
+					$paths[] = '/packages/' . $pkg_name . $dir;
 				}
 				else {
 					die("Bad resource routing rule");
