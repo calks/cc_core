@@ -66,17 +66,7 @@
 			
 			$out = array();
 			
-			
-			$resource_routing = array();
-			$resource_routing['default'] = array(
-				APP_RESOURCE_CONTAINER_FRONT_APPLICATION,
-				APP_RESOURCE_CONTAINER_PACKAGES,
-				APP_RESOURCE_CONTAINER_CORE
-			);
-
-			if (Application::isAdmin()) {
-				array_unshift($resource_routing['default'], APP_RESOURCE_CONTAINER_ADMIN_APPLICATION);
-			}			
+			$resource_routing = Application::getResourceRouting();
 			
 			$routing_rule = isset($resource_routing[$resource_name]) ? $resource_routing[$resource_name] : $resource_routing['default'];
 			$paths = array();

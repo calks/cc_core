@@ -56,7 +56,7 @@
 			)));			
 			$form->addField(new TEditField('email', '', 30, 100));
 			$form->addField(new TEditField('login', '', 30, 100));
-			$form->addField(new TEditField('pass', '', 30, 100));
+			//$form->addField(new TEditField('pass', '', 30, 100));
 
 			$form->addField(new TCheckboxField('active', ''));
 			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles', array(
@@ -68,9 +68,12 @@
 		
 		public function validate() {
 			$errors = parent::validate();
-			
 			if (!email_valid($this->email)) {
 				$errors[] = 'Неправильный Email';
+			}
+			
+			if (!$this->pass) {
+				$errors[] = 'Не задан пароль';
 			}
 			
 			return $errors;

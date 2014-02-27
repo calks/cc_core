@@ -31,6 +31,19 @@
     }
 
 
+    function email_unique($email, $user_id=0) {
+    	$user = Application::getEntityInstance('user');
+    	$table = $user->getTableName();
+    	$email = addslashes($email);
+    	$user_id = (int)$user_id;
+    	$db = Application::getDb();
+    	return !(bool)$db->executeScalar("
+    		SELECT COUNT(*)
+    		FROM $table
+    		WHERE email='$email' AND id!=$user_id
+    	");
+    }
+    
     function get_empty_select($add_null_item = false) {
         $select = array();
 

@@ -29,6 +29,12 @@
 			}
 		}
 		
+		public static function getWordForGender($gender, $male, $female, $neuter=null) {
+			if (!$neuter) $neuter = $male;
+			if ($gender == 'male') return $male;
+			elseif($gender == 'female') return $female;
+			else return $neuter; 
+		}
 		
 		public static function formatDate($date, $include_time=true, $skip_this_year=true, $use_relative_names=true) {
 			if (!$date || in_array($date, array('0000-00-00', '0000-00-00 00:00:00'))) {
@@ -138,13 +144,15 @@
 		}
 		
 		
-		public static function plaintext($str) {
+		public static function plaintext($str, $preserve_linebreaks=false) {
+			$linebreak_marker = '%'.md5(uniqid()).'%';
 			$str = strip_tags($str);
+			$str = str_replace(array("\r\n", "\n", "\r"), $linebreak_marker, $str);
 			$str = preg_replace('/\s+/', ' ', $str);
-			$str = trim($str, " /\n\r");
+			$str = str_replace($linebreak_marker, $preserve_linebreaks ? "\n" : ' ', $str);
 			return $str;			
 		}
-		
+				
 		public static function truncate($str, $max_length, $keep_whole_words=true, $addition='...') {
 			$str = self::plaintext($str);
 			if (mb_strlen($str) <= $max_length) return $str;
@@ -165,6 +173,35 @@
 
 			return implode(' ', $out) . ' ' . $addition;
 		}
+		
+		
+		public static function removePunctuation($str) {
+			$remove = array(
+				'.', 
+				',',
+				';',
+				':', 
+				'+', 
+				'(', 
+				')',
+				'`',
+				'~',
+				'%',
+				'№',
+				'#',
+				'\\',
+				'°',
+				'«',
+				'»',
+				'"',
+				"'",
+				"!",
+				"?"
+			);
+			$str = str_replace($remove, '', $str);							
+			return $str;			
+		}
+	
 		
 		
 	}

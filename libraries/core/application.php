@@ -36,9 +36,13 @@
 
 		private static $packages_list;
 		public static $loader;
+		
+		protected static $application_folders;
 
 		public static function init($application_name) {
 
+			self::$application_folders = array();
+			
 			self::$application_name = $application_name;
 			self::$site_root = realpath(dirname(__FILE__)."/../../..");
 			
@@ -233,18 +237,8 @@
 			return self::getApplicationName() == 'admin';
 		}
 
-
-		protected static function getPossibleClasses($resource_name, $resource_type) {
-			$is_admin_application = false;
-			$admin_application_name = $front_application_name = $application_name = Application::getApplicationName();
-			if (strpos($application_name, '_admin') !== false) {
-				$front_application_name = str_replace('_admin', '', $application_name);
-				$is_admin_application = true;
-			}
-			else {
-				$admin_application_name = $application_name.'_admin';
-			}
-
+		
+		public static function getResourceRouting() {
 			$resource_routing = isset(self::$config['resource_routing']) ? self::$config['resource_routing'] : array();
 
 			if (!isset($resource_routing['default'])) {
@@ -258,6 +252,23 @@
 					array_unshift($resource_routing['default'], APP_RESOURCE_CONTAINER_ADMIN_APPLICATION);
 				}
 			}
+			
+			return $resource_routing;
+			
+		}
+
+		protected static function getPossibleClasses($resource_name, $resource_type) {
+			$is_admin_application = false;
+			$admin_application_name = $front_application_name = $application_name = Application::getApplicationName();
+			if (strpos($application_name, '_admin') !== false) {
+				$front_application_name = str_replace('_admin', '', $application_name);
+				$is_admin_application = true;
+			}
+			else {
+				$admin_application_name = $application_name.'_admin';
+			}
+			
+			$resource_routing = self::getResourceRouting();
 
 			$possible_classes = array();
 
@@ -490,6 +501,8 @@
 
 			return 0; // Мобильный браузер не обнаружен
 		}
+		
+		
 
 	}
 	

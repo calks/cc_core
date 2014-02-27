@@ -51,9 +51,9 @@
             $table = $this->get_table_name();
             if (!$this->id) {
                 $object = $this->load($_id);
-                $dbEngine->deleteObject($object, $table);
+                return $dbEngine->deleteObject($object, $table);
             } else {
-                $dbEngine->deleteObject($this, $table);
+                return $dbEngine->deleteObject($this, $table);
             }
         }
 

@@ -23,7 +23,7 @@
         	$this->addField(new THiddenField('search_order_direction'));        
             
         	
-            if (Request::isPostMethod()) {
+            if ($this->isSearchQueryPosted()) {
                 $this->LoadFromRequest($_REQUEST);
                 $this->saveToSession(Application::getApplicationName());
             } else {
@@ -40,6 +40,14 @@
         		$this->saveToSession(Application::getApplicationName());
         	}
             
+        }
+        
+        function isSearchQueryPosted() {
+        	if (!Request::isPostMethod()) return false;
+        	foreach ($this->fields as $field_name => $field) {
+        		if (isset($_POST[$field_name])) return true;
+        	}
+        	return false;
         }
         
         function set_params(&$params) {        	
@@ -102,14 +110,14 @@
         }
 
         function saveToSession($name = '') {
-            $session_key = $this->getSessionKey($name);
+            $session_key = $this->getSessionKey($name);            
             foreach (array_keys($this->fields) as $field) {
                 $_SESSION[$session_key][$field] = $this->getValue($field);
             }
         }
 
         function loadFromSession($name = '') {
-            $session_key = $this->getSessionKey($name);
+            $session_key = $this->getSessionKey($name);            
             foreach (array_keys($this->fields) as $field) {
                 if (!isset($_SESSION[$session_key][$field])) continue;
                 $this->setValue($field, $_SESSION[$session_key][$field]);
@@ -118,7 +126,7 @@
 
         function getSessionKey($name = '') {
             $fields = array_keys($this->fields);
-            $fields_hash = md5(implode('|', $fields).$name.$this->mode.get_class($this));
+            $fields_hash = md5(implode('|', $fields).$name.$this->mode);
             return "filter_state_$fields_hash";
         }
         
@@ -126,11 +134,11 @@
         function sortLink($caption, $order_field, $base, $url_addition=null) {
         	
         	
-        	/*if (strpos($order_field, '.') !== false) {
+        	if (strpos($order_field, '.') !== false) {
         		$order_field = explode('.', $order_field);
         		$order_field[0] = coreBaseEntity::getTableAlias($order_field[0]);
         		$order_field = implode('.', $order_field);	
-        	}*/
+        	}
         	
         	$current_order_field = $this->getValue('search_order_field');
         	$current_order_direction = $this->getValue('search_order_direction');
@@ -172,16 +180,14 @@
         		$link .= "&$url_addition";
         	}
         	
-        	$link = Application::getSeoUrl($link);
-        	
         	//return "<a href=\"$link\" $classes>$caption</a>";
         	
         	
         	return "
-        		
+        		<div class=\"DataTables_sort_wrapper\">
         			<a href=\"$link\" $classes>$caption</a>
-        			
-        		
+        			<span class=\"DataTables_sort_icon css_right ui-icon $icon_class\"></span>
+        		</div>
         	";
         }
 

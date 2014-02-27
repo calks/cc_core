@@ -1,6 +1,6 @@
 <?php
 
-    class corePage404Module extends Module {
+    class corePage404Module extends coreBaseModule {
 
         public function run($params=array()) {
             header("HTTP/1.0 404 Not Found");
