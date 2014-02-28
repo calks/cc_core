@@ -248,6 +248,7 @@
 					APP_RESOURCE_CONTAINER_CORE
 				);
 
+				$is_admin_application = Application::getApplicationName() == 'admin';
 				if ($is_admin_application) {
 					array_unshift($resource_routing['default'], APP_RESOURCE_CONTAINER_ADMIN_APPLICATION);
 				}

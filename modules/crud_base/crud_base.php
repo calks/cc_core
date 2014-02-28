@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('core/admin_module');
 
-	class coreCrudBaseModule extends AdminModule {
+	class coreCrudBaseModule extends coreAdminBaseModule {
 		
 		public function run($params=array()) {
 			$smarty = Application::getSmarty();
