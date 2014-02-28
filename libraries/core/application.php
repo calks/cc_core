@@ -320,22 +320,6 @@
 		}
 		
 		
-		// TODO: убрать. В тех местах, где использовалось, перевести на coreResourceLibrary
-		public static function getFilePathForResource($resource_name, $resource_type, $relative_path) {
-			
-			$relative_path = trim($relative_path, ' /');
-			$possible_classes = self::getPossibleClasses($resource_name, $resource_type);
-			//print_r($possible_classes);
-			foreach ($possible_classes as $class) {
-				$directory = self::getClassDirectory($class);				
-				if (!$directory) continue;
-				$path = Application::getSitePath() . "$directory/$relative_path";
-				if (is_file($path)) return $path;
-			}			
-		}
-		
-		
-				
 
 		public static function getSmarty() {
 			if (!self::$smarty) {
