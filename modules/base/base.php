@@ -1,11 +1,103 @@
 <?php
 
 	class coreBaseModule {
+		
+		protected $html;
+		protected $user_logged;
+		protected $task;
+		
+		
+		protected function isAjax() {
+			return (bool)Request::get('ajax');
+		}
+		
+		
+				
+		protected function composeAjaxResponse() {
+			$message_stack = Application::getMessageStack();
+			$messages = $message_stack->getList();
+			$message_stack->clear();
 
+			$message_priority = array(
+				'ok' => 0,
+				'message' => 0,					
+				'warning' => 1,
+				'error' => 2
+			);
+			
+			$status = 'ok';
+			foreach($messages as $m) {					
+				if($message_priority[$m['type']] > $message_priority[$status]) {
+					$status = $m['type'];
+				}
+			}
+			
+			$out = array(
+				'content' => $this->html,
+				'status' => $status,
+				'messages' => $messages
+			);
+			
+			return $out;
+		
+		}
+		
+		protected function returnResponse() {
+			if ($this->isAjax()) {				
+				$out = $this->composeAjaxResponse();
+				die(json_encode($out));								
+			}
+			else return $this->html;
+		}
+		
+		protected function returnError($message) {
+			Application::stackError($message);
+			$this->returnResponse();
+		}
+		
+		
+		protected function commonLogic(&$params) {
+			
+		}
+		
 		public function run($params=array()) {
-			return '';
+			
+			$user_session = Application::getUserSession();
+			$this->user_logged = $user_session->getUserAccount();
+			
+			$this->task = $this->isAjax() ? Request::get('task') : @array_shift($params);
+			if (!$this->task) $this->task = 'default';
+						
+			$this->commonLogic($params);
+			
+			if (!$this->isAjax()) {
+				$smarty = Application::getSmarty();
+				$smarty->assign('message_stack_block', Application::getBlock('message_stack'));
+			}
+			
+			$method_name = coreNameUtilsLibrary::underscoredToCamel('task_' . $this->task);
+			if (method_exists($this, $method_name)) {
+				call_user_func(array($this, $method_name), $params);
+				return $this->returnResponse();
+			}
+			else {				
+				$this->terminate();
+			}
+			
 		}
 
+		
+		protected function taskDefault() {
+			$template_path = $this->getTemplatePath();
+			if ($template_path) {
+				$smarty = Application::getSmarty();
+				$this->html = $smarty->fetch($template_path);  
+			}
+			
+			return $this->returnResponse();
+		}
+		
+		
         protected function getModuleType() {
             return 'module';
         }
@@ -38,27 +130,16 @@
             return $out;
         }
 
-        protected function terminate() {        	        	
-			return Application::runModule('page404');                
+        protected function terminate() {
+        	if ($this->isAjax()) {        		
+        		Application::stackError('Ошибка в запросе');
+        		$this->returnResponse();	
+        	}
+        	else {
+        		$this->html = Application::runModule('page404'); 
+        	}               
         }
 
-        protected function runTaskByParams($params) {
-            $task = array_shift($params);
-            if (!trim($task)) return $this->terminate();
-            $method_name = 'task'.ucfirst(strtolower($task));
-            if (!method_exists($this, $method_name)) return $this->terminate();
-            return call_user_func(array($this, $method_name), $params);
-        }
-
-        public function baseDir() {
-            $class = $this->getName();
-            $module_type = $this->getModuleType();
-            $method_name = 'get'.ucfirst(strtolower($module_type)).'Path';
-            $module_path = call_user_func(array('Application', $method_name), $class);
-            return dirname($module_path);
-        }
-
-        
         
         public function getStaticFileUrl($path_relative_to_module) {        	
         	$path_relative_to_module = trim($path_relative_to_module, ' /');        	
@@ -70,15 +151,5 @@
             return coreResourceLibrary::getFirstFilePath($this->getModuleType(), $this->getName(), "/templates/$template_name.tpl");       
         }
 
-        protected function getModuleDirectoryName() {
-            switch ($this->getModuleType()) {
-            case 'module':
-                return 'modules';
-            case 'block':
-                return 'blocks';
-            default:
-                die('Can\'t determine type of myself');
-            }
-        }
 		
 	}
