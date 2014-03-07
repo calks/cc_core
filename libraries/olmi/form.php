@@ -21,7 +21,9 @@
          * @param TField $aField
          */
         function addField($aField) {
-            $this->fields[$aField->Name ] = $aField;
+        	$name = isset($aField->Name) ? $aField->Name : $aField->getFieldName();
+        	
+            $this->fields[$name] = $aField;
         }
 
         /**
