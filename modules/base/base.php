@@ -3,6 +3,7 @@
 	class coreBaseModule {
 		
 		protected $html;
+		protected $response_data = array();
 		protected $user_logged;
 		protected $task;
 		
@@ -33,10 +34,14 @@
 			}
 			
 			$out = array(
-				'content' => $this->html,
+				'content' => $this->html,				
 				'status' => $status,
 				'messages' => $messages
 			);
+			
+			foreach ($this->response_data as $k=>$v) {
+				$out[$k] = $v;
+			}
 			
 			return $out;
 		
@@ -65,10 +70,11 @@
 			$user_session = Application::getUserSession();
 			$this->user_logged = $user_session->getUserAccount();
 			
+			$this->commonLogic($params);
+			
 			$this->task = $this->isAjax() ? Request::get('task') : @array_shift($params);
 			if (!$this->task) $this->task = 'default';
 						
-			$this->commonLogic($params);
 			
 			if (!$this->isAjax()) {
 				$smarty = Application::getSmarty();
