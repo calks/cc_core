@@ -181,7 +181,7 @@
 		}
 		
 		
-		public function setPassword($password) {
+		public function setPassword($password) {			
 			$this->pass = $this->encriptPassword($password);
 		}
 		

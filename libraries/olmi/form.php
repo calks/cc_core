@@ -102,13 +102,7 @@
                 while (list($key, $value) = each($this->fields )) {
                     $field =& $this->fields[$key]; # get the _reference_ to the object in form
 
-                    if ($field->isStandardField()) {
-                        if (!$context || $context->canAccess($key)) {
-                            $field->SetFromPost($POST);
-                        }
-                    } else {
-                        $field->SetFromRequestSpecial();
-                    }
+                    if (method_exists($field, 'SetFromPost')) $field->SetFromPost($POST);
                 }
             }
         }
