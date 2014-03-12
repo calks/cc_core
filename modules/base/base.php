@@ -93,7 +93,7 @@
 		}
 
 		
-		protected function taskDefault() {
+		protected function taskDefault($params=array()) {
 			$template_path = $this->getTemplatePath();
 			if ($template_path) {
 				$smarty = Application::getSmarty();
@@ -108,7 +108,7 @@
             return 'module';
         }
 
-        protected function getName() {
+        public function getName() {
         	
         	$class = get_class($this);
             //$class = strtolower($class);
