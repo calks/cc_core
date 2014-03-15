@@ -8,7 +8,7 @@
 			return 'message_stack' . md5(__FILE__);
 		}
 		
-		protected function loadList() {
+		protected function load_list() {
 			if (!is_null($this->messages)) return;
 			$session_key = $this->getSessionKey();
 			$this->messages = isset($_SESSION[$session_key]) ? unserialize($_SESSION[$session_key]) : array();  
@@ -20,7 +20,7 @@
 		}
 		
 		public function add($message, $type) {
-			$this->loadList();
+			$this->load_list();
 			$this->messages[] = array(
 				'type' => $type,
 				'message' => $message
@@ -29,19 +29,19 @@
 		}
 		
 		public function clear() {
-			$this->loadList();
+			$this->load_list();
 			$this->messages = array();
 			$this->saveList();
 			
 		}
 		
 		public function getList() {
-			$this->loadList();
+			$this->load_list();
 			return $this->messages;
 		}
 		
 		public function getTexts($message_type) {
-			$this->loadList();
+			$this->load_list();
 			$out = array();
 			foreach ($this->messages as $m) {
 				if ($m['type'] != $type) continue;

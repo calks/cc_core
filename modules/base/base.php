@@ -68,12 +68,14 @@
 		public function run($params=array()) {
 			
 			$user_session = Application::getUserSession();
-			$this->user_logged = $user_session->getUserAccount();
-			
+			$this->user_logged = $user_session->getUserAccount();			
 			$this->commonLogic($params);
 			
-			$this->task = $this->isAjax() ? Request::get('task') : @array_shift($params);
+			$task_from_params = @array_shift($params);
+			$task_from_request = Request::get('task');
+			$this->task = $task_from_request ? $task_from_request : $task_from_params;
 			if (!$this->task) $this->task = 'default';
+			
 						
 			
 			if (!$this->isAjax()) {

@@ -241,7 +241,7 @@ class BaseDbEngine {
       }
     }
     if (count($conditions)) {
-      return "delete from ".$tableName." where ".join(" and ", $conditions);
+      return "delete from `".$tableName."` where ".join(" and ", $conditions);
     }
     else {
       return NULL;
