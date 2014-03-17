@@ -6,7 +6,7 @@
 			
 			$user_session = Application::getUserSession();
 			
-			if (!$user_session->userLogged()) Redirector::redirect('/admin/admin_login');
+			if (!$user_session->userLogged()) Redirector::redirect(Application::getSeoUrl('/login'));
 						
 			$smarty = Application::getSmarty();
 			$template_path = $this->getTemplatePath();
