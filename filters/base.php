@@ -23,12 +23,22 @@
         	$this->addField(new THiddenField('search_order_direction'));        
             
         	
+        	
             if (Request::isPostMethod()) {
                 $this->LoadFromRequest($_REQUEST);
                 $this->saveToSession(Application::getApplicationName());
             } else {
                 $this->loadFromSession(Application::getApplicationName());
             }
+            
+            
+            $sort_link_options = $this->getSortLinkOptions();
+            $current_sort_option = $this->getValue('search_order_field');
+            if ($sort_link_options && !array_key_exists($current_sort_option, $sort_link_options)) {            	
+            	$this->setValue('search_order_field', array_shift(array_keys($sort_link_options)));
+            	$this->setValue('search_order_direction', null);
+            	$this->saveToSession(Application::getApplicationName());
+            } 
             
         	if (isset($_GET['search_order_field'])) {        		
         		$this->setValue('search_order_field', $_GET['search_order_field']);
@@ -43,15 +53,20 @@
         }
         
         function set_params(&$params) {        	
-        	$order_field = $this->getValue('search_order_field');
+        	$order_option = $this->getValue('search_order_field');
+        	
         	$order_direction = $this->getValue('search_order_direction');        	
         	if (!in_array($order_direction, array('asc', 'desc'))) {
         		$order_direction = 'asc';
         	}
         	
-        	if ($order_field) {
-        		$order_field = addslashes(trim($order_field));
-        		$params['order_by'][] = "$order_field $order_direction";	
+        	if ($order_option) {
+        		$order_options = $this->getSortLinkOptions();
+        		$order_field = isset($order_options[$order_option]) ? $order_options[$order_option] : null;        		
+        		if ($order_field) {
+	        		$order_field = addslashes(trim($order_field));
+	        		$params['order_by'][] = "$order_field $order_direction";
+        		} 
         	}
         }
 
@@ -122,9 +137,11 @@
             return "filter_state_$fields_hash";
         }
         
+        function getSortLinkOptions() {
+        	return array();
+        }
         
-        function sortLink($caption, $order_field, $base, $url_addition=null) {
-        	
+        function sortLink($caption, $order_option, $base, $url_addition=null) {
         	
         	/*if (strpos($order_field, '.') !== false) {
         		$order_field = explode('.', $order_field);
@@ -138,7 +155,8 @@
         		$current_order_direction = 'asc';
         	}
         	
-        	if ($current_order_field==$order_field) {
+          	
+        	if ($current_order_field==$order_option) {
         		$new_order_direction = $current_order_direction == 'asc' ? 'desc' : 'asc';
         	}
         	else {
@@ -146,7 +164,7 @@
         	}
         	
         	$classes = array('sort_link');
-        	if ($current_order_field == $order_field) {
+        	if ($current_order_field == $order_option) {
         		$classes[] = 'selected';
         		$classes[] = $current_order_direction;
         	}
@@ -165,7 +183,7 @@
         	if (strpos($base, '?') === false) $link .= '?';
         	else $link .= '&';
         	
-        	$link .= 'search_order_field=' . rawurlencode($order_field);
+        	$link .= 'search_order_field=' . rawurlencode($order_option);
         	$link .= '&search_order_direction=' . rawurlencode($new_order_direction);
         	
         	if ($url_addition) {
@@ -177,12 +195,7 @@
         	//return "<a href=\"$link\" $classes>$caption</a>";
         	
         	
-        	return "
-        		
-        			<a href=\"$link\" $classes>$caption</a>
-        			
-        		
-        	";
+        	return "<a href=\"$link\" $classes>$caption</a>";
         }
 
     }
