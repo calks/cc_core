@@ -166,7 +166,7 @@
 			
 			$group_delete_link = "/{$this->getName()}?action=delete&%ids%";
 			if ($this->url_addition) $group_delete_link .= '&amp;' . str_replace('&', '&amp;', $this->url_addition);
-			//$smarty->assign('group_delete_link', Application::getSeoUrl($group_delete_link));
+			$smarty->assign('group_delete_link', Application::getSeoUrl($group_delete_link));
 			
 			$this->links['group_delete'] = Application::getSeoUrl($group_delete_link);			
 			
