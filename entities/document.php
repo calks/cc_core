@@ -372,7 +372,7 @@
 			$table = $this->get_table_name();
 			
 			$params['parent'] = $this->id;
-			print_r($params);
+			
 			$children = $this->load_list($params);
 			
 			foreach($children as $child) $child->delete();
