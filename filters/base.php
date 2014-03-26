@@ -141,7 +141,7 @@
         	return array();
         }
         
-        function sortLink($caption, $order_option, $base, $url_addition=null) {
+        function sortLink($caption, $order_option, $base, $url_addition=null, $default_direction='asc') {
         	
         	/*if (strpos($order_field, '.') !== false) {
         		$order_field = explode('.', $order_field);
@@ -152,7 +152,7 @@
         	$current_order_field = $this->getValue('search_order_field');
         	$current_order_direction = $this->getValue('search_order_direction');
         	if (!in_array($current_order_direction, array('asc', 'desc'))) {
-        		$current_order_direction = 'asc';
+        		$current_order_direction = $default_direction;
         	}
         	
           	
@@ -160,7 +160,7 @@
         		$new_order_direction = $current_order_direction == 'asc' ? 'desc' : 'asc';
         	}
         	else {
-        		$new_order_direction = 'asc';
+        		$new_order_direction = $default_direction;
         	}
         	
         	$classes = array('sort_link');
