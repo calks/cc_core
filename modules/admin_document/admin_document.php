@@ -1,7 +1,6 @@
 <?php
 
-	Application::loadLibrary('core/admin_module');
-
+	
 	class coreAdminDocumentModule extends coreAdminBaseModule {
 		
 		protected function getObjectName() {
@@ -32,10 +31,11 @@
 				$item->edit_link = "/admin/{$this->getName()}?action=edit&amp;ids[]=$item->id";
 				$item->delete_link = "/admin/{$this->getName()}?action=delete&amp;ids[]=$item->id";
 				$this->afterListLoad($item->children);
+				$item->link = str_replace('/admin/', '/', $item->link);
 			}
 		}
 		
-		
+				
 		protected function taskMove($params, $direction) {
 			$object = $this->objects[0];
 			$table = $object->get_table_name();
