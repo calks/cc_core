@@ -193,6 +193,8 @@
         	$link .= 'search_order_field=' . rawurlencode($order_option);
         	$link .= '&search_order_direction=' . rawurlencode($new_order_direction);
         	
+        	$link = Application::getSeoUrl($link);
+        	
         	if ($url_addition) {
         		$link .= "&$url_addition";
         	}
