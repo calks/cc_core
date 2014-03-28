@@ -63,7 +63,7 @@ class corePagePropertiesHelperLibrary {
 		$internal_url = addslashes(UrlRewriter::seoToInternal($url));
 		$doc = Application::getEntityInstance('document');
 
-		$table = $doc->get_table_name();
+		$table = $doc->getTableName();
 		$sql = "
                 SELECT id, IF(TRIM(open_link)='$url', 1, 0) as is_external
                 FROM $table

@@ -26,7 +26,7 @@
 		}
 		
 
-		function get_table_name() {
+		function getTableName() {
 			return self::TABLE_NAME;
 		}
 
@@ -59,16 +59,16 @@
 		protected function idRequested($params) {
 			if (!isset($params['where'])) return false;
 			$id_requested = false;
-			$table = $this->get_table_name();
-			$alias = $this->get_table_abr();			
+			$table = $this->getTableName();
+			//$alias = $this->get_table_abr();			
 			foreach ($params['where'] as $where) {
 				$where = strtolower(str_replace(' ', '', $where));				
 				if (strpos($where, 'id=') === 0) $id_requested = true;
 				if (strpos($where, "$table.id=") === 0) $id_requested = true;
-				if (strpos($where, "$alias.id=") === 0) $id_requested = true;				
+				//if (strpos($where, "$alias.id=") === 0) $id_requested = true;				
 				if (strpos($where, 'idin(') === 0) $id_requested = true;
 				if (strpos($where, "$table.idin(") === 0) $id_requested = true;
-				if (strpos($where, "$alias.idin(") === 0) $id_requested = true;
+				//if (strpos($where, "$alias.idin(") === 0) $id_requested = true;
 			}
 			
 			return $id_requested;
@@ -200,7 +200,7 @@
 		
 		function get_categories($language_id = CURRENT_LANGUAGE) {
 			$db = Application::getDb();
-			$table = $this->get_table_name();
+			$table = $this->getTableName();
 
 			$subquery = $this->get_content_subquery($language_id);
 
@@ -227,7 +227,7 @@
 
 		function loadToUrl($url, $language_id = CURRENT_LANGUAGE) {
 			$db = Application::getDb();
-			$table = $this->get_table_name();
+			$table = $this->getTableName();
 			$url = addslashes(trim($url));
 
 			$subquery = $this->get_content_subquery($language_id);
@@ -311,8 +311,8 @@
 			$this->active = (int)$this->active;
 			
 			$db = Application::getDb();
-			$table = $this->get_table_name();
-			$table = $this->get_table_name();
+			$table = $this->getTableName();
+			$table = $this->getTableName();
 			$fields = $this->getFields();
 
 			if (is_null($this->seq)) {			
@@ -369,7 +369,7 @@
 
 		function delete() {
 			$db = Application::getDb();
-			$table = $this->get_table_name();
+			$table = $this->getTableName();
 			
 			$params['parent'] = $this->id;
 			
@@ -389,7 +389,7 @@
 		/*function normalizeSeq($parent_id) {
 			$db = Application::getDb();
 
-			$table = $this->get_table_name();
+			$table = $this->getTableName();
 			$sql = "
                 SELECT `id`
                 FROM {$table}

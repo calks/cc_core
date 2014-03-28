@@ -59,7 +59,7 @@
     		self::$user_account = null;
     		    		
     		$user = Application::getEntityInstance('user');
-    		$table = $user->get_table_name();
+    		$table = $user->getTableName();
     		$db = Application::getDb();
 
     		$login = addslashes($login);

@@ -5,7 +5,6 @@
 	define('APP_RESOURCE_TYPE_FILTER', 'filter');
 	define('APP_RESOURCE_TYPE_LIBRARY', 'library');
 	define('APP_RESOURCE_TYPE_MODULE', 'module');
-	define('APP_RESOURCE_TYPE_OBJECT', 'object');
 	define('APP_RESOURCE_TYPE_ENTITY', 'entity');
 	define('APP_RESOURCE_TYPE_ADDON', 'addon');
 	define('APP_RESOURCE_TYPE_STATIC', 'static');
@@ -13,7 +12,6 @@
 
 	define('APP_RESOURCE_CONTAINER_ADMIN_APPLICATION', 1);
 	define('APP_RESOURCE_CONTAINER_FRONT_APPLICATION', 2);
-	define('APP_RESOURCE_CONTAINER_APPLICATION', 3); // Нигде не используется
 	define('APP_RESOURCE_CONTAINER_PACKAGES', 4);
 	define('APP_RESOURCE_CONTAINER_CORE', 5);
 	
@@ -130,14 +128,6 @@
 		}
 
 		
-		// TODO: Найти, где используется DbEngine и повыкидывать. Включая сам DbEngine.
-		public static function getDbEngine() {
-			if (!self::$dbEngine) {
-				self::loadLibrary('olmi/basedbengine');
-				self::$dbEngine = new BaseDbEngine(self::getDb());
-			}
-			return self::$dbEngine;
-		}
 
 		public static function getPage() {
 			if (!self::$page) {

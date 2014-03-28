@@ -38,7 +38,7 @@
 				$ids = implode(',', $this->ids);
 				
 				$obj = Application::getEntityInstance($this->getObjectName());
-				$obj_table = $obj->get_table_name();				
+				$obj_table = $obj->getTableName();				
 				$load_params['where'][] = "$obj_table.id IN($ids)";
 				$this->objects = $obj->load_list($load_params);
 
@@ -274,7 +274,7 @@
 		
 		protected function getSeq() {
 			$object = $this->objects[0];
-			$table = $object->get_table_name();
+			$table = $object->getTableName();
 			$db = Application::getDb();
 			return (int)$db->executeScalar("
 				SELECT MAX(seq)+1 FROM $table
@@ -358,7 +358,7 @@
 		
 		protected function taskMove($params, $direction) {
 			$object = $this->objects[0];
-			$table = $object->get_table_name();
+			$table = $object->getTableName();
 			$db = Application::getDb();
 			$extra_condition = $this->neighbourExtraCondition();
 			if ($extra_condition) $extra_condition = " AND $extra_condition ";
@@ -413,7 +413,7 @@
 			$object = $this->objects[0];			
 			if (!in_array('seq', $object->getFields())) return;
 			
-			$table = $object->get_table_name();
+			$table = $object->getTableName();
 			$db = Application::getDb();
 			
 			$db->execute("SET @num=0");

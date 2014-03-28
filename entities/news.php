@@ -7,7 +7,7 @@
         var $story;        
         var $active;
 
-        function get_table_name() {
+        function getTableName() {
             return "news";
         }
 
@@ -58,13 +58,6 @@
         }
         
         function load_list($params) {
-        	$mode = isset($params['mode']) ? $params['mode'] : '';
-
-        	if ($mode=='front') {
-        		$alias = $this->get_table_abr();
-        		$params['where'][] = "$alias.active=1";
-        	}
-        	
         	$list = parent::load_list($params);
         	
         	foreach($list as $item) {
@@ -76,17 +69,6 @@
         	
         }
         
-        function count_list($params) {
-        	$mode = isset($params['mode']) ? $params['mode'] : '';
-        	
-        	if ($mode=='front') {
-        		$alias = $this->get_table_abr();
-        		$params['where'][] = "$alias.active=1";
-        	}
-        	
-        	return parent::count_list($params);
-        
-        }
 
 
     }

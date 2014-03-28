@@ -5,7 +5,7 @@
 
     class coreBaseFilter extends BaseForm {
 
-        protected $mode;
+        
         protected $session_key;
 
         function __construct( array $params=array() )
@@ -13,10 +13,7 @@
             if( is_null( $this->fields ) )
                 $this->fields = array();
 
-            $this->mode = isset( $params[ 'mode' ] )
-                ? $params[ 'mode' ]
-                : 'front';
-
+        
             $this->add_fields();
             
             $this->addField(new THiddenField('search_order_field'));
@@ -25,7 +22,7 @@
         	
             if ($this->isSearchQueryPosted()) {
                 $this->LoadFromRequest($_REQUEST);
-                $this->saveToSession(Application::getApplicationName());
+                $this->saveToSession();
             } else {
                 $this->loadFromSession(Application::getApplicationName());
             }
@@ -36,17 +33,17 @@
             if ($sort_link_options && !array_key_exists($current_sort_option, $sort_link_options)) {            	
             	$this->setValue('search_order_field', array_shift(array_keys($sort_link_options)));
             	$this->setValue('search_order_direction', null);
-            	$this->saveToSession(Application::getApplicationName());
+            	$this->saveToSession();
             } 
             
         	if (isset($_GET['search_order_field'])) {        		
         		$this->setValue('search_order_field', $_GET['search_order_field']);
-        		$this->saveToSession(Application::getApplicationName());
+        		$this->saveToSession();
         	}
         	
         	if (isset($_GET['search_order_direction'])) {
         		$this->setValue('search_order_direction', $_GET['search_order_direction']);
-        		$this->saveToSession(Application::getApplicationName());
+        		$this->saveToSession();
         	}
             
         }
@@ -79,7 +76,7 @@
 
         function reset_values() {
             unset ($this->fields);
-            $this->add_fields($this->mode);
+            $this->add_fields();
             $this->saveToSession();
         }
 
@@ -123,24 +120,24 @@
             $this->saveToSession();
         }
 
-        function saveToSession($name = '') {
-            $session_key = $this->getSessionKey($name);            
+        function saveToSession() {
+            $session_key = $this->getSessionKey();            
             foreach (array_keys($this->fields) as $field) {
                 $_SESSION[$session_key][$field] = $this->getValue($field);
             }
         }
 
-        function loadFromSession($name = '') {
-            $session_key = $this->getSessionKey($name);            
+        function loadFromSession() {
+            $session_key = $this->getSessionKey();            
             foreach (array_keys($this->fields) as $field) {
                 if (!isset($_SESSION[$session_key][$field])) continue;
                 $this->setValue($field, $_SESSION[$session_key][$field]);
             }
         }
 
-        function getSessionKey($name = '') {
+        function getSessionKey() {
             $fields = array_keys($this->fields);
-            $fields_hash = md5(implode('|', $fields).$name.$this->mode.get_class($this));
+            $fields_hash = md5(implode('|', $fields).Application::getApplicationName().get_class($this));
             return "filter_state_$fields_hash";
         }
         
@@ -150,11 +147,6 @@
         
         function sortLink($caption, $order_option, $base, $url_addition=null, $default_direction='asc') {
         	
-        	/*if (strpos($order_field, '.') !== false) {
-        		$order_field = explode('.', $order_field);
-        		$order_field[0] = coreBaseEntity::getTableAlias($order_field[0]);
-        		$order_field = implode('.', $order_field);	
-        	}*/
         	
         	$current_order_field = $this->getValue('search_order_field');
         	$current_order_direction = $this->getValue('search_order_direction');

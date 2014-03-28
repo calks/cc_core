@@ -42,7 +42,7 @@
 
             $doc = Application::getEntityInstance('document');
 
-            $table = $doc->get_table_name();
+            $table = $doc->getTableName();
 			
             if (!is_array($parent_id)) $parent_id = array($parent_id);
             elseif (!$parent_id) return array();

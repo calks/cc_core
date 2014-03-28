@@ -38,7 +38,7 @@
 		
 		protected function taskMove($params, $direction) {
 			$object = $this->objects[0];
-			$table = $object->get_table_name();
+			$table = $object->getTableName();
 			$db = Application::getDb();			
 			if($direction=='up') {
 				$sql = "
