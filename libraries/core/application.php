@@ -73,8 +73,9 @@
 		
 		
 		public static function render($application_name) {
-			self::init($application_name);
-		    if (USE_PROFILER) {
+			
+			self::init($application_name);		    
+			if (USE_PROFILER) {
 		        Application::loadLibrary('core/profiler');
 		        $profiler = new profiler("Total time consumption");
 		        $profiler->start();
