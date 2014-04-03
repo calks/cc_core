@@ -44,7 +44,7 @@
 		}
 
 		function make_form(&$form) {
-			$form->addField(new THiddenField("id"));
+			$form->addField(new THiddenField($this->getPrimaryKeyField()));
 			return $form;
 		}
 
@@ -73,7 +73,8 @@
 				$unique_keys = array_keys($unique);
 
 				$extrasql = "";
-				if ($this->id) $extrasql = " and id <> ".$this->id;
+				$pkey = $this->getPrimaryKeyField();
+				if ($this->$pkey) $extrasql = " and $pkey <> ".$this->$pkey;
 				foreach ($this as $key => $value) {
 					if (in_array($key, $unique_keys)) {
 						$query = "select count(*) from ".$table." where ".$key."='".addslashes($key)."' ".$extrasql;
@@ -101,7 +102,7 @@
         }
         
         
-        public function delete($_id=null) {
+        public function delete() {
         	if (class_exists('filePkgHelperLibrary')) {
         		filePkgHelperLibrary::deleteFiles($this);	
         	}
@@ -110,10 +111,11 @@
         	}
         	        	
         	$db = Application::getDb();
-        	$id = (int)$this->id;
-        	if (!$id) return true;
+        	$pkey = $this->getPrimaryKeyField();
+        	$pkey_value = (int)$this->$pkey;
+        	if (!$pkey_value) return true;
         	$table = $this->getTableName();
-        	$db->execute("DELETE FROM $table WHERE id=$id");
+        	$db->execute("DELETE FROM $table WHERE $pkey=$pkey_value");
         	return (bool)mysql_errno()==0;
         }
         
@@ -125,7 +127,8 @@
 
         public function order_by() {
             $table = $this->getTableName();
-            return "`$table`.`id`";
+            $pkey = $this->getPrimaryKeyField();
+            return "`$table`.`$pkey`";
         }
 
         protected function wrap_term($term) {
@@ -153,7 +156,18 @@
         }
 
         protected function get_list_fields($params = array()) {
-            return array_keys(get_class_vars(get_class($this)));
+        	$pkey = $this->getPrimaryKeyField();
+        	if ($pkey == 'id') {
+        		return array_keys(get_class_vars(get_class($this)));	
+        	}
+        	else {
+        		$out = array();
+        		foreach (array_keys(get_class_vars(get_class($this))) as $f) {
+        			if ($f != 'id') $out[] = $f;
+        		}
+        		return $out;
+        	}
+        	
         }
 
         protected function load_list_get_fields($params = array()) {
@@ -192,7 +206,10 @@
             $fields = array_keys(get_class_vars(get_class($this)));
 
             $out = array();
+            $pkey = $this->getPrimaryKeyField();
+            $throw_out_id = $pkey != 'id'; 
             foreach ($fields as & $f) {
+            	if ($throw_out_id && $f == 'id') continue;
                 // field prefixed with "internal_" are not to be stored in DB
                 if (false !== strpos($f, 'internal_') || 0 === strpos($f, '_')) {
                     continue;
@@ -350,8 +367,8 @@
             }
 
             $table = $this->getTableName();
-            
-            $params['where'][] = "`$table`.id=$id";
+            $pkey = $this->getPrimaryKeyField();
+            $params['where'][] = "`$table`.$pkey=$id";
             
             $list = $this->load_list($params);
 
@@ -361,20 +378,21 @@
         public function save() {
             $object_table = $this->getTableName();
             $fields = $this->get_save_fields();
-            if (!$this->id ) {
-                $this->id = null;
+            $pkey = $this->getPrimaryKeyField();
+            if (!$this->$pkey) {
+                $this->$pkey = null;
             }
 
             $insert_fields = array();
             $insert_values = array();
             $update = array();
 
-            foreach ($fields as $field) {
+            foreach ($fields as $field) {            	
                 $value = $this->$field;
                 $value = is_null($value) ? "NULL" : "'".addslashes($value)."'";
                 $insert_fields[] = "`$field`";
                 $insert_values[] = $value;
-                $update[] = ($field == 'id') ? 'id=LAST_INSERT_ID(id)' : "`$field`=$value";
+                $update[] = ($field == $pkey) ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=$value";
             }
 
             $insert_fields = implode(', ', $insert_fields);
@@ -382,13 +400,13 @@
             $update = implode(', ', $update);
 
             $sql = "INSERT INTO `$object_table` ($insert_fields) VALUES($insert_values)";
-            if ($this->id ) $sql .= " ON DUPLICATE KEY UPDATE $update";
+            if ($this->$pkey) $sql .= " ON DUPLICATE KEY UPDATE $update";
 
             $db = Application::getDb();
             $db->execute($sql);
 
-            $this->id = $db->getLastAutoIncrementValue();
-            return $this->id;
+            $this->$pkey = $db->getLastAutoIncrementValue();
+            return $this->$pkey;
         }
 
         public function getName() {

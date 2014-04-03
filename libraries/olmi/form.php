@@ -96,8 +96,8 @@
          * @param object $context
          * @return void
          */
-        function LoadFromRequest($POST, $context = NULL) {
-            if (is_array($POST)) {
+        function LoadFromRequest($POST, $context = NULL) {        	
+            if (is_array($POST)) {            	
                 reset($this->fields );
                 while (list($key, $value) = each($this->fields )) {
                     $field =& $this->fields[$key]; # get the _reference_ to the object in form

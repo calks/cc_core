@@ -19,7 +19,7 @@
 		
 		public function run($params=array()) {			
 						
-			$this->checkUser();
+			$this->commonLogic($params);
 			
 			$this->action = Request::get('action', 'list');
 			$this->ids = Request::get('ids');
@@ -66,7 +66,7 @@
 			return $smarty->fetch($template_path);
 		}
 		
-		protected function checkUser() {
+		protected function commonLogic(&$params=array()) {
 			$user_session = Application::getUserSession();
 			if (!$user_session->userLogged()) Redirector::redirect(Application::getSeoUrl('/login'));
 			
@@ -75,6 +75,8 @@
 				$user_session->logout();
 				Redirector::redirect('/login');
 			}
+			
+			parent::commonLogic($params);
 		}
 		
 		protected function getObjectName() {

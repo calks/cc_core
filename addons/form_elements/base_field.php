@@ -27,7 +27,7 @@
 				$property_name = coreNameUtilsLibrary::camelToUnderscored(substr($name, 3));
 				return $this->getProperty($property_name);	
 			}
-			if (strpos($name, 'set') === 0) {
+			if (strpos($name, 'set') === 0) {				
 				$property_name = coreNameUtilsLibrary::camelToUnderscored(substr($name, 3));
 				if (!isset($arguments[0])) {
 					throw new Exception("Property value not supplied for form element", 999);
@@ -37,7 +37,7 @@
 				return $this->setProperty($property_name, $property_value);	
 			}
 			
-			throw new Exception("no method", 999);
+			throw new Exception("no $name method", 999);
 			return $this;
 			
 		}
@@ -70,6 +70,25 @@
 
 		abstract public function getAsHtml();
 		
+		public function isEditable() {
+			return true;
+		}
 		
-	
+		public function hasValue() {
+			return true;
+		}
+		
+		
+		public function GetValue() {
+			return $this->value;
+		}
+		
+		public function SetValue($value) {
+			$this->value = $value;
+		}
+		
+		public function SetFromPost($POST) {
+			if(isset($_POST[$this->field_name])) $this->SetValue($_POST[$this->field_name]);	
+		}
+		
 	}
