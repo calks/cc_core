@@ -91,6 +91,12 @@
 			return $errors;
 		}
 
+		
+		function getId() {
+			$pkey = $this->getPrimaryKeyField();
+			return $this->$pkey;
+		}
+		
 		function getFields() {
 			$result = get_class_vars(get_class($this));
 			return array_keys($result);
