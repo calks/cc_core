@@ -14,16 +14,35 @@
 			}
 		}
 		
-		public static function set($name, $timeout=6) {
+		public static function isLocked($name) {
+			self::removeExpired();
+			
 			$db = Application::getDB();
 			$name = addslashes($name);
-			$timeout = (int)$timeout;
+			$table = self::getTableName();
+			
+			return (bool)$db->executeScalar("
+				SELECT COUNT(*) FROM $table
+				WHERE name = '$name' 
+			");
+		}
+		
+		protected function removeExpired() {
+			$db = Application::getDB();
 			$table = self::getTableName();
 			
 			$db->execute("
 				DELETE FROM $table
 				WHERE created < DATE_SUB(NOW(), INTERVAL timeout SECOND) 
 			");
+		}
+		
+		public static function set($name, $timeout=6) {
+			self::removeExpired();
+			
+			$db = Application::getDB();
+			$name = addslashes($name);
+			$timeout = (int)$timeout;
 			
 			$old_show_errors = $db->getShowErrors();
 			$db->setShowErrors(0);
