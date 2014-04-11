@@ -23,7 +23,7 @@
 			
 			return (bool)$db->executeScalar("
 				SELECT COUNT(*) FROM $table
-				WHERE name = '$name' 
+				WHERE name='$name' 
 			");
 		}
 		
@@ -43,6 +43,7 @@
 			$db = Application::getDB();
 			$name = addslashes($name);
 			$timeout = (int)$timeout;
+			$table = self::getTableName();
 			
 			$old_show_errors = $db->getShowErrors();
 			$db->setShowErrors(0);
