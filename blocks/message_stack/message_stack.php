@@ -7,7 +7,6 @@
 			$smarty = Application::getSmarty();
 			
 			$message_stack = Application::getMessageStack();
-			 
 			
 			$message_from_request = Request::get('message');
 			if ($message_from_request) {
