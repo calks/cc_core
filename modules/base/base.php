@@ -50,7 +50,14 @@
 		protected function returnResponse() {
 			if ($this->isAjax()) {				
 				$out = $this->composeAjaxResponse();
-				die(json_encode($out));								
+				$callback = Request::get('callback');
+				if ($callback) {					
+					die($callback . '(' . json_encode($out) . ');');
+				}
+				else {
+					die(json_encode($out));	
+				}
+												
 			}
 			else return $this->html;
 		}
