@@ -44,15 +44,20 @@
 			
 			self::$application_name = $application_name;
 			self::$site_root = realpath(dirname(__FILE__)."/../../..");
+
+			$config_path = self::$site_root."/applications/$application_name/conf.php";
+			include_once $config_path;
+
+			self::$config = $config;
 			
 			
-			$host_path = Application::getSitePath() . Application::getVarDirectory() . "/host_name";
+			$host_path = self::getSitePath() . self::getVarDirectory() . "/host_name";
 
 			if (isset($_SERVER['HTTP_HOST'])) {
 				self::$host = @strtolower($_SERVER['HTTP_HOST']);
 				@file_put_contents($host_path, self::$host);
 			}
-			else {
+			else {				
 				self::$host = @file_get_contents($host_path);
 			}
 
@@ -63,11 +68,6 @@
 			self::$message_stack = null;
 
 			self::$mobile = (int) ((bool) (self::detectMobileBrowser()));
-
-			$config_path = self::$site_root."/applications/$application_name/conf.php";
-			include_once $config_path;
-
-			self::$config = $config;
 
 			session_start();
 			
