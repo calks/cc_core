@@ -23,6 +23,7 @@
 			$this->meta_title = '';
 			$this->meta_desc = '';
 			$this->meta_key = '';
+			$this->category = 2;
 		}
 		
 
@@ -36,14 +37,14 @@
 
 		function mandatory_fields() {
 			return array(
-				'url' => 'URL', 
+				//'url' => 'URL', 
 				'title' => 'Заголовок'			
 			);
 		}
 
-		function unique_fields() {
+		/*function unique_fields() {
 			return array("url" => "URL");
-		}
+		}*/
 
 		function get_content_subquery($language_id = CURRENT_LANGUAGE) {
 			$table = $this->get_content_table_name();
@@ -60,15 +61,12 @@
 			if (!isset($params['where'])) return false;
 			$id_requested = false;
 			$table = $this->getTableName();
-			//$alias = $this->get_table_abr();			
 			foreach ($params['where'] as $where) {
 				$where = strtolower(str_replace(' ', '', $where));				
 				if (strpos($where, 'id=') === 0) $id_requested = true;
 				if (strpos($where, "$table.id=") === 0) $id_requested = true;
-				//if (strpos($where, "$alias.id=") === 0) $id_requested = true;				
 				if (strpos($where, 'idin(') === 0) $id_requested = true;
 				if (strpos($where, "$table.idin(") === 0) $id_requested = true;
-				//if (strpos($where, "$alias.idin(") === 0) $id_requested = true;
 			}
 			
 			return $id_requested;
@@ -184,7 +182,7 @@
 			$form->addField(new TTextField("meta_key", "", 85, 4));
 
 			$form->addField(new THiddenField("language_id", $language_id));
-
+			
 			return $form;
 		}
 
@@ -239,6 +237,7 @@
                 WHERE url = '$url'
                 GROUP BY document_id
             ";
+					
 			$object = $db->executeSelectObject($query);
 			if (!$object) return NULL;
 
@@ -303,6 +302,7 @@
 			$object->menu = $menu;
 		}
 
+		
 		function save() {
 			$this->packMenuInfo($this);			
 			$this->menu = (int)$this->menu;

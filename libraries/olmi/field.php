@@ -837,7 +837,7 @@
 		function GetAsHTML($aName, $aSelectedValue, $aAlign = "left") {
 			$Res = "";
 			if ($this->Caption && $aAlign != "left") $Res = $this->Caption."&nbsp;";
-			$Res .= sprintf("<input type=\"radio\" name=\"%s\" value=\"%s\"%s ".HtmlUtils::attributes($this->attributes).">", htmlspecialchars($aName), htmlspecialchars($this->Value), $this->Value == $aSelectedValue ? " checked" : "");
+			$Res .= sprintf("<input type=\"radio\" name=\"%s\" value=\"%s\"%s ".HtmlUtils::attributes($this->attributes).">", htmlspecialchars($aName), htmlspecialchars($this->Value), $this->Value == $aSelectedValue ? ' checked="checked"' : "");
 			if ($this->Caption && $aAlign == "left") $Res .= "&nbsp;".$this->Caption;
 			#if ($this->Caption) $Res .= "<br>";
 			return $Res;
