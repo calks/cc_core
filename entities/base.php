@@ -121,7 +121,7 @@
         	$pkey_value = (int)$this->$pkey;
         	if (!$pkey_value) return true;
         	$table = $this->getTableName();
-        	$db->execute("DELETE FROM $table WHERE $pkey=$pkey_value");
+        	$db->execute("DELETE FROM `$table` WHERE $pkey=$pkey_value");
         	return (bool)mysql_errno()==0;
         }
         
