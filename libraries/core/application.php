@@ -36,6 +36,7 @@
 		public static $loader;
 		
 		protected static $application_folders;
+		
 
 		public static function init($application_name) {
 
@@ -43,13 +44,21 @@
 			
 			self::$application_name = $application_name;
 			self::$site_root = realpath(dirname(__FILE__)."/../../..");
+
+			$config_path = self::$site_root."/applications/$application_name/conf.php";
+			include_once $config_path;
+
+			self::$config = $config;
 			
+			
+			$host_path = self::getSitePath() . self::getVarDirectory() . "/host_name";
 
 			if (isset($_SERVER['HTTP_HOST'])) {
 				self::$host = @strtolower($_SERVER['HTTP_HOST']);
+				@file_put_contents($host_path, self::$host);
 			}
-			else {
-				self::$host = "";
+			else {				
+				self::$host = @file_get_contents($host_path);
 			}
 
 			self::$site_url = 'http://'.self::$host;
@@ -59,11 +68,6 @@
 			self::$message_stack = null;
 
 			self::$mobile = (int) ((bool) (self::detectMobileBrowser()));
-
-			$config_path = self::$site_root."/applications/$application_name/conf.php";
-			include_once $config_path;
-
-			self::$config = $config;
 
 			session_start();
 			
@@ -410,7 +414,8 @@
 		public static function getVarDirectory() {
 			return isset(self::$config['var_directory']) ? self::$config['var_directory'] : '/var/'.self::getApplicationName();
 		}
-
+		
+		
 		protected static function detectMobileBrowser() {
 			$user_agent = strtolower(getenv('HTTP_USER_AGENT'));
 			$accept = strtolower(getenv('HTTP_ACCEPT'));
