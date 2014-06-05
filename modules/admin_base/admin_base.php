@@ -134,9 +134,10 @@
 			
 			$list = $obj->load_list($load_params);
 			
-			$this->addLinks($list);		
 			
 			$this->afterListLoad($list);
+			
+			$this->addLinks($list);
 						
 			$smarty = Application::getSmarty();
 			

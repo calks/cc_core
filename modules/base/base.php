@@ -148,10 +148,11 @@
         protected function terminate() {
         	if ($this->isAjax()) {        		
         		Application::stackError('Ошибка в запросе');
-        		$this->returnResponse();	
+        		$this->returnResponse();
         	}
         	else {
-        		$this->html = Application::runModule('page404'); 
+        		$this->html = Application::runModule('page404');
+        		return $this->html;
         	}               
         }
 
