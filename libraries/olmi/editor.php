@@ -71,11 +71,11 @@
             }*/
 
             function SetConfig($config) {
-                /*if (is_array($config)) {
+                if (is_array($config)) {
                     foreach ($config as $k => $v) {
-                        $this->_editor->Config[$k] = $v;
+                        $this->_config[$k] = $v;
                     }
-                }*/
+                }
             }
         }
     }

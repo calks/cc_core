@@ -35,7 +35,68 @@
 			}
 		}
 		
-				
+		protected function createForm($object) {
+			parent::createForm($object);
+			$link_type_options = array(
+				'page_itself' => 'Сама страница или раздел',
+				'alias' => 'Ссылка'
+			);
+			
+			$type_field = coreFormElementsLibrary::get('radio', 'link_type', array(
+				'options' => $link_type_options
+			));
+			$this->form->addField($type_field);
+			$type_field->setValue($object->open_link ? 'alias' : 'page_itself');
+		}
+
+		
+		protected function taskEdit() {
+			$page = Application::getPage();
+			$page->addScript($this->getStaticFileUrl('/type_switch.js'));
+			return parent::taskEdit();
+		}
+		
+		protected function updateObjectFromRequest($object) {
+			parent::updateObjectFromRequest($object);
+			$link_type = $this->form->getValue('link_type');
+			if ($link_type == 'page_itself') {
+				$object->open_link = '';
+			}
+			elseif($link_type == 'alias') {
+				$object->url = '';
+				$object->meta_title = '';
+				$object->content = '';
+				$object->meta_desc = '';
+				$object->meta_key = '';
+			}
+		}
+		
+		
+		protected function validateObject($object) {
+			parent::validateObject($object);
+			
+			$link_type = $this->form->getValue('link_type');
+			
+			if ($link_type == 'page_itself') {
+				if (!trim($object->url)) {
+					$this->errors[] = "Необходимо задать URL";
+				}
+				else {					
+					$existing = $object->loadToUrl($object->url);
+					if ($existing && $existing->id != $object->id) {
+						$this->errors[] = "Указанное значение URL уже используется для другой страницы";
+					}
+				}				
+			}
+			elseif($link_type == 'alias') {
+				if (!trim($object->open_link)) {
+					$this->errors[] = "Необходимо задать ссылку на страницу";
+				}
+			}
+			
+		}
+		
+		
 		protected function taskMove($params, $direction) {
 			$object = $this->objects[0];
 			$table = $object->getTableName();

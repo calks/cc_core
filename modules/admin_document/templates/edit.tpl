@@ -29,6 +29,11 @@
 						<div class="clear"></div>
 					</div>
 					<div class="st-form-line">	
+						<span class="st-labeltext">Тип</span>	
+						{$form->render('link_type')} 
+						<div class="clear"></div>
+					</div>
+					<div class="st-form-line type-page_itself">	
 						<span class="st-labeltext">URL *</span>	
 		            		{if $object->protected}
 		            			{$object->url}
@@ -37,8 +42,8 @@
 		            		{/if}
 						<div class="clear"></div>
 					</div>
-					<div class="st-form-line">	
-						<span class="st-labeltext">Существующая страница</span>	
+					<div class="st-form-line type-alias">	
+						<span class="st-labeltext">Ссылка на существующую страницу *</span>	
 						{$form->render('open_link')}
 						<div class="clear"></div>
 					</div>
@@ -48,7 +53,7 @@
 						<div class="clear"></div>
 					</div>
 					<div class="st-form-line">	
-						<span class="st-labeltext">Тип</span>	
+						<span class="st-labeltext">Раздел или страница?</span>	
 						{$form->render('category')}
 						<div class="clear"></div>
 					</div>
@@ -57,12 +62,12 @@
 						{$form->render('title')} 
 						<div class="clear"></div>
 					</div>
-					<div class="st-form-line">	
+					<div class="st-form-line type-page_itself">	
 						<span class="st-labeltext">Заголовок</span>	
 						{$form->render('meta_title')}
 						<div class="clear"></div>
 					</div>
-					<div class="st-form-line">	
+					<div class="st-form-line type-page_itself">	
 						<span class="st-labeltext">Контент</span>
 						<br /><br />	
 						{$form->render('content')}
@@ -78,12 +83,12 @@
 						{$form->render('open_new_window')}
 						<div class="clear"></div>
 					</div>
-					<div class="st-form-line">	
+					<div class="st-form-line type-page_itself">	
 						<span class="st-labeltext">Meta Descriptions</span>	
 						{$form->render('meta_desc')}
 						<div class="clear"></div>
 					</div>
-					<div class="st-form-line">	
+					<div class="st-form-line type-page_itself">	
 						<span class="st-labeltext">Meta Keywords</span>	
 						{$form->render('meta_key')}
 						<div class="clear"></div>

@@ -137,14 +137,14 @@ class HtmlUtils {
   function attributes($attributes) {
     if (is_array($attributes)) {
       $result = '';
-      foreach ($attributes as $key => $value) {
-        $result .= ' '.$key.'="'.htmlspecialchars($value).'"';
+      foreach ($attributes as $key => $value) {      	
+        $result .= ' '.$key.'="'.htmlspecialchars($value).'"';       
       }
       return $result;
     }
-    else {
+    else {    	
       if ($attributes) {
-        return ' '.((string) $attributes);
+        return ' '.((string) $attributes);         
       }
       else {
         return NULL;
@@ -243,7 +243,7 @@ class HtmlUtils {
     if (is_array($values)) {
       foreach ($values as $key => $value) {
         $result .= "<option value=\"".$key."\"";
-        if ($key == $selected) $result .= " selected"; //=\"1\" не XHTML, пока.
+        if ($key == $selected) $result .= " selected"; //=\"1\" пїЅпїЅ XHTML, пїЅпїЅпїЅпїЅ.
         $result .= ">".$value;
         $result .= "</option>\n";
       }
