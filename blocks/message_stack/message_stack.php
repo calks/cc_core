@@ -10,7 +10,7 @@
 			
 			$message_from_request = Request::get('message');
 			if ($message_from_request) {
-				$message_stack->add($message_from_request);
+				$message_stack->add($message_from_request, 'message');
 			}
 			
 			$errors_from_smarty = isset($smarty->_tpl_vars['errors']) ? $smarty->_tpl_vars['errors'] : array();

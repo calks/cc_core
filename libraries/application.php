@@ -15,8 +15,9 @@
 	define('APP_RESOURCE_CONTAINER_PACKAGES', 4);
 	define('APP_RESOURCE_CONTAINER_CORE', 5);
 	
+	class Application extends coreApplicationLibrary {}
 
-	class Application {
+	class coreApplicationLibrary {
 		private static $application_name;
 		private static $site_root;
 		private static $site_url;
@@ -43,7 +44,7 @@
 			self::$application_folders = array();
 			
 			self::$application_name = $application_name;
-			self::$site_root = realpath(dirname(__FILE__)."/../../..");
+			self::$site_root = realpath(dirname(__FILE__)."/../..");
 
 			$config_path = self::$site_root."/applications/$application_name/conf.php";
 			include_once $config_path;
@@ -414,6 +415,7 @@
 		public static function getVarDirectory() {
 			return isset(self::$config['var_directory']) ? self::$config['var_directory'] : '/var/'.self::getApplicationName();
 		}
+		
 		
 		
 		protected static function detectMobileBrowser() {
