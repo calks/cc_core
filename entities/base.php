@@ -325,8 +325,9 @@
             SELECT $fields
             FROM $from
             $where $group_by $having $order_by $limit_offset";
+            
+            if (@$params['show_sql']) echo '<pre>' . $sql . '</pre>'."\n";
 
-//echo '<pre>' . $sql . '</pre>'."\n\n";
 
             $raw_list = $db->executeSelectAllObjects($sql);
             if (!$raw_list) {

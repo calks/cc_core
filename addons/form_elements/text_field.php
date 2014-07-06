@@ -2,33 +2,20 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonTextField extends TTextField {
+	class coreFormElementsAddonTextField extends coreFormElementsAddonBaseField {
 		
 		
-		protected function addClasses(&$params, $classes) {
-			$attributes = isset($params['attributes']) ? $params['attributes'] : '';
-			
-			if (strpos($attributes, 'class=') !== false) {
-				$attributes = preg_replace('/(class=)(\'|")/', 'class=$2'.$classes.' ', $attributes);				
-			} 
-			else {
-				$attributes .= ' class="'.$classes.'"';
-			}
-			
-			$params['attributes'] = $attributes;
-			
+		
+		public function getAsHtml() {
+			$attr_string = $this->getAttributesString();
+			return "
+				<textarea name=\"$this->field_name\" $attr_string>$this->value</textarea>
+			";
 		}
-		
 		
 		public function __construct($name, $params) {
 			
-			parent::TTextField(
-				$name,
-				isset($params['value']) ? $params['value'] : '',
-				isset($params['cols']) ? $params['cols'] : 80,
-				isset($params['rows']) ? $params['rows'] : 4,
-				isset($params['attributes']) ? $params['attributes'] : ''
-			);	
+			parent::__construct($name);	
 		}
 		
 	}
