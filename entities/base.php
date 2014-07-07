@@ -395,7 +395,7 @@
             $update = array();
 
             foreach ($fields as $field) {            	
-                $value = $this->$field;
+                $value = $this->$field;                
                 $value = is_null($value) ? "NULL" : "'".addslashes($value)."'";
                 $insert_fields[] = "`$field`";
                 $insert_values[] = $value;
