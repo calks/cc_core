@@ -98,7 +98,7 @@
 				if (!isset($max_seq_by_group[$item->group_name])) $max_seq_by_group[$item->group_name] = 0;
 				$item->seq = $max_seq_by_group[$item->group_name];
 				$max_seq_by_group[$item->group_name]++;
-				$item->is_namdatory = (int)$item->is_mandatory;
+				$item->is_mandatory = (int)$item->is_mandatory;
 				
 				$row = array();
 				foreach ($fields as $f) {
