@@ -2,7 +2,7 @@
 
 	class coreBaseBlock {
 		
-		public function render() {
+		public function render() {			
 			$smarty = Application::getSmarty();
 			$template_path = $this->getTemplatePath();
 			return $smarty->fetch($template_path);
@@ -26,7 +26,7 @@
         }
         
         public function getTemplatePath($template_name = '') {
-            if (!$template_name) $template_name = $this->getName();
+            if (!$template_name) $template_name = $this->getName();            
             return coreResourceLibrary::getFirstFilePath($this->getModuleType(), $this->getName(), "/templates/$template_name.tpl");       
         }        
 		

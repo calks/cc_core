@@ -5,6 +5,7 @@
 		public $application_name;
 		public $param_name;
 		public $param_displayed_name;
+		public $param_displayed_unit;
 		public $group_name;
 		public $group_displayed_name;
 		public $param_type;
@@ -23,12 +24,21 @@
 			return null;
 		}
 		
-		public function renderField() {
-			$field = coreFormElementsLibrary::get('edit', $this->getFieldName(), array(
-				'size' => 80
-			));
+		public function renderField() {			
+			$field = coreFormElementsLibrary::get('edit', $this->getFieldName());
+			
+			if (isset($this->constraints['field_params'])) {			
+				foreach ($this->constraints['field_params'] as $k=>$v) {
+					$setter = coreNameUtilsLibrary::underscoredToCamel("set_$k");  
+					$field->$setter($v);					
+				}				
+				$field->attr($this->constraints['field_attr']);
+			}
 			$field->setValue($this->param_value);
-			return $field->getAsHtml();	
+			$out = $field->getAsHtml();
+			if ($this->param_displayed_unit) $out .= " $this->param_displayed_unit"; 
+
+			return $out;
 		}
 		
 		public function setValueFromPost() {

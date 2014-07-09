@@ -16,7 +16,7 @@
 			$this->attr(array(
 				'size' => $this->size,
 				'maxlength' => $this->maxlength
-			));
+			));			
 			$attr_string = $this->getAttributesString();
 			$value = $this->getSafeAttrValue($this->value);
 			return "

@@ -6,12 +6,14 @@
 		protected $value;
 		protected $attributes;
 		protected $css_classes;
+		protected $html_allowed;
 		
 		public function __construct($name) {
 			$this->field_name = $this->normalizeName($name);
 			$this->value = null;
 			$this->attributes = array();
 			$this->css_classes = array();
+			$this->html_allowed = false;
 		}
 		
 		
@@ -19,6 +21,15 @@
 			$class_name = get_class($this);
 			preg_match('/.*Addon(?P<name>.*)Field/U', $class_name, $matches);
 			return coreNameUtilsLibrary::camelToUnderscored($matches['name']);
+		}
+		
+		
+		public function allowHtml() {
+			$this->html_allowed = true;
+		}
+		
+		public function disallowHtml() {
+			$this->html_allowed = false;
 		}
 		
 		
@@ -87,7 +98,11 @@
 		}
 		
 		public function SetFromPost($POST) {
-			if(isset($_POST[$this->field_name])) $this->SetValue($_POST[$this->field_name]);	
+			$value = isset($_POST[$this->field_name]) ? $_POST[$this->field_name] : '';
+			if (!$this->html_allowed) {
+				$value = strip_tags($value);
+			}
+			$this->SetValue($value);
 		}
 		
 		protected function normalizeName($attr_name) {

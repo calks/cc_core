@@ -176,7 +176,8 @@
 						$param_type = $param_data['type'];
 						$item = self::getParamAddon($group_name, $param_name, $param_type);
 						$item->param_name = $param_name;
-						$item->param_displayed_name = isset($param_data['displayed_name']) ? $param_data['displayed_name'] : $param_name;   
+						$item->param_displayed_name = isset($param_data['displayed_name']) ? $param_data['displayed_name'] : $param_name;
+						$item->param_displayed_unit = isset($param_data['displayed_unit']) ? $param_data['displayed_unit'] : '';   
 						$item->group_name = $group_name;
 						$item->param_type = $param_type;
 						if (!$item->keep_value) {
