@@ -350,8 +350,13 @@
 		
 		
 		public static function getMailer() {
-			$library_class = Application::getResourceClass('mailer', APP_RESOURCE_TYPE_LIBRARY);
-			return new $library_class();
+			/*$library_class = Application::getResourceClass('mailer', APP_RESOURCE_TYPE_LIBRARY);
+			return new $library_class();*/
+			
+			$email_transport_addons = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'message_transport', 'email_transport.php');
+			if (!$email_transport_addons) return null;
+			$addon_class = $email_transport_addons['email_transport']->class;
+			return new $addon_class();
 		}
 
 		public static function getBreadcrumbs() {

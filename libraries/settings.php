@@ -81,6 +81,7 @@
 				ORDER BY group_name, seq
 			");
 			foreach ($data as $d) {
+				self::$group_names[$d->group_name] = $d->group_displayed_name;
 				$d->param_value = unserialize($d->param_value);
 				$d->constraints = unserialize($d->constraints);
 				$item = self::getParamAddon($d->group_name, $d->param_name, $d->param_type);
@@ -92,12 +93,10 @@
 		public static function saveTree() {
 			$values = array();			
 			$fields = array_keys(get_class_vars('coreSettingsAddonBaseParam'));
-			$max_seq_by_group = array();
+
+			
 			foreach (self::$tree_flat as $item) {				
 				$item->group_displayed_name = isset(self::$group_names[$item->group_name]) ? self::$group_names[$item->group_name] : $item->group_name;
-				if (!isset($max_seq_by_group[$item->group_name])) $max_seq_by_group[$item->group_name] = 0;
-				$item->seq = $max_seq_by_group[$item->group_name];
-				$max_seq_by_group[$item->group_name]++;
 				$item->is_mandatory = (int)$item->is_mandatory;
 				
 				$row = array();
@@ -121,6 +120,8 @@
 			$sql = "
 				INSERT INTO `$table` ($fields_str) VALUES $values_str
 			";
+			
+			
 			$db = Application::getDb();
 			$db->execute("TRUNCATE `$table`");
 			$db->execute($sql);
@@ -160,6 +161,7 @@
 			self::loadTree();
 			$addons = coreResourceLibrary::getAvailableFiles('addon', 'settings');
 			
+			$max_seq_by_group = array();
 			foreach($addons as $addon_name=>$addon_data) {
 				$is_param_set = substr($addon_name, strlen($addon_name)-10) == '_param_set';
 				if (!$is_param_set) continue;
@@ -185,16 +187,19 @@
 						}
 						$item->is_mandatory = isset($param_data['mandatory']) ? (bool)$param_data['mandatory'] : false;
 						$item->constraints = isset($param_data['constraints']) ? $param_data['constraints'] : array();
+						if (!isset($max_seq_by_group[$item->group_name])) $max_seq_by_group[$item->group_name] = 0;
+						$item->seq = $max_seq_by_group[$item->group_name];
+						$max_seq_by_group[$item->group_name]++;
+						
 					}
 				}
 				
 				//print_r(self::$tree_flat);
-				
-				self::saveTree();
-				
 			}
+			
+			self::saveTree();			
+			self::loadTree();
 		}
-		
-		//public static function 
+ 
 		
 	}
