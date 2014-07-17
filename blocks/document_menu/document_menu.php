@@ -66,7 +66,7 @@
             $query = "
                 SELECT 
                 	id, parent_id, open_link, url, open_new_window, title,
-                	IF(category=0, 1, 0) AS important
+                	0 AS important
                 FROM $table JOIN $subquery AS content ON content.document_id = $table.id
                 WHERE parent_id IN($parent_id) AND active = 1 AND $menu
                 GROUP BY document_id ORDER BY seq ASC
