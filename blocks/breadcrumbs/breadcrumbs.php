@@ -7,8 +7,12 @@
 			$breadcrumbs = Application::getBreadcrumbs();
 	
 			$template_path = $this->getTemplatePath();
-			$smarty->assign('path', $breadcrumbs->getPath());
-	
-			return $smarty->fetch($template_path);
+			
+			$path = $breadcrumbs->getPath();
+			if (!$path) return $this->terminate();
+			
+			$smarty->assign('path', $path);
+			
+			return parent::render();
 		}
 	}

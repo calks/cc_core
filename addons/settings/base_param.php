@@ -24,8 +24,12 @@
 			return null;
 		}
 		
+		protected function getField() {
+			return coreFormElementsLibrary::get('edit', $this->getFieldName());
+		}
+		
 		public function renderField() {			
-			$field = coreFormElementsLibrary::get('edit', $this->getFieldName());
+			$field = $this->getField(); 
 			
 			if (isset($this->constraints['field_params'])) {			
 				foreach ($this->constraints['field_params'] as $k=>$v) {

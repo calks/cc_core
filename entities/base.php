@@ -1,10 +1,14 @@
 <?php
 
-	class coreBaseEntity {
+	class coreBaseEntity extends coreResourceObjectLibrary {
 	     
 		public $id;
         
-        
+		protected function getResourceType() {
+			return APP_RESOURCE_TYPE_ENTITY;
+		}		
+		
+		
 		function hasField($fieldName) {
 			return array_key_exists($fieldName, get_object_vars($this));
 		}
@@ -382,10 +386,61 @@
             return $list ? $list[0] : null;
         }
 
-        public function save() {
+        
+        protected function get_save_sql($list) {        	
             $object_table = $this->getTableName();
             $fields = $this->get_save_fields();
             $pkey = $this->getPrimaryKeyField();
+
+            $sql_fields = array();            
+            $sql_update = array();
+
+            foreach ($fields as $field) {            	
+                $sql_fields[] = "`$field`";
+                //$sql_values[] = $value;                
+                /*if ($field != $pkey) {
+                	$sql_update[] = "`$field`=VALUES(`$field`)";                	
+            	}*/
+                //if ($field == $pkey) continue;
+                $sql_update[] = $field==$pkey ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=VALUES(`$field`)";
+            	
+            }
+            
+            $sql_values = array();
+            foreach ($list as $item) {
+            	            	
+            	$value_row = array();
+	            if (!$item->$pkey) {
+	                $item->$pkey = null;
+	            }            	
+            	foreach ($fields as $field) {
+	            	$value = $item->$field;                
+    	            $value = is_null($value) ? "NULL" : "'".addslashes($value)."'";
+    	            $value_row[] = $value;
+            	}
+            	
+            	$value_row = implode(',', $value_row);
+				$sql_values[] = "($value_row)";
+            }
+            
+
+            $sql_fields = implode(',', $sql_fields);
+            $sql_values = implode(',', $sql_values);
+            $sql_update = implode(',', $sql_update);
+            
+            
+            $sql = "
+            	INSERT INTO `$object_table` ($sql_fields) VALUES $sql_values
+            	ON DUPLICATE KEY UPDATE $sql_update
+            ";
+                        
+            return $sql;        	
+        }
+        
+        public function save() {
+            /*$object_table = $this->getTableName();
+            $fields = $this->get_save_fields();
+            
             if (!$this->$pkey) {
                 $this->$pkey = null;
             }
@@ -407,24 +462,60 @@
             $update = implode(', ', $update);
 
             $sql = "INSERT INTO `$object_table` ($insert_fields) VALUES($insert_values)";
-            if ($this->$pkey) $sql .= " ON DUPLICATE KEY UPDATE $update";
-
+            if ($this->$pkey) $sql .= " ON DUPLICATE KEY UPDATE $update";*/
+        	
+        	$pkey = $this->getPrimaryKeyField();
+        	$sql = $this->get_save_sql(array($this));
+//die($sql);
             $db = Application::getDb();
             $db->execute($sql);
 
             $this->$pkey = $db->getLastAutoIncrementValue();
+            
             return $this->$pkey;
         }
+        
+        public function save_list(&$list) {
+        	if (!$list) return true;
 
-        public function getName() {
-            $class = get_class($this);
+        	$pkey = $this->getPrimaryKeyField();
+        	
+        	$new_items_indexes = array();
+        	foreach ($list as $idx=>$item) {        		
+				if (!$item->$pkey) $new_items_indexes[] = $idx;
+        	}
+        	
+        	$sql = $this->get_save_sql($list);
+        	
+            $db = Application::getDb();
+            $db->execute($sql);
             
-            if (preg_match('/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<entity_name>[a-zA-Z0-9]+)Entity/', $class, $matches)) {            	
-            	return coreNameUtilsLibrary::camelToUnderscored($matches['entity_name']);
+            $succeed = mysql_errno() == 0;
+            if (!$succeed) return false;
+
+            if (!$new_items_indexes) return true;
+            
+            $reload_params = array();
+            $new_items_count = count($new_items_indexes);
+            $first_inserted_item_pkey = $db->getLastAutoIncrementValue();
+            $object_table = $this->getTableName();
+            $reload_params['where'][] = "`$object_table`.`$pkey` >= $first_inserted_item_pkey";
+            $reload_params['limit'] = $new_items_count;
+            $reload_params['show_sql'] = 1;
+            
+            $just_inserted = $this->load_list($reload_params);
+            if (count($just_inserted) != $new_items_count) {
+            	die('save_list(): reload failed');
+            }
+
+            foreach ($just_inserted as $idx=>$item) {
+            	$list[$new_items_indexes[$idx]] = $item;
             }
             
-            return strtolower(str_replace(Application::getApplicationName().'_', '', get_class($this)));             
+            return true;
         }
+        
+
 
         public function get_values($fields) {
             $out = array();

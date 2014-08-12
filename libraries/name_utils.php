@@ -75,44 +75,87 @@
 		}
 		
 		
-		public static function relativePathFromClass($class) {
-			
+		protected static function parseResourceClass($class) {
+			$out = array(				
+				'container_type' => null,
+				'container_name' => null,
+				'resource_type' => null,
+				'resource_name' => null,
+				'resource_sub_name' => null			
+			);
+
             $matched = preg_match('/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>Entity|Module|Block|Addon|Library)(?P<sub_name>.*)/', $class, $matches);
-            if (!$matched) return null;
+            if (!$matched) return $out;
             
             
             $container_complex_name = $matches['container_complex_name'];
             if ($container_complex_name == 'core') {
-            	$out[] = 'core';
+            	$out['container_type'] = 'core';
+            	$out['container_name'] = 'core';
             }
             else {
             	$container_type = $matches['container_type'];
-            	$out[] = $container_type=='Pkg' ? 'packages' : 'applications';
+            	$out['container_type'] = $container_type=='Pkg' ? 'package' : 'application';
             	$container_name = $matches['container_name'];
-            	$out[] = self::camelToUnderscored($container_name);
+            	$out['container_name'] = self::camelToUnderscored($container_name);
             }
             
-            $resource_dir_to_type = self::resourceDirToType();
-            $resource_type_to_dir = array_flip($resource_dir_to_type);
             $resource_type = strtolower($matches['resource_type']);
-            
-            if (!array_key_exists($resource_type, $resource_type_to_dir)) return null;
-            $out[] = $resource_type_to_dir[$resource_type];
+            $out['resource_type'] = $resource_type;            
             
             $resource_name = $matches['resource_name'];
-            $out[] = self::camelToUnderscored($resource_name);
+            $out['resource_name'] = self::camelToUnderscored($resource_name);
             
-            if (in_array($resource_type, array(APP_RESOURCE_TYPE_MODULE, APP_RESOURCE_TYPE_BLOCK))) {
-            	$out[] = self::camelToUnderscored($resource_name);	
-            }
             
             $sub_name = $matches['sub_name'];
             if ($sub_name) {
-            	$out[] = self::camelToUnderscored($sub_name);
+            	$out['resource_sub_name'] = self::camelToUnderscored($sub_name);
             }
             
-            return '/' . implode('/', $out) . '.php';
+            return $out;			
+		}
+		
+		
+		public static function getResourceName($resource_class) {
+			$class_parsed = self::parseResourceClass($resource_class);
+			return $class_parsed['resource_name'];
+		}
+		
+		
+		public static function relativePathFromClass($class) {
+			
+			$class_parsed = self::parseResourceClass($class);
+			if (!$class_parsed['container_type']) return null;
+			
+			$out = array();
+			if ($class_parsed['container_type'] == 'core') {
+				$out[] = 'core';
+			}
+			else {
+            	$out[] = $class_parsed['container_type']=='package' ? 'packages' : 'applications';            	
+            	$out[] = $class_parsed['container_name'];
+			}
+			
+            $resource_dir_to_type = self::resourceDirToType();
+            $resource_type_to_dir = array_flip($resource_dir_to_type);
+            //$resource_type = strtolower($matches['resource_type']);
             
+            if (!array_key_exists($class_parsed['resource_type'], $resource_type_to_dir)) return null;
+            $out[] = $resource_type_to_dir[$class_parsed['resource_type']];
+			
+			$out[] = $class_parsed['resource_name'];
+			
+            if (in_array($class_parsed['resource_type'], array(APP_RESOURCE_TYPE_MODULE, APP_RESOURCE_TYPE_BLOCK))) {
+            	$out[] = $class_parsed['resource_name'];	
+            }
+			
+			
+			if ($class_parsed['resource_sub_name']) {
+            	$out[] = $class_parsed['resource_sub_name'];
+            }
+			
+			return  '/' . implode('/', $out) . '.php';
+        
 		}
 		
 	}

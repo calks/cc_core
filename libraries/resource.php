@@ -1,7 +1,6 @@
 <?php
 
-	class coreResourceLibrary {
-		
+	class coreResourceLibrary {		
 		
 		public static function getAbsolutePath($relative_path) {
 			$site_root = Application::getSitePath();
@@ -27,7 +26,7 @@
 		} 
 		
 				
-		public static function getFirstFilePath($resource_type, $resource_name=null, $relative_path=null) {
+		public static function getFirstFilePath($resource_type, $resource_name=null, $relative_path=null) {			
 			$available_files = self::getAvailableFiles($resource_type, $resource_name, $relative_path);
 			if (!$available_files) return null;
 			$file = array_shift($available_files);
@@ -99,7 +98,6 @@
 					die("Bad resource routing rule");
 				}
 			}	
-			//print_r($paths);
 			
 			foreach ($paths as $path) {
 				$absolute_path = Application::getSitePath() . $path;
@@ -131,48 +129,9 @@
 				}
 			}
 			
-			//print_r($out); die();
-			
-			return $out;
-			
+			return $out;			
 		}
 
-		
-		protected function getClass($relative_path, $resource_type) {
-			return coreNameUtilsLibrary::classFromRelativePath($relative_path);
-			
-			if (in_array($resource_type, array(APP_RESOURCE_TYPE_TEMPLATE, APP_RESOURCE_TYPE_STATIC))) return '';
-			
-			$path = explode('/', trim($relative_path, ' /'));
-			$out = array();
-			
-			$block = @array_shift($path);
-			
-			if ($block == 'core') {
-				$out[] = 'core';	
-			}
-			else {
-				$block_type = $block=='applications' ?  'app' : 'pkg';
-				$block = @array_shift($path);  
-				$out[] = $block;
-				$out[] = $block_type;
-			}
-			
-			@array_shift($path);
-			$name = @array_shift($path);
-			$name = self::removeExtension($name);
-			$out[] = $name;
-			$out[] = $resource_type;
-			
-			if ($resource_type == APP_RESOURCE_TYPE_ADDON) {
-				while ($part = @array_shift($path)) {
-					$out[] = self::removeExtension($part);	
-				}
-			}
-			
-			return coreNameUtilsLibrary::underscoredToCamel(implode('_', $out));
-		}
-		
 		
 	}
 	

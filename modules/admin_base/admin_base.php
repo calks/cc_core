@@ -62,7 +62,7 @@
 			$smarty->assign('action', $this->action);
 			$smarty->assign('app_img_dir', Application::getSiteUrl()."/applications/".Application::getApplicationName() . '/static/img');
 						
-			$template_path = $this->getTemplatePath($this->action);									
+			$template_path = $this->getTemplatePath($this->action);			
 			return $smarty->fetch($template_path);
 		}
 		
@@ -186,10 +186,15 @@
 			$smarty->assign('page_actions', $this->getPageActions());
 		}
 		
-		protected function taskAdd() {
+		
+		protected function createEmptyObjects() {
 			$this->objects = array(
 				Application::getEntityInstance($this->getObjectName())
 			);
+		}
+		
+		protected function taskAdd() {
+			$this->createEmptyObjects();
 						
 			if (array_key_exists('active', get_object_vars($this->objects[0]))) {			
 				$this->objects[0]->active = 1;	
@@ -435,6 +440,11 @@
 		}
 		
 		
+		protected function taskError() {
+			
+		}
+		
+		
 		public function setUrlAddition($url_addition) {
 			$this->url_addition = $url_addition;
 		}
@@ -462,6 +472,12 @@
 		public function getPageActions() {
 			return $this->links;
 		}
+		
+        protected function terminate() {
+        	Application::stackError("Произошла ошибка");
+        	$this->action = 'error';        	        	
+        	return parent::terminate();
+        }
 		
 		
 		
