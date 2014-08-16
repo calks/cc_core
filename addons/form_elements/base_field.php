@@ -40,7 +40,7 @@
 			}
 			if (strpos($name, 'set') === 0) {				
 				$property_name = coreNameUtilsLibrary::camelToUnderscored(substr($name, 3));
-				if (!isset($arguments[0])) {
+				if (!array_key_exists(0, $arguments)) {
 					throw new Exception("Property value not supplied for form element", 999);
 					return $this;
 				}
