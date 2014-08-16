@@ -318,12 +318,13 @@
 		
 		
 
-		public static function getSmarty() {
-			if (!self::$smarty) {
+		public static function getSmarty($namespace='default') {
+			if (!self::$smarty) self::$smarty = array();
+			if (!isset(self::$smarty[$namespace])) {
 
 				//self::loadLibrary('smarty/Smarty.Class');
 
-				self::$smarty = new coreSmartyLibrary();
+				$smarty = new coreSmartyLibrary();
 
 				$cache_dir = Application::getSitePath().Application::getTempDirectory().'/smarty/cache/';
 				$compile_dir = Application::getSitePath().Application::getTempDirectory().'/smarty/compile/';
@@ -340,12 +341,13 @@
 					}
 				}
 				
-				self::$smarty->compile_dir = $compile_dir;				
-				self::$smarty->cache_dir = $cache_dir;
+				$smarty->compile_dir = $compile_dir;				
+				$smarty->cache_dir = $cache_dir;
 
-				self::$smarty->caching = false;
+				$smarty->caching = false;
+				self::$smarty[$namespace] = $smarty;
 			}
-			return self::$smarty;
+			return self::$smarty[$namespace];
 		}
 		
 		
