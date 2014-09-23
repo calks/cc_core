@@ -8,10 +8,6 @@
 			return APP_RESOURCE_TYPE_MODULE;
 		}		
 		
-		protected function isAjax() {
-			return (bool)Request::get('ajax');
-		}
-		
 		protected function commonLogic(&$params) {
 			
 		}

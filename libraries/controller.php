@@ -13,6 +13,10 @@
 		
 		abstract protected function getResponse();
 		
+		protected function isAjax() {
+			return (bool)Request::get('ajax');
+		}
+		
 		public function __construct() {
 			$user_session = Application::getUserSession();
 			$this->user_logged = $user_session->getUserAccount();
