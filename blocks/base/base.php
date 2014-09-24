@@ -17,7 +17,7 @@
             return APP_RESOURCE_TYPE_BLOCK;
         }
 		
-        protected function taskRefresh() {
+        protected function taskRefresh($data=array()) {
         	$this->render();
         }
 		

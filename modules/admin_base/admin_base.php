@@ -34,6 +34,22 @@
 			
 			$method_name = 'task' . ucfirst(coreNameUtilsLibrary::underscoredToCamel($this->action));
 			if (!method_exists($this, $method_name)) return $this->terminate();			
+			
+			$this->loadObjects();
+			
+			call_user_func(array($this, $method_name), $params);
+			
+			$smarty = Application::getSmarty();
+			$smarty->assign('errors', $this->errors);
+			$smarty->assign('action', $this->action);
+			$smarty->assign('app_img_dir', Application::getSiteUrl()."/applications/".Application::getApplicationName() . '/static/img');
+						
+			$template_path = $this->getTemplatePath($this->action);			
+			return $smarty->fetch($template_path);
+		}
+		
+		
+		protected function loadObjects() {
 			if ($this->ids) {				
 				$ids = implode(',', $this->ids);
 				
@@ -53,17 +69,7 @@
 			else {
 				$this->objects = array();
 				$this->original_objects = array();
-			}			
-			
-			call_user_func(array($this, $method_name), $params);
-			
-			$smarty = Application::getSmarty();
-			$smarty->assign('errors', $this->errors);
-			$smarty->assign('action', $this->action);
-			$smarty->assign('app_img_dir', Application::getSiteUrl()."/applications/".Application::getApplicationName() . '/static/img');
-						
-			$template_path = $this->getTemplatePath($this->action);			
-			return $smarty->fetch($template_path);
+			}
 		}
 		
 		protected function commonLogic(&$params=array()) {
@@ -207,14 +213,14 @@
 			return $result;
 		}
 		
-		protected function taskEdit() {
-			
+		protected function taskEdit() {	
 			if (!isset($this->objects[0])) return $this->terminate();			
 			$object = $this->objects[0];
 			
 			$this->createForm($object);
 			
 			if(Request::isPostMethod()) {
+				
 				$this->updateObjectFromRequest($object);
 				
 				$this->validateObject($object);
@@ -227,6 +233,7 @@
 							if (!$object->seq) $object->seq = $this->getSeq();
 						}						
 						if ($object->save()) {
+							
 							$this->afterObjectSave($object);
 							//if ($this->action == 'add') $this->renameNewObjectImageDir($object->id);
 							
