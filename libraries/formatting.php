@@ -86,10 +86,13 @@
 		}
 		
 		
-		public static function formatCurrency($amount, $currency='', $decimals=2) {
-			$out = number_format($amount, $decimals, ',', ' ');
-			if ($currency) $out .= $currency;
-			return $out; 			
+		public static function formatCurrency($amount, $preset_name='default') {
+			$formatters = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'formatting', 'currency_formatter.php');
+			$formatter = $formatters ? array_shift($formatters) : null;
+			if (!$formatter) return $amount;
+			
+			$formatter = new $formatter->class();
+			return $formatter->format($amount, $preset_name);
 		}
 		
 		public static function dateMysqlToRussian($mysql_date, $default=null) {
