@@ -26,10 +26,12 @@
 		
 		public function allowHtml() {
 			$this->html_allowed = true;
+			return $this;
 		}
 		
 		public function disallowHtml() {
 			$this->html_allowed = false;
+			return $this;
 		}
 		
 		
