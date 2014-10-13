@@ -2,15 +2,28 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonSelectField extends TSelectField {
+	class coreFormElementsAddonSelectField extends coreFormElementsAddonBaseField {
 		
-		public function __construct($name, $params) {
-			parent::TSelectField(
-				$name,
-				'',
-				isset($params['options']) ? $params['options'] : array(),
-				isset($params['attributes']) ? $params['attributes'] : ''
-			);	
+		protected $options;
+		
+		public function __construct($name) {
+			parent::__construct($name);
+			$this->options = array();
 		}
+		
+		public function getAsHtml() {
+			$attr_string = $this->getAttributesString();
+			
+			$out = "<select name=\"$this->field_name\" $attr_string>";
+			foreach ($this->options as $value=>$caption) {
+				$selected = $value==$this->value ? 'selected="selected"' : '';
+				$value = $this->getSafeAttrValue($value);
+				$out .= "<option $selected value=\"$value\">$caption</option>";	
+			}
+			$out .= "</select>";
+			
+			return $out;
+		}
+		
 		
 	}

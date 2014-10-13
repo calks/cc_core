@@ -207,10 +207,6 @@
 			else die("Can't instantiate $resource_name $resource_type" );
 		}
 
-		// TODO: Придумать более удачное название. Подумать над переносом логики в coreNameUtils
-		public static function getClassDirectory($class) {
-			return self::$loader->getDirectoryForClass($class);
-		}
 
 		// TODO: Разобраться с терминологией (URL/Path/Directory). Либо переписать функции,
 		// возвращающие абсолютные пути, либо дать им более явные имена (Absolute/Relative)
@@ -352,9 +348,6 @@
 		
 		
 		public static function getMailer() {
-			/*$library_class = Application::getResourceClass('mailer', APP_RESOURCE_TYPE_LIBRARY);
-			return new $library_class();*/
-			
 			$email_transport_addons = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'message_transport', 'email_transport.php');
 			if (!$email_transport_addons) return null;
 			$addon_class = $email_transport_addons['email_transport']->class;

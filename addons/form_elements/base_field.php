@@ -62,7 +62,7 @@
 		
 		protected function getProperty($property_name){
 			$properties = $this->getAccesibleProperties();
-			
+						
 			if (!in_array($property_name, $properties)) {
 				throw new Exception("Property $property_name is not accessible in {$this->getName()} form element", 999);
 				return $this;
@@ -100,8 +100,8 @@
 		}
 		
 		public function SetFromPost($POST) {
-			$value = isset($_POST[$this->field_name]) ? $_POST[$this->field_name] : '';
-			if (!$this->html_allowed) {
+			$value = isset($_POST[$this->field_name]) ? $_POST[$this->field_name] : '';						
+			if (!$this->html_allowed) {				
 				$value = strip_tags($value);
 			}
 			$this->SetValue($value);
