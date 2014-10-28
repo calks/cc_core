@@ -21,6 +21,9 @@
 						
 			$this->commonLogic($params);
 			
+			$terminated = $this->action == 'error';
+			if ($terminated) return;
+			
 			$this->action = Request::get('action', 'list');
 			$this->ids = Request::get('ids');
 			$this->errors = array();
