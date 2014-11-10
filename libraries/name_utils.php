@@ -31,6 +31,7 @@
 		protected static function resourceDirToType() {
 			return array(
 				'entities' => APP_RESOURCE_TYPE_ENTITY,
+				'filters' => APP_RESOURCE_TYPE_FILTER,
 				'modules' => APP_RESOURCE_TYPE_MODULE,
 				'blocks' => APP_RESOURCE_TYPE_BLOCK,
 				'addons' => APP_RESOURCE_TYPE_ADDON,			
@@ -84,7 +85,7 @@
 				'resource_sub_name' => null			
 			);
 
-            $matched = preg_match('/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>Entity|Module|Block|Addon|Library)(?P<sub_name>.*)/', $class, $matches);
+            $matched = preg_match('/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>Entity|Filter|Module|Block|Addon|Library)(?P<sub_name>.*)/', $class, $matches);
             if (!$matched) return $out;
             
             

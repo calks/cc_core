@@ -1,6 +1,8 @@
 <?php
 
-	class coreResourceLibrary {		
+	class coreResourceLibrary {
+
+		protected static $package_list;
 		
 		public static function getAbsolutePath($relative_path) {
 			$site_root = Application::getSitePath();
@@ -8,11 +10,11 @@
 			return $site_root . $relative_path;
 		}
 		
-		public static function getFullUrl($relative_path) {
+		/*public static function getFullUrl($relative_path) {
 			$site_url = Application::getSiteUrl();
 			if (strpos($relative_path, $site_url) !== false) return $relative_path;
 			return $site_url . $relative_path;
-		}
+		}*/
 		
 		public static function getTemplatePath($template_name) {
 			$templates = self::getAvailableFiles(APP_RESOURCE_TYPE_TEMPLATE, null, $template_name.'.tpl');			
@@ -23,8 +25,7 @@
 			$files = self::getAvailableFiles(APP_RESOURCE_TYPE_STATIC, null, $relative_path);								
 			$file = @array_shift($files); 
 			return isset($file->path) ? $file->path : null; 
-		} 
-		
+		} 		
 				
 		public static function getFirstFilePath($resource_type, $resource_name=null, $relative_path=null) {			
 			$available_files = self::getAvailableFiles($resource_type, $resource_name, $relative_path);
@@ -33,12 +34,36 @@
 			return $file->path;			
 		}
 		
+		protected static function getPackageList() {
+			if (is_null(self::$package_list)) {
+				self::$package_list = array();
+				$packages_directory = Application::getSitePath().'/packages';
+				if (is_dir($packages_directory)) {
+					$dir = opendir($packages_directory);
+					while ($file = readdir($dir)) {
+						if (in_array($file, array('.', '..'))) continue;
+						if (!is_dir($packages_directory.'/'.$file)) continue;
+						self::$package_list[] = $file;
+					}
+
+					closedir($dir);
+				}
+
+			}
+
+			return self::$package_list;
+		}
+		
+		
 		public static function getAvailableFiles($resource_type, $resource_name=null, $relative_path=null) {
 			
 			switch ($resource_type) {
 				case APP_RESOURCE_TYPE_ENTITY:
 					$dir = '/entities';
 					break;
+				case APP_RESOURCE_TYPE_FILTER:
+					$dir = '/filters';
+					break;					
 				case APP_RESOURCE_TYPE_MODULE:
 					$dir = '/modules';
 					break;
@@ -60,7 +85,9 @@
 			
 			$relative_path = trim($relative_path, ' /');
 			
-			if ($resource_name) $dir .= '/' . $resource_name;
+			$add_subfolder = !in_array($resource_type, array(APP_RESOURCE_TYPE_ENTITY, APP_RESOURCE_TYPE_FILTER));
+			
+			if ($resource_name && $add_subfolder) $dir .= '/' . $resource_name;
 			if ($relative_path) $dir .= '/' . $relative_path;
 			
 			$out = array();
@@ -81,7 +108,7 @@
 					$paths[] = '/applications/admin' . $dir;
 				}
 				elseif ($rule == APP_RESOURCE_CONTAINER_PACKAGES) {
-					$packages = Application::getPackagesList();
+					$packages = self::getPackageList();
 					foreach ($packages as $package) {
 						$paths[] = '/packages/' . $package . $dir;
 					}
@@ -100,10 +127,8 @@
 			}	
 			
 			foreach ($paths as $path) {
-				$absolute_path = Application::getSitePath() . $path;
-								
-				if (is_file($absolute_path)) {
-					
+				$absolute_path = Application::getSitePath() . $path;								
+				if (is_file($absolute_path)) {					
 					$entry = new stdClass();
 					$entry->path = $path;
 					$entry->class = coreNameUtilsLibrary::classFromRelativePath($path);
@@ -128,6 +153,7 @@
 					}
 				}
 			}
+			
 			
 			return $out;			
 		}

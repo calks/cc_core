@@ -23,26 +23,30 @@
 		private static $site_url;
 		private static $host;
 		private static $config;
-		private static $db;
-		private static $dbEngine;
+		private static $db;		
 		private static $smarty;
 		private static $breadcrumbs;
 		private static $message_stack;
 		private static $page;
 		private static $user_session;
+		private static $mobile = null;
 
-		private static $mobile;
-
-		private static $packages_list;
-		public static $loader;
 		
-		protected static $application_folders;
+		public static function loader($class_name) {
+			self::loadLibrary('name_utils');
+			self::loadLibrary('resource');
+			$path = coreNameUtilsLibrary::relativePathFromClass($class_name);			
+			$path = coreResourceLibrary::getAbsolutePath($path);
+
+			if (is_file($path)) {
+				require_once $path;	
+			}			
+		} 
 		
 
 		public static function init($application_name) {
-
-			self::$application_folders = array();
-			
+			spl_autoload_register(array('Application', 'loader'));
+					
 			self::$application_name = $application_name;
 			self::$site_root = realpath(dirname(__FILE__)."/../..");
 
@@ -68,17 +72,14 @@
 			self::$breadcrumbs = null;
 			self::$message_stack = null;
 
-			self::$mobile = (int) ((bool) (self::detectMobileBrowser()));
-
 			session_start();
 			
 			self::loadLibrary('misc');    
-    		self::loadLibrary('core/dataobject');
+    		
 		}
 		
 		
-		public static function render($application_name) {
-			
+		public static function render($application_name) {			
 			self::init($application_name);		    
 			if (USE_PROFILER) {
 		        Application::loadLibrary('core/profiler');
@@ -94,6 +95,10 @@
 		
 
 		public static function isMobile() {
+			if (is_null(self::$mobile)) {
+				self::$mobile = (int) ((bool) (self::detectMobileBrowser()));
+			}
+			
 			return self::$mobile;
 		}
 
@@ -178,29 +183,8 @@
 		public static function getFilter($filter_name) {
 			return self::getResourceInstance($filter_name, APP_RESOURCE_TYPE_FILTER);
 		}
-		
 
-		public static function getPackagesList() {
-			if (is_null(self::$packages_list)) {
-				self::$packages_list = array();
-				$packages_directory = self::getSitePath().'/packages';
-				if (is_dir($packages_directory)) {
-					$dir = opendir($packages_directory);
-					while ($file = readdir($dir)) {
-						if (in_array($file, array('.', '..'))) continue;
-						if (!is_dir($packages_directory.'/'.$file)) continue;
-						self::$packages_list[] = $file;
-					}
-
-					closedir($dir);
-				}
-
-			}
-
-			return self::$packages_list;
-		}
-
-		public static function getResourceInstance($resource_name, $resource_type) {
+		public static function getResourceInstance($resource_name, $resource_type) {			
 			$resource_class = self::getResourceClass($resource_name, $resource_type);
 
 			if ($resource_class) return new $resource_class();
@@ -211,17 +195,8 @@
 		// TODO: Разобраться с терминологией (URL/Path/Directory). Либо переписать функции,
 		// возвращающие абсолютные пути, либо дать им более явные имена (Absolute/Relative)
 		public static function getResourceDirectory($resource_name, $resource_type) {
-			// Убеждаемся, что для запрошенного ресурса есть класс
-			// Кроме того, поскольку при запросе имени класса запустится автолоадер,
-			// мы можем быть уверены что в кэше окажется нужный нам путь
 			$resource_class = self::getResourceClass($resource_name, $resource_type);
-			
-			if ($resource_class) {				
-				return self::$loader->getDirectory($resource_name, $resource_type);				
-			}
-			else {
-				return null;
-			}
+			return $resource_class ? dirname(coreNameUtilsLibrary::relativePathFromClass($resource_class)) : null;
 		}
 		
 		
@@ -249,67 +224,14 @@
 			return $resource_routing;
 			
 		}
-
-		protected static function getPossibleClasses($resource_name, $resource_type) {
-			$is_admin_application = false;
-			$admin_application_name = $front_application_name = $application_name = Application::getApplicationName();
-			if (strpos($application_name, '_admin') !== false) {
-				$front_application_name = str_replace('_admin', '', $application_name);
-				$is_admin_application = true;
-			}
-			else {
-				$admin_application_name = $application_name.'_admin';
-			}
-			
-			$resource_routing = self::getResourceRouting();
-
-			$possible_classes = array();
-
-			$routing_rule = isset($resource_routing[$resource_name]) ? $resource_routing[$resource_name] : $resource_routing['default'];
-
-			$class_ending = ucfirst(coreNameUtilsLibrary::underscoredToCamel($resource_name).ucfirst($resource_type));
-			foreach ($routing_rule as $rule) {
-				if ($rule == APP_RESOURCE_CONTAINER_CORE) {
-					$possible_classes[] = 'core'.$class_ending;
-				}
-				elseif ($rule == APP_RESOURCE_CONTAINER_FRONT_APPLICATION) {
-					$possible_classes[] = coreNameUtilsLibrary::underscoredToCamel($front_application_name).'App'.$class_ending;
-				}
-				elseif ($rule == APP_RESOURCE_CONTAINER_ADMIN_APPLICATION) {
-					$possible_classes[] = coreNameUtilsLibrary::underscoredToCamel($admin_application_name).'App'.$class_ending;
-				}
-				elseif ($rule == APP_RESOURCE_CONTAINER_PACKAGES) {
-					$packages = self::getPackagesList();
-					foreach ($packages as $package) {
-						$possible_classes[] = coreNameUtilsLibrary::underscoredToCamel($package).'Pkg'.$class_ending;
-					}
-				}
-				elseif (strpos($rule, 'applications/') === 0) {
-					$app_name = str_replace('applications/', '', $rule);
-					$possible_classes[] = coreNameUtilsLibrary::underscoredToCamel($app_name).'App'.$class_ending;
-				}
-				elseif (strpos($rule, 'packages/') === 0) {
-					$pkg_name = str_replace('packages/', '', $rule);
-					$possible_classes[] = coreNameUtilsLibrary::underscoredToCamel($pkg_name).'Pkg'.$class_ending;
-				}
-				else {
-					die("Bad resource routing rule");
-				}
-			}	
-			return $possible_classes;		
-		}
 		
 
 		// TODO: Подумать над переносом в coreNameUtils
-		public static function getResourceClass($resource_name, $resource_type) {
-			$possible_classes = self::getPossibleClasses($resource_name, $resource_type);
-			
-			$class_name = null;
-			foreach ($possible_classes as $class) {
-				if (class_exists($class)) return $class;
-			}
-
-			return null;
+		public static function getResourceClass($resource_name, $resource_type) {						
+			$available_files = coreResourceLibrary::getAvailableFiles($resource_type, $resource_name, $resource_name . '.php');
+			if (!$available_files) return null;
+			$file = array_shift($available_files);
+			return $file->class;			
 		}
 		
 		

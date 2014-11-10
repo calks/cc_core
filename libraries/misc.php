@@ -22,12 +22,8 @@
         return preg_match($regexp, $url, $m);
     }
 
-    function email_valid($email) {
-        $pockets = array();
-        preg_match('/([0-9a-zA-Z])([0-9a-zA-Z_\.-]*)@([0-9a-zA-Z])([0-9a-z\.-]*)\.([a-zA-Z]+)/is', $email, $pockets);
-        if ($email != @$pockets[0])
-            return false;
-        return true;
+    function email_valid($email) {        
+        return preg_match('/^([0-9a-zA-Z])([0-9a-zA-Z_\.-]*)@([0-9a-zA-Z])([0-9a-z\.-]*)\.([a-zA-Z]+)$/is', $email);
     }
 
 

@@ -37,7 +37,7 @@
 		}
 		
 		protected function getBaseImage() {
-			$ImageToLoad = $this->getStaticFileUrl('/imagecode.gif');
+			$ImageToLoad = $this->getStaticFilePath('/imagecode.gif');
 			$ImageToLoad = coreResourceLibrary::getAbsolutePath($ImageToLoad);
 			
 			$image = @ImageCreateFromGIF($ImageToLoad);
@@ -46,8 +46,8 @@
 		}
 		
 		protected function getFontPath() {
-			//$path = $this->getStaticFileUrl('/anastasiascript.ttf');
-			$path = $this->getStaticFileUrl('/anastasiascript.ttf');
+			//$path = $this->getStaticFilePath('/anastasiascript.ttf');
+			$path = $this->getStaticFilePath('/anastasiascript.ttf');
 			$path = coreResourceLibrary::getAbsolutePath($path);
 			
 			return $path;

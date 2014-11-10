@@ -68,7 +68,7 @@
 			$this->returnResponse();
 		}
 		
-        public function getStaticFileUrl($path_relative_to_module) {
+        public function getStaticFilePath($path_relative_to_module) {
         	$path_relative_to_module = trim($path_relative_to_module, ' /');     
         	$own_url = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $this->getName(), '/static/' . $path_relative_to_module); 
             if ($own_url) return $own_url;
@@ -89,7 +89,7 @@
         public function getTemplatePath($template_name = '') {        	        	
             $template_name_supplied = $template_name != '';        	
         	if (!$template_name_supplied) $template_name = $this->getName();            
-            $own_template = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $this->getName(), "/templates/$template_name.tpl");            
+            $own_template = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $this->getName(), "/templates/$template_name.tpl");
             if ($own_template) return $own_template;
 
             $parents = class_parents($this);            

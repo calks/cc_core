@@ -52,7 +52,7 @@
 		
 		protected function taskEdit() {
 			$page = Application::getPage();
-			$page->addScript($this->getStaticFileUrl('/type_switch.js'));
+			$page->addScript($this->getStaticFilePath('/type_switch.js'));
 			return parent::taskEdit();
 		}
 		
