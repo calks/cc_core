@@ -6,17 +6,20 @@
 			if (!$this->isAjax()) return $this->terminate();			
 			
 			$this->response_data['blocks'] = array();
+			$this->response_data['static_list'] = array();
 						
 			$request = $this->getSanitizedRequest();
 			if (!$request) return $this->returnResponse();
-			
-			
+						
 			foreach ($request as $block_name => $params) {
 				$block = Application::getBlock($block_name);
 				$block->runTask($params['task'], $params['data']);
 				
 				$this->response_data['blocks'][$block_name] = $block->composeAjaxResponse();
 			}
+			
+			$page = Application::getPage();
+			$this->response_data['static_list'] = $page->getStaticList();
 			
 			$this->returnResponse();
 		}

@@ -2,6 +2,17 @@
 
 	class coreBaseBlock extends coreControllerLibrary {
 		
+		protected $block_id;
+		
+		
+		public function __construct() {
+			$this->block_id = $this->getName() . md5(uniqid());
+		}
+		
+		public function getBlockId() {
+			return $this->block_id;
+		}
+		
 		public function render() {			
 			$smarty = Application::getSmarty();
 			$template_path = $this->getTemplatePath();

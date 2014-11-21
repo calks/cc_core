@@ -320,6 +320,34 @@
         }
         
         
+        public function getStaticList() {
+        	$out = array(
+        		'css' => array(),
+        		'js' => array()
+        	);
+        	foreach ($this->_adding_order as $item_data) {
+            	$array_name = $item_data['array_name'];
+            	$index_1 = $item_data['index_1'];
+            	$index_2 = $item_data['index_2'];
+            	
+            	$array = $this->$array_name;
+            	$item = is_null($index_2) ? $array[$index_1] : $array[$index_1][$index_2];
+        		
+            	switch ($array_name) {
+            		case '_stylesheets':
+            			$out['css'][] = $item;            			
+            			break;
+            		case '_scripts':
+            			if ($index_1 == 'text/javascript') {
+            				$out['js'][] = $item;
+            			}            			          			
+            			break;
+            	}            	
+        	}
+        	
+        	return $out;
+        }
+        
         public function getHtmlHead() {
             $out = "<head>\n";
             $title = $this->getTitle();
