@@ -15,12 +15,14 @@
 
 	error_reporting(E_ALL); ini_set('display_errors', 1);
     $site_root = realpath(dirname(__FILE__) . "/../../../../");
+    date_default_timezone_set('Europe/Kiev');
     //die('site root: ' . $site_root);
     
-    require $site_root . '/core/init.php';
-    Application::init('admin');
+    require $site_root . '/core/libraries/application.php';
+    require $site_root . '/core/libraries/seo/rewrite.php';
 
-
+    Application::init('to_english_admin');
+    //die('site root: ' . $site_root);
 
 
 /**
