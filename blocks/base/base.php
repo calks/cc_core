@@ -6,6 +6,7 @@
 		
 		
 		public function __construct() {
+			parent::__construct();
 			$this->block_id = $this->getName() . md5(uniqid());
 		}
 		
