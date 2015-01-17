@@ -1,6 +1,6 @@
 <?php
 
-	class coreAdminIndexModule extends coreBaseModule {
+	class coreAdminIndexModule extends coreAdminBaseModule {
 		
 		public function run($params=array()) {
 			
