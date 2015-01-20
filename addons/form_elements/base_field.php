@@ -97,6 +97,7 @@
 		
 		public function SetValue($value) {
 			$this->value = $value;
+			return $this;
 		}
 		
 		public function SetFromPost($POST) {
@@ -104,7 +105,7 @@
 			if (!$this->html_allowed) {				
 				$value = strip_tags($value);
 			}
-			$this->SetValue($value);
+			$this->SetValue($value);			
 		}
 		
 		protected function normalizeName($attr_name) {
