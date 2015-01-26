@@ -1,8 +1,9 @@
 <?php
 
-	class coreSettingsModule extends coreBaseModule {
+	class coreSettingsModule extends coreAdminBaseModule {
 	
 		protected function commonLogic(&$params=array()) {
+			$this->task = 'default';
 			$user_session = Application::getUserSession();
 			if (!$user_session->userLogged()) Redirector::redirect(Application::getSeoUrl('/login'));
 			
@@ -16,7 +17,9 @@
 		}
 		
 		
-		protected function taskDefault($params=array()) {
+		
+		protected function taskList($params=array()) { 
+			
 			$tree = coreSettingsLibrary::getUpToDateTree();
 					
 			if (Request::isPostMethod()) {
