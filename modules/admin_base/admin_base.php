@@ -186,13 +186,17 @@
 			$smarty->assign('pagenav', $this->pagenav);
 			
 			$obj_count = count($list);
-			$obj_count_noun = coreFormattingLibrary::getNounForNumber($obj_count, 'объект', 'объекта', 'объектов');
-			$shown_str = coreFormattingLibrary::getNounForNumber($obj_count, 'Показан', 'Показано', 'Показано');
-			$this->object_count_str = "$shown_str $obj_count $obj_count_noun из $this->total_objects";
+			$this->object_count_str = $this->getObjectCountString($obj_count, $this->total_objects);
 			$smarty->assign('count_str', $this->object_count_str);
 			
 			
 			$smarty->assign('page_actions', $this->getPageActions());
+		}
+		
+		protected function getObjectCountString($shown, $total) {
+			$obj_count_noun = coreFormattingLibrary::getNounForNumber($shown, 'объект', 'объекта', 'объектов');
+			$shown_str = coreFormattingLibrary::getNounForNumber($shown, 'Показан', 'Показано', 'Показано');
+			return  "$shown_str $shown $obj_count_noun из $total";
 		}
 		
 		
