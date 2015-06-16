@@ -99,6 +99,50 @@
 			return preg_replace('/(\d+)-(\d+)-(\d+)/', '$3.$2.$1', $mysql_date);
 		}
 		
+		
+		public static function dateFromMysql($mysql_date, $format) {
+			if(!preg_match("/(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})/", $mysql_date, $matches)) return null;
+			$replacements = array(				
+				'yy' => $matches['year'],
+				'Y' => $matches['year'],				
+				'mm' => $matches['month'],
+				'm' => $matches['month'],				
+				'dd' => $matches['day'],	
+				'd' => $matches['day']		
+			);
+			return str_replace(array_keys($replacements), $replacements, $format);
+		}
+		
+		public static function dateToMysql($date, $format) {
+			$format_replacements = array(
+				'mm' => 'm',
+				'yy' => 'Y',
+				'dd' => 'd'
+			);
+			
+			$format = str_replace(array_keys($format_replacements), $format_replacements, $format);
+			
+			$regex_replacements = array(
+				'd' => '(?<day>\d{1,2})',	
+				'Y' => '(?<year>\d{4})',				
+				'm' => '(?<month>\d{1,2})',
+				'.' => '\.',
+				'/' => '\/',
+				' ' => '\s'
+			);
+			
+			$regex = '/' . str_replace(array_keys($regex_replacements), $regex_replacements, $format) . '/';
+			
+			if (!preg_match($regex, $date, $matches)) return null;
+			$year = $matches['year'];
+			$month = str_pad($matches['month'], 2, '0', STR_PAD_LEFT);
+			$day = str_pad($matches['day'], 2, '0', STR_PAD_LEFT);
+			
+			return "$year-$month-$day";
+			
+		}
+		
+		
 		public static function dateRussianToMysql($russian_date, $default=null) {
 			$russian_date = trim($russian_date);
 			if (!$russian_date) return $default;
