@@ -1,6 +1,7 @@
 <?php
 
 	define('USER_ROLE_ADMIN', 1);
+	define('USER_ROLE_USER', 2);
 
 	class coreUserEntity extends coreBaseEntity {		
 		
