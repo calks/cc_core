@@ -1,6 +1,6 @@
 <?php
 
-	class coreFormattingAddonCurrencyFormatter {
+	class coreCurrencyFormatter {
 	
 		public function format($amount, $preset_name='default') {
 			$out = number_format($amount, 2, ',', ' ');

@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonTextField extends coreFormElementsAddonBaseField {
+	class coreTextareaFormField extends coreBaseFormField {
 		
 		
 		

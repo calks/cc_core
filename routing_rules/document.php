@@ -1,6 +1,6 @@
 <?php
 
-	class coreSeoRulesAddonDocumentRule extends RewriteRule {
+	class coreDocumentRoutingRule extends RewriteRule {
 		
         public function seoToInternal(URL $seo_url) {
             $address = $seo_url->getAddress();            

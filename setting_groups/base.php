@@ -1,6 +1,6 @@
 <?php
 
-	class coreSettingsAddonBaseParamSet {
+	class coreBaseSettingGroup {
 		
 		public function getParamsTree() {
 			return array();

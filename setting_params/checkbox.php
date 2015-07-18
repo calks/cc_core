@@ -1,7 +1,7 @@
 <?php
 
 	
-	class coreSettingsAddonCheckboxParam extends coreSettingsAddonBaseParam {
+	class coreCheckboxSettingParam extends coreBaseSettingParam {
 		
 		public function getError() {
 			return null;

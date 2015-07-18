@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonCheckboxField extends TCheckboxField {
+	class coreCheckboxFormField extends TCheckboxField {
 		
 		
 		public function __construct($name, $params) {

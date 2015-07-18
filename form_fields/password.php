@@ -1,7 +1,7 @@
 <?php 
 
 		
-	class coreFormElementsAddonPasswordField extends coreFormElementsAddonEditField {
+	class corePasswordFormField extends coreTextFormField {
 		function getInputType() {
 			return 'password';
 		}

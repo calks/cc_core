@@ -1,7 +1,7 @@
 <?php
 
 	
-	class coreSettingsAddonIntegerParam extends coreSettingsAddonBaseParam {
+	class coreIntegerSettingParam extends coreBaseSettingParam {
 		
 		public function getError() {	
 			if (!is_null($this->param_value)) {		 

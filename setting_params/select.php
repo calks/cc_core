@@ -1,7 +1,7 @@
 <?php
 
 	
-	class coreSettingsAddonSelectParam extends coreSettingsAddonBaseParam {
+	class coreSelectSettingParam extends coreBaseSettingParam {
 		
 		public function getError() {
 			return null;

@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonRadioField extends TRadioField {
+	class coreRadioFormField extends TRadioField {
 		
 		public function __construct($name, $params) {
 			parent::TRadioField(

@@ -1,7 +1,7 @@
 <?php
 
 		
-	class coreFormElementsAddonDateField extends coreFormElementsAddonEditField {
+	class coreDateFormField extends coreTextFormField {
 		
 		protected $day_names;
 		protected $month_names;

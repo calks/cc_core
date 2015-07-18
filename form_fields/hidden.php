@@ -1,6 +1,6 @@
 <?php
 
-	class coreFormElementsAddonHiddenField extends coreFormElementsAddonBaseField {
+	class coreHiddenFormField extends coreBaseFormField {
 		
 		public function getAsHtml() {
 			$attr_string = $this->getAttributesString();

@@ -11,7 +11,7 @@
 			return 'settings';
 		}
 		
-		public static function get($full_param_name, $rebuild=false) {
+		public static function get($full_param_name, $rebuild=false) {	
 			if (is_null(self::$tree_nvp)) self::loadTreeNvp();
 			if (isset(self::$tree_nvp[$full_param_name])) {
 				return self::$tree_nvp[$full_param_name];
@@ -84,15 +84,15 @@
 				self::$group_names[$d->group_name] = $d->group_displayed_name;
 				$d->param_value = unserialize($d->param_value);
 				$d->constraints = unserialize($d->constraints);
-				$item = self::getParamAddon($d->group_name, $d->param_name, $d->param_type);
+				$item = self::getParamObject($d->group_name, $d->param_name, $d->param_type);
 				$item->keep_value = true;
 				foreach ($d as $k=>$v) $item->$k = $v;
-			}
+			}			
 		}
 		
 		public static function saveTree() {
 			$values = array();			
-			$fields = array_keys(get_class_vars('coreSettingsAddonBaseParam'));
+			$fields = array_keys(get_class_vars('coreBaseSettingParam'));
 
 			
 			foreach (self::$tree_flat as $item) {				
@@ -110,6 +110,8 @@
 				$row = '(' . implode(',', $row) . ')';
 				$values[] = $row;								
 			}
+			
+			if (!$values) return;
 			
 			$fields_escaped = array();
 			foreach ($fields as $f) $fields_escaped[] = "`$f`";
@@ -129,54 +131,51 @@
 			
 		}
 		
-		protected static function getParamAddon($group_name, $param_name, $type) {
-			
+		protected static function getParamObject($group_name, $param_name, $param_type) {			
 			if (!isset(self::$tree[$group_name])) self::$tree[$group_name] = array();
 			
 			// Если параметр уже был когда-то внесен в БД,
 			// возвращаем его (чтобы сохранить назначенное значение)
 			if (isset(self::$tree[$group_name][$param_name])) {				
-				if (self::$tree[$group_name][$param_name]->param_type == $type) {
+				if (self::$tree[$group_name][$param_name]->param_type == $param_type) {
 					self::$tree[$group_name][$param_name]->keep_value = true;
 					return self::$tree[$group_name][$param_name];
 				} 
 			}
 			
-			// если нет, создаем новый и вставляем в дерево
-			$addon_name = $type . '_param';
-			$param_addons = coreResourceLibrary::findEffective('addon', 'settings', "$addon_name.php");
-			if (!isset($param_addons[$addon_name])) {
-				throw new Exception("settings/$addon_name addon not found", 999);
+			// если нет, создаем новый и вставляем в дерево			
+			$params = coreResourceLibrary::findEffective('setting_param', $param_type);			
+			if (!isset($params[$param_type])) {
+				throw new Exception("settings/$type param not found", 999);
 				return null;
 			}
-			$out = new $param_addons[$addon_name]->class();
+			$out = new $params[$param_type]->class();
 			$out->keep_value = false;
 			self::$tree[$group_name][$param_name] = $out;
 			self::$tree_flat["$group_name/$param_name"] = $out;
+			
 			return $out; 
 		}
 		
 		
-		protected static function rebuildTree() {
+		protected static function rebuildTree() {			
 			self::loadTree();
-			$addons = coreResourceLibrary::findEffective('addon', 'settings');
+			$setting_groups = coreResourceLibrary::findEffective('setting_group');
 			
 			$max_seq_by_group = array();
-			foreach($addons as $addon_name=>$addon_data) {
-				$is_param_set = substr($addon_name, strlen($addon_name)-10) == '_param_set';
-				if (!$is_param_set) continue;
-				$param_set_addon = new $addon_data->class();
+			foreach($setting_groups as $group_name=>$group_data) {
+				$group_object = new $group_data->class();
 				
-				foreach ($param_set_addon->getGroupNames() as $name=>$displayed_name) {
+				foreach ($group_object->getGroupNames() as $name=>$displayed_name) {
 					self::$group_names[$name] = $displayed_name;
 				}
 				
-				$subtree = $param_set_addon->getParamsTree();
+				$subtree = $group_object->getParamsTree();
 				
 				foreach ($subtree as $group_name => $params) {					
 					foreach ($params as $param_name => $param_data) {
 						$param_type = $param_data['type'];
-						$item = self::getParamAddon($group_name, $param_name, $param_type);
+						$item = self::getParamObject($group_name, $param_name, $param_type);
 						$item->param_name = $param_name;
 						$item->param_displayed_name = isset($param_data['displayed_name']) ? $param_data['displayed_name'] : $param_name;
 						$item->param_displayed_unit = isset($param_data['displayed_unit']) ? $param_data['displayed_unit'] : '';   

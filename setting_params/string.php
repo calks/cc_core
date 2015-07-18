@@ -2,7 +2,7 @@
 
 	
 	
-	class coreSettingsAddonStringParam extends coreSettingsAddonBaseParam {
+	class coreStringSettingParam extends coreBaseSettingParam {
 		
 		public function check() {			 
 			return array();

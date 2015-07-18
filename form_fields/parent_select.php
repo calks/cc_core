@@ -1,6 +1,6 @@
 <?php
 
-	class coreFormElementsAddonParentSelectField extends coreFormElementsAddonSelectField {
+	class coreParentSelectFormField extends coreSelectFormField {
 		
 		public function GetAsHTML() {
 			$Res = '<select name="'.htmlspecialchars($this->Name).'"'.HtmlUtils::attributes($this->attributes).'>';

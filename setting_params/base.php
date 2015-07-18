@@ -1,6 +1,6 @@
 <?php
 
-	abstract class coreSettingsAddonBaseParam  {
+	abstract class coreBaseSettingParam  {
 		
 		public $application_name;
 		public $param_name;

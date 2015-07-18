@@ -1,6 +1,6 @@
 <?php
 
-	abstract class coreFormElementsAddonBaseField {
+	abstract class coreBaseFormField {
 		
 		protected $field_name;
 		protected $value;

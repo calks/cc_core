@@ -35,7 +35,6 @@
 			self::loadLibrary('name_utils');
 			self::loadLibrary('resource');
 			$path = coreNameUtilsLibrary::relativePathFromClass($class_name);
-			//echo "$path\n";			
 			$path = coreResourceLibrary::getAbsolutePath($path);
 
 			if (is_file($path)) {

@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonCheckboxCollectionField extends CollectionCheckBoxField {
+	class coreCheckboxCollectionFormField extends CollectionCheckBoxField {
 		
 		public function __construct($name, $params) {
 			parent::CollectionCheckBoxField(

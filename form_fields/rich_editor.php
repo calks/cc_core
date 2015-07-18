@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/editor');
 
-	class coreFormElementsAddonRichEditorField extends TEditorField {
+	class coreRichEditorFormField extends TEditorField {
 		
 		
 		public function __construct($name, $params) {

@@ -65,10 +65,14 @@
 				'resource_sub_name' => null			
 			);
 
-            $matched = preg_match('/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>Entity|Filter|Module|Block|Addon|Library)(?P<sub_name>.*)/', $class, $matches);
+			$resource_types = coreResourceLibrary::getResourceTypeList();			
+			$resource_type_regexp = implode('|', $resource_types);
+			
+			$regexp = '/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')(?P<sub_name>.*)/';
+						
+            $matched = preg_match($regexp, $class, $matches);
             if (!$matched) return $out;
-            
-            
+                        
             $container_complex_name = $matches['container_complex_name'];
             if ($container_complex_name == 'core') {
             	$out['container_type'] = 'core';
@@ -81,8 +85,8 @@
             	$out['container_name'] = self::camelToUnderscored($container_name);
             }
             
-            $resource_type = strtolower($matches['resource_type']);
-            $out['resource_type'] = $resource_type;            
+            $resource_type = $matches['resource_type'];
+            $out['resource_type'] = self::camelToUnderscored($resource_type);
             
             $resource_name = $matches['resource_name'];
             $out['resource_name'] = self::camelToUnderscored($resource_name);
@@ -106,6 +110,7 @@
 		public static function relativePathFromClass($class) {
 			
 			$class_parsed = self::parseResourceClass($class);
+			
 			if (!$class_parsed['container_type']) return null;
 			
 			$out = array();

@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonEditField extends coreFormElementsAddonBaseField {
+	class coreTextFormField extends coreBaseFormField {
 		
 		protected $size = 30;
 		protected $maxlength = 255;

@@ -3,6 +3,8 @@
 	class coreResourceLibrary {
 
 		protected static $package_list;
+		protected static $application_list;
+		protected static $resource_type_list;
 		protected static $path_cache = array();
 		
 		public static function getAbsolutePath($relative_path) {
@@ -30,22 +32,58 @@
 			return $file->path;			
 		}
 		
+		
+		protected static function getSubdirectories($dir_path) {
+			$dir_path = self::getAbsolutePath($dir_path);
+			$dir = @opendir($dir_path);
+			if (!$dir) return array();
+			$out = array();
+			while ($file = readdir($dir)) {
+				if (strpos($file, '.') === 0) continue;
+				if (!is_dir($dir_path.'/'.$file)) continue;
+				$out[] = $file;
+			}
+			closedir($dir);
+			return $out;			
+		}
+		
 		protected static function getPackageList() {
 			if (is_null(self::$package_list)) {
-				self::$package_list = array();
-				$packages_directory = Application::getSitePath().'/packages';
-				if (is_dir($packages_directory)) {
-					$dir = opendir($packages_directory);
-					while ($file = readdir($dir)) {
-						if (in_array($file, array('.', '..'))) continue;
-						if (!is_dir($packages_directory.'/'.$file)) continue;
-						self::$package_list[] = $file;
-					}
-					closedir($dir);
-				}
+				self::$package_list = self::getSubdirectories('/packages');				
 			}
 
 			return self::$package_list;
+		}
+		
+		protected static function getApplicationList() {
+			if (is_null(self::$application_list)) {
+				self::$application_list = self::getSubdirectories('/applications');				
+			}
+
+			return self::$application_list;
+		}
+		
+		public static function getResourceTypeList() {
+			if (is_null(self::$resource_type_list)) {
+				$dirs = array('/core');
+				foreach (self::getPackageList() as $pkg_name) {
+					$dirs[] = "/packages/$pkg_name";
+				}
+				foreach (self::getApplicationList() as $app_name) {
+					$dirs[] = "/applications/$app_name";
+				}
+				
+				self::$resource_type_list = array();
+				foreach ($dirs as $d) {
+					foreach (self::getSubdirectories($d) as $resource_dir) {
+						$type_name = coreNameUtilsLibrary::getSingularNoun($resource_dir);
+						$classname_part = ucfirst(coreNameUtilsLibrary::underscoredToCamel($type_name));
+						self::$resource_type_list[$type_name] = $classname_part;					
+					}
+				}				
+			}
+
+			return self::$resource_type_list;
 		}
 		
 		

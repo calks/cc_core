@@ -2,7 +2,7 @@
 
 	Application::loadLibrary('olmi/field');
 
-	class coreFormElementsAddonSelectField extends coreFormElementsAddonBaseField {
+	class coreSelectFormField extends coreBaseFormField {
 		
 		protected $options;
 		
