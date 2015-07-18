@@ -68,41 +68,17 @@
 			$this->returnResponse();
 		}
 		
-        public function getStaticFilePath($path_relative_to_module) {
-        	$path_relative_to_module = trim($path_relative_to_module, ' /');     
-        	$own_url = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $this->getName(), '/static/' . $path_relative_to_module); 
-            if ($own_url) return $own_url;
-
-            $parents = class_parents($this);
-            $own_name = $this->getName();
-            foreach ($parents as $p) {
-            	$parent_name = coreNameUtilsLibrary::getResourceName($p);
-            	if ($parent_name == $own_name) continue;
-            	$parent_url = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $parent_name, '/static/' . $path_relative_to_module);
-            	if ($parent_url) return $parent_url;
-            }
-            
-            return null;
-        	
+        public function getStaticFilePath($path_relative_to_module) {        	
+        	$subresources = $this->findEffectiveSubresources('static', null, $path_relative_to_module, '');
+        	if (!$subresources) return null;
+        	$subresource = array_shift($subresources);
+        	return $subresource->path; 
         }
         
         public function getTemplatePath($template_name = '') {        	        	
             $template_name_supplied = $template_name != '';        	
         	if (!$template_name_supplied) $template_name = $this->getName();            
-            $own_template = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $this->getName(), "/templates/$template_name.tpl");
-            if ($own_template) return $own_template;
-
-            $parents = class_parents($this);            
-            $own_name = $this->getName();
-            foreach ($parents as $p) {
-            	$parent_name = coreNameUtilsLibrary::getResourceName($p);
-            	if ($parent_name == $own_name) continue;            	
-            	if (!$template_name_supplied) $template_name = $parent_name;
-            	$parent_template = coreResourceLibrary::getFirstFilePath($this->getResourceType(), $parent_name, "/templates/$template_name.tpl");
-            	if ($parent_template) return $parent_template;
-            }
-            
-            return null;
+        	return $this->findEffectiveSubresourcePath('template', $template_name, null, 'tpl');
         }
 		
 		

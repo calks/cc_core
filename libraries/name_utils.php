@@ -23,12 +23,13 @@
 			return implode('_', $ret);						
 		}
 		
-		public function removeExtension($name) {
-			return preg_replace('/^(.*)\..*/', '$1', $name);
-		}
 		
 		
 		public static function classFromRelativePath($relative_path) {
+			
+			$extension = pathinfo($relative_path, PATHINFO_EXTENSION);
+			if (!$extension || $extension != 'php') return null;
+			
 			$path = explode('/', trim($relative_path, ' /'));
 			$out = array();
 			
@@ -47,10 +48,20 @@
 			$resource_dir = @array_shift($path);
 			$resource_type = coreNameUtilsLibrary::getSingularNoun($resource_dir);
 			
-			$name = @array_shift($path);
-			$name = self::removeExtension($name);
-			$out[] = $name;
+			$resource_name = @array_shift($path);
+			$resource_name = pathinfo($resource_name, PATHINFO_FILENAME);
+			$out[] = $resource_name;
 			$out[] = $resource_type;
+			
+			$subresource_type = @array_shift($path);
+			$subresource_name = @array_shift($path);
+			$subresource_name = pathinfo($subresource_name, PATHINFO_FILENAME);
+			
+			if ($subresource_type && $subresource_name) {
+				$out[] = $subresource_name;
+				$out[] = coreNameUtilsLibrary::getSingularNoun($subresource_type);
+			}
+			
 			
 			return self::underscoredToCamel(implode('_', $out));			
 		}
@@ -62,17 +73,18 @@
 				'container_name' => null,
 				'resource_type' => null,
 				'resource_name' => null,
-				'resource_sub_name' => null			
+				'subresource_type' => null,
+				'subresource_name' => null						
 			);
 
 			$resource_types = coreResourceLibrary::getResourceTypeList();			
 			$resource_type_regexp = implode('|', $resource_types);
 			
-			$regexp = '/(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')(?P<sub_name>.*)/';
-						
+			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')(?P<sub_name>.*)$/isU';
+									
             $matched = preg_match($regexp, $class, $matches);
             if (!$matched) return $out;
-                        
+            
             $container_complex_name = $matches['container_complex_name'];
             if ($container_complex_name == 'core') {
             	$out['container_type'] = 'core';
@@ -94,7 +106,17 @@
             
             $sub_name = $matches['sub_name'];
             if ($sub_name) {
-            	$out['resource_sub_name'] = self::camelToUnderscored($sub_name);
+            	$subresource_dir = coreNameUtilsLibrary::getPluralNoun($out['resource_type']) . '/' . $out['resource_name'];
+            	$subresource_types = coreResourceLibrary::getResourceTypeList($subresource_dir);
+            	$subresource_type_regexp = implode('|', $subresource_types);
+            	preg_match('/^(?P<subresource_name>[a-zA-Z0-9]+)(?P<subresource_type>'.$subresource_type_regexp.')$/is', $sub_name, $sub_name_matches);
+            	$subresource_type = isset($sub_name_matches['subresource_type']) ? $sub_name_matches['subresource_type'] : null; 
+            	$subresource_name = isset($sub_name_matches['subresource_name']) ? $sub_name_matches['subresource_name'] : null;
+ 
+            	if ($subresource_type && $subresource_name) {
+            		$out['subresource_type'] = self::camelToUnderscored($subresource_type);
+            		$out['subresource_name'] = self::camelToUnderscored($subresource_name);
+            	}
             }
             
             return $out;			
@@ -106,6 +128,10 @@
 			return $class_parsed['resource_name'];
 		}
 		
+		public static function getResourceType($resource_class) {
+			$class_parsed = self::parseResourceClass($resource_class);
+			return $class_parsed['resource_type'];
+		}
 		
 		public static function relativePathFromClass($class) {
 			
@@ -126,11 +152,18 @@
 			
 			$out[] = $class_parsed['resource_name'];
 			
-			$path_in_common_dir = '/' . implode('/', $out) . '.php';
-			$out[] = $class_parsed['resource_name'];
-			$path_in_individual_dir = '/' . implode('/', $out) . '.php';
-			
-			return is_file(Application::getSitePath() . $path_in_common_dir) ? $path_in_common_dir : $path_in_individual_dir;
+			if ($class_parsed['subresource_name']) {
+				$out[] = coreNameUtilsLibrary::getPluralNoun($class_parsed['subresource_type']);
+				$out[] = $class_parsed['subresource_name'];
+				return '/' . implode('/', $out) . '.php';
+			}
+			else {
+				$path_in_common_dir = '/' . implode('/', $out) . '.php';
+				$out[] = $class_parsed['resource_name'];
+				$path_in_individual_dir = '/' . implode('/', $out) . '.php';
+				
+				return is_file(Application::getSitePath() . $path_in_common_dir) ? $path_in_common_dir : $path_in_individual_dir;					
+			}
         
 		}
 		

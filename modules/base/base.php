@@ -4,9 +4,6 @@
 		
 		protected $task;
 		
-		protected function getResourceType() {
-			return APP_RESOURCE_TYPE_MODULE;
-		}		
 		
 		protected function commonLogic(&$params) {
 			
