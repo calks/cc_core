@@ -25,7 +25,7 @@
 		}
 		
 		protected function getField() {
-			return coreFormElementsLibrary::get('edit', $this->getFieldName());
+			return coreFormElementsLibrary::get('text', $this->getFieldName());
 		}
 		
 		public function renderField() {			

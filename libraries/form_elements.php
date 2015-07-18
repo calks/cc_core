@@ -10,16 +10,15 @@
 		
 
 		protected static function getElementClass($element_type) {
-			
-			$addon_name = $element_type . '_field';
-			$addons_available = coreResourceLibrary::findEffective(APP_RESOURCE_TYPE_ADDON, 'form_elements', "/$addon_name.php");
-			if (!$addons_available) {
+						
+			$fields_available = coreResourceLibrary::findEffective('form_field', $element_type);
+			if (!$fields_available) {
 				die("No $element_type form element");
 			}
-			$file_path = coreResourceLibrary::getAbsolutePath($addons_available[$addon_name]->path);
+			$file_path = coreResourceLibrary::getAbsolutePath($fields_available[$element_type]->path);
 			//die($file_path);
 			require_once $file_path;
-			return $addons_available[$addon_name]->class;
+			return $fields_available[$element_type]->class;
 	
 		}
 		
