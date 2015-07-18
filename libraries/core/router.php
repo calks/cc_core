@@ -26,7 +26,8 @@
 			}
 			
 			$possible_module_name = array_shift($url_parts);			
-			$module_class = Application::getResourceClass($possible_module_name, APP_RESOURCE_TYPE_MODULE);
+
+			$module_class = coreResourceLibrary::getEffectiveClass('module', $possible_module_name);
 			if ($module_class) {
 				self::$module_name = $possible_module_name;
 			}

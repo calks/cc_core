@@ -87,7 +87,7 @@
 		
 		
 		public static function formatCurrency($amount, $preset_name='default') {
-			$formatters = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'formatting', 'currency_formatter.php');
+			$formatters = coreResourceLibrary::findEffective(APP_RESOURCE_TYPE_ADDON, 'formatting', 'currency_formatter.php');
 			$formatter = $formatters ? array_shift($formatters) : null;
 			if (!$formatter) return $amount;
 			

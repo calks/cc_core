@@ -10,8 +10,7 @@
 	define('APP_RESOURCE_TYPE_STATIC', 'static');
 	define('APP_RESOURCE_TYPE_TEMPLATE', 'template');
 
-	define('APP_RESOURCE_CONTAINER_ADMIN_APPLICATION', 1);
-	define('APP_RESOURCE_CONTAINER_FRONT_APPLICATION', 2);
+
 	define('APP_RESOURCE_CONTAINER_PACKAGES', 4);
 	define('APP_RESOURCE_CONTAINER_CORE', 5);
 	
@@ -35,7 +34,8 @@
 		public static function loader($class_name) {
 			self::loadLibrary('name_utils');
 			self::loadLibrary('resource');
-			$path = coreNameUtilsLibrary::relativePathFromClass($class_name);			
+			$path = coreNameUtilsLibrary::relativePathFromClass($class_name);
+			//echo "$path\n";			
 			$path = coreResourceLibrary::getAbsolutePath($path);
 
 			if (is_file($path)) {
@@ -158,7 +158,7 @@
 
 		
 		public static function resourceExists($resource_name, $resource_type) {
-			$resource_class = self::getResourceClass($resource_name, $resource_type);			
+			$resource_class = coreResourceLibrary::getEffectiveClass($resource_type, $resource_name);			
 			return $resource_class != '';
 		}
 
@@ -185,55 +185,26 @@
 		}
 
 		public static function getResourceInstance($resource_name, $resource_type) {			
-			$resource_class = self::getResourceClass($resource_name, $resource_type);
-
+			$resource_class = coreResourceLibrary::getEffectiveClass($resource_type, $resource_name);
 			if ($resource_class) return new $resource_class();
 			else die("Can't instantiate $resource_name $resource_type" );
 		}
 
 
-		// TODO: Разобраться с терминологией (URL/Path/Directory). Либо переписать функции,
-		// возвращающие абсолютные пути, либо дать им более явные имена (Absolute/Relative)
-		public static function getResourceDirectory($resource_name, $resource_type) {
-			$resource_class = self::getResourceClass($resource_name, $resource_type);
-			return $resource_class ? dirname(coreNameUtilsLibrary::relativePathFromClass($resource_class)) : null;
-		}
-		
-		
-		public static function isAdmin() {
-			return self::getApplicationName() == 'admin';
-		}
-
-		
 		public static function getResourceRouting() {
 			$resource_routing = isset(self::$config['resource_routing']) ? self::$config['resource_routing'] : array();
 
 			if (!isset($resource_routing['default'])) {
 				$resource_routing['default'] = array(
-					APP_RESOURCE_CONTAINER_FRONT_APPLICATION,
+					'applications/' . Application::getApplicationName(),
 					APP_RESOURCE_CONTAINER_PACKAGES,
 					APP_RESOURCE_CONTAINER_CORE
 				);
-
-				$is_admin_application = Application::getApplicationName() == 'admin';
-				if ($is_admin_application) {
-					array_unshift($resource_routing['default'], APP_RESOURCE_CONTAINER_ADMIN_APPLICATION);
-				}
 			}
 			
 			return $resource_routing;
 			
 		}
-		
-
-		// TODO: Подумать над переносом в coreNameUtils
-		public static function getResourceClass($resource_name, $resource_type) {						
-			$available_files = coreResourceLibrary::getAvailableFiles($resource_type, $resource_name, $resource_name . '.php');
-			if (!$available_files) return null;
-			$file = array_shift($available_files);
-			return $file->class;			
-		}
-		
 		
 
 		public static function getSmarty($namespace='default') {
@@ -270,7 +241,7 @@
 		
 		
 		public static function getMailer() {
-			$email_transport_addons = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'message_transport', 'email_transport.php');
+			$email_transport_addons = coreResourceLibrary::findEffective(APP_RESOURCE_TYPE_ADDON, 'message_transport', 'email_transport.php');
 			if (!$email_transport_addons) return null;
 			$addon_class = $email_transport_addons['email_transport']->class;
 			return new $addon_class();

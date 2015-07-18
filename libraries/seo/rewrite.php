@@ -10,7 +10,7 @@
         protected function &getRules() {
         	
         	if (!is_array(self::$rules)) {
-        		$rules_available = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'seo_rules');
+        		$rules_available = coreResourceLibrary::findEffective('routing_rule');
         		self::$rules = array();
         		
         		foreach ($rules_available as $rule_name => $rule) {
@@ -28,7 +28,7 @@
 
             $rules =& self::getRules();
             
-            $common_rule = isset($rules['common_rule']) ? $rules['common_rule'] : null;
+            $common_rule = isset($rules['common']) ? $rules['common'] : null;
             if ($common_rule) {
             	$url = new URL($seo_url);
             	$new_seo_url = $common_rule->seoToInternal($url);
@@ -41,7 +41,7 @@
 
             $url = new URL($seo_url);
             foreach ($rules as $rule_name => $rule) {
-            	if ($rule_name == 'common_rule') continue;
+            	if ($rule_name == 'common') continue;
                 $internal_url = $rule->seoToInternal($url);
                 if (false === $internal_url) {
                     continue;
@@ -58,7 +58,7 @@
             return $seo_url;
         }
 
-        public function internalToSeo($internal_url) {
+        public function internalToSeo($internal_url) {        	
         	$internal_url = trim($internal_url, ' /');
 
             $parts = explode('/', $internal_url);
@@ -66,8 +66,7 @@
             $url = implode('/', $parts); 
 
             $rules =& self::getRules();
-            
-            
+                        
             $rule_name = $module_name . '_rule';
             if (isset($rules[$rule_name])) {
                 $rule = $rules[$rule_name];                
@@ -77,7 +76,7 @@
                 if ($seo_url !== false) $internal_url = $seo_url->toString();
             }
 
-            $common_rule = isset($rules['common_rule']) ? $rules['common_rule'] : null;
+            $common_rule = isset($rules['common']) ? $rules['common'] : null;
             if ($common_rule) {
             	$url = new URL($internal_url);
             	

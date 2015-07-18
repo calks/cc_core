@@ -144,7 +144,7 @@
 			
 			// если нет, создаем новый и вставляем в дерево
 			$addon_name = $type . '_param';
-			$param_addons = coreResourceLibrary::getAvailableFiles('addon', 'settings', "$addon_name.php");
+			$param_addons = coreResourceLibrary::findEffective('addon', 'settings', "$addon_name.php");
 			if (!isset($param_addons[$addon_name])) {
 				throw new Exception("settings/$addon_name addon not found", 999);
 				return null;
@@ -159,7 +159,7 @@
 		
 		protected static function rebuildTree() {
 			self::loadTree();
-			$addons = coreResourceLibrary::getAvailableFiles('addon', 'settings');
+			$addons = coreResourceLibrary::findEffective('addon', 'settings');
 			
 			$max_seq_by_group = array();
 			foreach($addons as $addon_name=>$addon_data) {

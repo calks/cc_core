@@ -3,6 +3,7 @@
 	class coreResourceLibrary {
 
 		protected static $package_list;
+		protected static $path_cache = array();
 		
 		public static function getAbsolutePath($relative_path) {
 			$site_root = Application::getSitePath();
@@ -10,25 +11,20 @@
 			return $site_root . $relative_path;
 		}
 		
-		/*public static function getFullUrl($relative_path) {
-			$site_url = Application::getSiteUrl();
-			if (strpos($relative_path, $site_url) !== false) return $relative_path;
-			return $site_url . $relative_path;
-		}*/
 		
 		public static function getTemplatePath($template_name) {
-			$templates = self::getAvailableFiles(APP_RESOURCE_TYPE_TEMPLATE, null, $template_name.'.tpl');			
+			$templates = self::findEffective(APP_RESOURCE_TYPE_TEMPLATE, null, $template_name.'.tpl');			
 			return isset($templates[$template_name]) ? $templates[$template_name]->path : null; 
 		}
 
 		public static function getStaticPath($relative_path) {
-			$files = self::getAvailableFiles(APP_RESOURCE_TYPE_STATIC, null, $relative_path);								
-			$file = @array_shift($files); 
+			$files = self::findEffective(APP_RESOURCE_TYPE_STATIC, null, $relative_path);								
+			$file = @array_shift($files);
 			return isset($file->path) ? $file->path : null; 
 		} 		
 				
 		public static function getFirstFilePath($resource_type, $resource_name=null, $relative_path=null) {			
-			$available_files = self::getAvailableFiles($resource_type, $resource_name, $relative_path);
+			$available_files = self::findEffective($resource_type, $resource_name, $relative_path);
 			if (!$available_files) return null;
 			$file = array_shift($available_files);
 			return $file->path;			
@@ -45,50 +41,45 @@
 						if (!is_dir($packages_directory.'/'.$file)) continue;
 						self::$package_list[] = $file;
 					}
-
 					closedir($dir);
 				}
-
 			}
 
 			return self::$package_list;
 		}
 		
 		
-		public static function getAvailableFiles($resource_type, $resource_name=null, $relative_path=null) {
-			
-			switch ($resource_type) {
-				case APP_RESOURCE_TYPE_ENTITY:
-					$dir = '/entities';
-					break;
-				case APP_RESOURCE_TYPE_FILTER:
-					$dir = '/filters';
-					break;					
-				case APP_RESOURCE_TYPE_MODULE:
-					$dir = '/modules';
-					break;
-				case APP_RESOURCE_TYPE_BLOCK:
-					$dir = '/blocks';
-					break; 
-				case APP_RESOURCE_TYPE_ADDON:
-					$dir = '/addons';
-					break;
-				case APP_RESOURCE_TYPE_STATIC:
-					$dir = '/static';
-					break; 
-				case APP_RESOURCE_TYPE_TEMPLATE:
-					$dir = '/templates';
-					break;
-				default:
-					die('coreResourceLibrary::getAvailableFiles invalid resource type');	
+		public static function findEffective($resource_type, $resource_name=null, $sub_path=null) {
+			$all_files = self::findAll($resource_type, $resource_name, $sub_path);
+			$out = array();
+			foreach ($all_files as $name=>$items) {
+				$out[$name] = $items[0];
 			}
+			return $out;		
+		}
+		
+		
+		protected static function addPossiblePaths(&$paths, $base, $resource_name, $sub_path) {			
+			if (!$sub_path) $paths[] = $base;
+			if ($sub_path && !$resource_name) $paths[] = "$base/$sub_path";
+			if ($resource_name) $paths[] = "$base/$resource_name" . ($sub_path ? "/$sub_path" : '');
+		}
+		
+		public static function getEffectiveClass($resource_type, $resource_name) {
+			$effective_resources = self::findEffective($resource_type, $resource_name);
+			return isset($effective_resources[$resource_name]) ? $effective_resources[$resource_name]->class : null; 
+		}
+		
+		
+		
+		public static function findAll($resource_type, $resource_name=null, $sub_path=null) {
 			
-			$relative_path = trim($relative_path, ' /');
+			$cache_key = md5("$resource_type.$resource_name.$sub_path");
+			if (isset(self::$path_cache[$cache_key])) return self::$path_cache[$cache_key]; 
+						
+			$dir = coreNameUtilsLibrary::getPluralNoun($resource_type);
 			
-			$add_subfolder = !in_array($resource_type, array(APP_RESOURCE_TYPE_ENTITY, APP_RESOURCE_TYPE_FILTER));
-			
-			if ($resource_name && $add_subfolder) $dir .= '/' . $resource_name;
-			if ($relative_path) $dir .= '/' . $relative_path;
+			$sub_path = trim($sub_path, ' /');
 			
 			$out = array();
 			
@@ -96,30 +87,23 @@
 			
 			$routing_rule = isset($resource_routing[$resource_name]) ? $resource_routing[$resource_name] : $resource_routing['default'];
 			$paths = array();
-			
 			foreach ($routing_rule as $rule) {
 				if ($rule == APP_RESOURCE_CONTAINER_CORE) {
-					$paths[] = '/core' . $dir;
-				}
-				elseif ($rule == APP_RESOURCE_CONTAINER_FRONT_APPLICATION) {
-					$paths[] = '/applications/front' . $dir;
-				}
-				elseif ($rule == APP_RESOURCE_CONTAINER_ADMIN_APPLICATION) {
-					$paths[] = '/applications/admin' . $dir;
+					self::addPossiblePaths($paths, "/core/$dir", $resource_name, $sub_path);
 				}
 				elseif ($rule == APP_RESOURCE_CONTAINER_PACKAGES) {
 					$packages = self::getPackageList();
 					foreach ($packages as $package) {
-						$paths[] = '/packages/' . $package . $dir;
+						self::addPossiblePaths($paths, "/packages/$package/$dir", $resource_name, $sub_path);
 					}
 				}
 				elseif (strpos($rule, 'applications/') === 0) {
 					$app_name = str_replace('applications/', '', $rule);
-					$paths[] = '/applications/' . $app_name . $dir;
+					self::addPossiblePaths($paths, "/applications/$app_name/$dir", $resource_name, $sub_path);
 				}
 				elseif (strpos($rule, 'packages/') === 0) {
 					$pkg_name = str_replace('packages/', '', $rule);
-					$paths[] = '/packages/' . $pkg_name . $dir;
+					self::addPossiblePaths($paths, "/packages/$pkg_name/$dir", $resource_name, $sub_path);
 				}
 				else {
 					die("Bad resource routing rule");
@@ -133,28 +117,49 @@
 					$entry->path = $path;
 					$entry->class = coreNameUtilsLibrary::classFromRelativePath($path);
 					$name = coreNameUtilsLibrary::removeExtension(basename($path));
-					
-					if (array_key_exists($name, $out)) continue;
-					$out[$name] = $entry;
+					$out[$name][] = $entry;
 				}
-				else {
+				elseif($resource_name && !$sub_path) {
+					if(is_file("$absolute_path/$resource_name.php")) {
+						$entry = new stdClass();
+						$entry->path = "$absolute_path/$resource_name.php";
+						$entry->class = coreNameUtilsLibrary::classFromRelativePath("$path/$resource_name.php");						
+						$out[$resource_name][] = $entry;						
+					}
+				}
+				else {					
 					$d = @opendir($absolute_path);
 					if (!$d) continue;
 					while ($filename = readdir($d)) {
 						if (in_array($filename, array('..', '.'))) continue;
-						if (is_dir($absolute_path . '/' . $filename)) continue;
-						$name = coreNameUtilsLibrary::removeExtension(basename($filename));
-						if (array_key_exists($name, $out)) continue;
-						$entry = new stdClass();
-						$entry->path = $path . '/' . $filename;
-						$entry->class = coreNameUtilsLibrary::classFromRelativePath($path . '/' . $filename);
 						
-						$out[$name] = $entry;
+						$absolute_path_individual_dir = null;						
+						if (is_dir("$absolute_path/$filename")) {
+							if (is_file("$absolute_path/$filename/$filename.php")) {
+								$absolute_path_individual_dir = "$absolute_path/$filename/$filename.php";
+							}
+						};
+						
+						$name = coreNameUtilsLibrary::removeExtension(basename($filename));
+						
+						if (is_file("$absolute_path/$name.php") && $absolute_path_individual_dir) {
+							throw new Exception("Resource '$name' of type '$resource_type' exists in two places: $path/$name.php and $path/$name/$name.php", 999);
+						}
+
+						if (!is_file("$absolute_path/$name.php") && !$absolute_path_individual_dir) {
+							continue;
+						}
+						
+						$entry = new stdClass();
+						$entry->path = $absolute_path_individual_dir ? "$path/$filename/$filename.php" : "$path/$filename";
+						$entry->class = coreNameUtilsLibrary::classFromRelativePath($path . '/' . $filename);						
+						$out[$name][] = $entry;
 					}
+					closedir($d);
 				}
 			}
 			
-			
+			self::$path_cache[$cache_key] = $out;
 			return $out;			
 		}
 

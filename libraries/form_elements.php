@@ -12,7 +12,7 @@
 		protected static function getElementClass($element_type) {
 			
 			$addon_name = $element_type . '_field';
-			$addons_available = coreResourceLibrary::getAvailableFiles(APP_RESOURCE_TYPE_ADDON, 'form_elements', "/$addon_name.php");
+			$addons_available = coreResourceLibrary::findEffective(APP_RESOURCE_TYPE_ADDON, 'form_elements', "/$addon_name.php");
 			if (!$addons_available) {
 				die("No $element_type form element");
 			}

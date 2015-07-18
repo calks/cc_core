@@ -28,17 +28,6 @@
 		}
 		
 		
-		protected static function resourceDirToType() {
-			return array(
-				'entities' => APP_RESOURCE_TYPE_ENTITY,
-				'filters' => APP_RESOURCE_TYPE_FILTER,
-				'modules' => APP_RESOURCE_TYPE_MODULE,
-				'blocks' => APP_RESOURCE_TYPE_BLOCK,
-				'addons' => APP_RESOURCE_TYPE_ADDON,			
-				'libraries' => APP_RESOURCE_TYPE_LIBRARY,
-			);
-		}
-		
 		public static function classFromRelativePath($relative_path) {
 			$path = explode('/', trim($relative_path, ' /'));
 			$out = array();
@@ -56,21 +45,12 @@
 			}
 			
 			$resource_dir = @array_shift($path);
-			$resource_dir_to_type = self::resourceDirToType();
-			
-			if (!array_key_exists($resource_dir, $resource_dir_to_type)) return '';
-			$resource_type = $resource_dir_to_type[$resource_dir];
+			$resource_type = coreNameUtilsLibrary::getSingularNoun($resource_dir);
 			
 			$name = @array_shift($path);
 			$name = self::removeExtension($name);
 			$out[] = $name;
 			$out[] = $resource_type;
-			
-			if ($resource_type == APP_RESOURCE_TYPE_ADDON) {
-				while ($part = @array_shift($path)) {
-					$out[] = self::removeExtension($part);	
-				}
-			}
 			
 			return self::underscoredToCamel(implode('_', $out));			
 		}
@@ -137,26 +117,79 @@
             	$out[] = $class_parsed['container_name'];
 			}
 			
-            $resource_dir_to_type = self::resourceDirToType();
-            $resource_type_to_dir = array_flip($resource_dir_to_type);
-            //$resource_type = strtolower($matches['resource_type']);
-            
-            if (!array_key_exists($class_parsed['resource_type'], $resource_type_to_dir)) return null;
-            $out[] = $resource_type_to_dir[$class_parsed['resource_type']];
+			$out[] = coreNameUtilsLibrary::getPluralNoun($class_parsed['resource_type']);
 			
 			$out[] = $class_parsed['resource_name'];
 			
-            if (in_array($class_parsed['resource_type'], array(APP_RESOURCE_TYPE_MODULE, APP_RESOURCE_TYPE_BLOCK))) {
-            	$out[] = $class_parsed['resource_name'];	
-            }
+			$path_in_common_dir = '/' . implode('/', $out) . '.php';
+			$out[] = $class_parsed['resource_name'];
+			$path_in_individual_dir = '/' . implode('/', $out) . '.php';
 			
-			
-			if ($class_parsed['resource_sub_name']) {
-            	$out[] = $class_parsed['resource_sub_name'];
-            }
-			
-			return  '/' . implode('/', $out) . '.php';
+			return is_file(Application::getSitePath() . $path_in_common_dir) ? $path_in_common_dir : $path_in_individual_dir;
         
 		}
+		
+		
+		protected static function getEndingReplacements() {
+			return array(
+				'a' => 'as',
+				'b' => 'bs',
+				'c' => 'cs',
+				'd' => 'ds',				
+				'e' => 'es',
+				'f' => 'fs',
+				'g' => 'gs',
+				'h' => 'hs',
+				'i' => 'is',
+				'j' => 'js',
+				'k' => 'ks',
+				'l' => 'ls',
+				'm' => 'ms',
+				'n' => 'ns',
+				'o' => 'os',
+				'p' => 'ps',
+				'q' => 'qs',
+				'r' => 'rs',
+				's' => 'ses',
+				't' => 'ts',
+				'u' => 'us',
+				'v' => 'vs',
+				'w' => 'ws',
+				'x' => 'xes',
+				'y' => 'ies',
+				'z' => 'zes',
+				'static' => 'static'				
+			);			
+		}
+		
+		
+		protected static function replaceWordEnding($word, $replacements) {
+			$word_length = strlen($word);
+			
+			$replace_what = null;
+			$replace_with = null;
+			foreach ($replacements as $old_ending=>$new_ending) {
+				$old_ending_length = strlen($old_ending);
+				$ending_matched = strrpos($word, $old_ending) === $word_length-$old_ending_length;
+				if (!$ending_matched) continue;
+				if (is_null($replace_what) || strlen($replace_what) < $old_ending_length) {
+					$replace_what = $old_ending;
+					$replace_with = $new_ending;
+				}				
+			} 
+			if (is_null($replace_what)) return $word;
+			return substr($word, 0, $word_length-strlen($replace_what)) . $replace_with;
+		}
+		
+		public static function getSingularNoun($plural_noun) {
+			$replacements = array_flip(self::getEndingReplacements());
+			return self::replaceWordEnding($plural_noun, $replacements);		
+		}
+		
+		public static function getPluralNoun($singular_noun) {
+			$replacements = self::getEndingReplacements();
+			return self::replaceWordEnding($singular_noun, $replacements);
+		}
+		
 		
 	}
