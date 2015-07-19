@@ -371,9 +371,9 @@
             	
             	switch ($array_name) {
             		case '_meta':
-                		$out .= "\t<meta ";
+                		$out .= "\t<meta";
                 		foreach ($item as $attr => $value) {
-                			$out .= "{$attr}=\"{$value}\" ";                			
+                			$out .= " {$attr}=\"{$value}\"";                			
                 		}                    
                 		$out .= ">\n";
             			break;
