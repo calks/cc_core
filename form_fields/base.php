@@ -1,6 +1,6 @@
 <?php
 
-	abstract class coreBaseFormField {
+	abstract class coreBaseFormField extends coreResourceObjectLibrary {
 		
 		protected $field_name;
 		protected $value;
@@ -14,13 +14,6 @@
 			$this->attributes = array();
 			$this->css_classes = array();
 			$this->html_allowed = false;
-		}
-		
-		
-		public function getName() {
-			$class_name = get_class($this);
-			preg_match('/.*Addon(?P<name>.*)Field/U', $class_name, $matches);
-			return coreNameUtilsLibrary::camelToUnderscored($matches['name']);
 		}
 		
 		

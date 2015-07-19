@@ -5,8 +5,7 @@
 	define('APP_RESOURCE_TYPE_FILTER', 'filter');
 	define('APP_RESOURCE_TYPE_LIBRARY', 'library');
 	define('APP_RESOURCE_TYPE_MODULE', 'module');
-	define('APP_RESOURCE_TYPE_ENTITY', 'entity');
-	define('APP_RESOURCE_TYPE_ADDON', 'addon');
+	define('APP_RESOURCE_TYPE_ENTITY', 'entity');	
 	define('APP_RESOURCE_TYPE_STATIC', 'static');
 	define('APP_RESOURCE_TYPE_TEMPLATE', 'template');
 
@@ -240,10 +239,11 @@
 		
 		
 		public static function getMailer() {
-			$email_transport_addons = coreResourceLibrary::findEffective(APP_RESOURCE_TYPE_ADDON, 'message_transport', 'email_transport.php');
-			if (!$email_transport_addons) return null;
-			$addon_class = $email_transport_addons['email_transport']->class;
-			return new $addon_class();
+			
+			$mailers = coreResourceLibrary::findEffective('message_sender', 'email');						
+			if (!$mailers) return null;
+			$mailer_class = $mailers['email']->class;
+			return new $mailer_class();
 		}
 
 		public static function getBreadcrumbs() {
