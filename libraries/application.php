@@ -308,7 +308,42 @@
 			return isset(self::$config['var_directory']) ? self::$config['var_directory'] : '/var/'.self::getApplicationName();
 		}
 		
+		public static function deployDatabase() {
+			$sql_scripts = coreResourceLibrary::findAll('deploy_db_script', null, null, 'sql');
+			
+			ksort($sql_scripts);
+			
+			$db = self::getDb();
+			$show_errors_old = $db->getShowErrors();
+			$db->setShowErrors(false);
+			
+			$succeed = true;
+			
+			foreach ($sql_scripts as $script_name=>$script_list) {
+				foreach ($script_list as $script) {
+					$path = $script->path;
+					$path_abs = coreResourceLibrary::getAbsolutePath($path);
+					$script = file_get_contents($path_abs);
+					$script = str_replace("\r\n", "\n", $script);
+					$bom = pack('H*','EFBBBF');
+					$script = preg_replace("/^$bom/", '', $script);
+					$queries = explode(";\n", $script);
+					foreach ($queries as $q) {
+						$q = trim($q);
+						if (!$q) continue;
+						$succeed = $succeed && (bool)$db->execute($q);
+					}
+				} 
+			}
+			
+			$db->setShowErrors($show_errors_old);
+			
+			return $succeed;
 		
+		}
+		
+		
+				
 		
 		protected static function detectMobileBrowser() {
 			$user_agent = strtolower(getenv('HTTP_USER_AGENT'));
