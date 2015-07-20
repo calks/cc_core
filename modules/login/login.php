@@ -25,7 +25,7 @@
 			$smarty = Application::getSmarty();
 			$smarty->assign('errors', $this->errors);
 			$smarty->assign('message_stack_block', Application::getBlock('message_stack'));
-			
+			$smarty->assign('module', $this);
 			
 			$template_path = $this->getTemplatePath($this->action);
 						
@@ -50,7 +50,7 @@
 				if($this->user_session->auth($login, $pass)) {
 					return $this->onSuccessLogin();
 				}
-				else Application::stackError("Неправильный Email и/или пароль"); 
+				else Application::stackError($this->gettext('Wrong login and/or password')); 
 			}
 			
 			

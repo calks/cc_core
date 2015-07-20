@@ -111,28 +111,5 @@
         	return self::$user_id;
         }
         
-        
-    	/*function register_ownership($object_type, $object_id, $user_id=null) {    		
-    		if (!$user_id) $user_id = $this->getUserID();
-    		if (!$user_id) return false;
-    		
-    		$object_type = addslashes($object_type);
-    		$object_id = (int)$object_id;
-    		
-    		$db = JFactory::getDBO();
-    		$db->execute("
-    			REPLACE INTO #__mypms_owned_objects VALUES(
-    				$user_id, $object_id, '$object_type'
-    			)
-    		");
-    			
-    		return true;
-    		
-    	}*/
-    	    	
-    	 
-    	
-    	
-    	
     	
     }

@@ -66,5 +66,37 @@
         	return isset($subresources[$subresource_name]) ? $subresources[$subresource_name]->path : null;        	
         }
         
+        
+                
+        public function gettext($message) {
+        	
+        	if (CURRENT_LANGUAGE != LANGUAGES_ENGLISH) {
+        		$language_code = coreRealWordEntitiesLibrary::getLanguageCode(CURRENT_LANGUAGE); 
+        		if ($language_code) {
+        			$translation_subresources = $this->findEffectiveSubresources('translation', $language_code);
+        			foreach ($translation_subresources as $ts) {
+        				$translation_class = $ts->class;
+        				$translation_object = new $translation_class();
+        				$translations = $translation_object->getTranslations();
+        				if (isset($translations[$message])) {
+        					$message = $translations[$message];
+        					break;
+        				}       				        				
+        			}        		
+        		}
+        	}
+        	$sprintf_params = func_get_args();
+        	$sprintf_params[0] = $message;
+        	return call_user_func_array('sprintf', $sprintf_params);
+        }
+        
 	
 	}
+	
+	
+	
+	
+	
+	
+	
+	

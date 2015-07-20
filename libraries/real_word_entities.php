@@ -5,6 +5,12 @@
 		protected static $languages = null;
 		protected static $countries = null;
 		
+		
+		public static function getLanguageCode($language_id) {
+			$languages = self::getLanguages(false, 'id', 'code');
+			return isset($languages[$language_id]) ? $languages[$language_id] : null;	
+		}
+		
 		public static function getLanguages($add_null_item=false, $key='id', $value='english_name') {
 			
 			if (is_null(self::$languages)) {
