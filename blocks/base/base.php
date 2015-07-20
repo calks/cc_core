@@ -25,9 +25,6 @@
 			return '';
 		}
 
-        protected function getResourceType() {
-            return APP_RESOURCE_TYPE_BLOCK;
-        }
 		
         protected function taskRefresh($data=array()) {
         	$this->render();

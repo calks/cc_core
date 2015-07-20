@@ -4,10 +4,6 @@
 	     
 		public $id;
         
-		protected function getResourceType() {
-			return APP_RESOURCE_TYPE_ENTITY;
-		}		
-		
 		
 		function hasField($fieldName) {
 			return array_key_exists($fieldName, get_object_vars($this));

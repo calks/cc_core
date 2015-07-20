@@ -3,7 +3,7 @@
 	abstract class coreResourceObjectLibrary {
 	
 		
-		protected function getResourceType() {
+		public function getResourceType() {
 			$resource_class = get_class($this);
 			return coreNameUtilsLibrary::getResourceType($resource_class);
 		} 

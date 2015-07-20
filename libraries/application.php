@@ -118,15 +118,37 @@
 				$profiler->start();
 			}
 
-			$module = self::getResourceInstance($module_name, 'module');
+			$module = self::getResourceInstance(APP_RESOURCE_TYPE_MODULE, $module_name);
 			$out = call_user_func(array($module, 'run'), $params);
 
 			if (USE_PROFILER) $profiler->stop();
 			return $out;
 
 		}
-
-
+		
+		
+		public static function gettext($message) {
+        	
+        	if (CURRENT_LANGUAGE != LANGUAGES_ENGLISH) {
+        		$language_code = coreRealWordEntitiesLibrary::getLanguageCode(CURRENT_LANGUAGE); 
+        		if ($language_code) {
+        			$translation_subresources = coreResourceLibrary::findEffective('translation', $language_code);
+        			foreach ($translation_subresources as $ts) {
+        				$translation_class = $ts->class;
+        				$translation_object = new $translation_class();
+        				$translations = $translation_object->getTranslations();
+        				if (isset($translations[$message])) {
+        					$message = $translations[$message];
+        					break;
+        				}       				        				
+        			}        		
+        		}
+        	}
+        	$sprintf_params = func_get_args();
+        	$sprintf_params[0] = $message;
+        	return call_user_func_array('sprintf', $sprintf_params);
+        }		
+		
 		public static function getDb() {
 			if (!self::$db) {
 				self::loadLibrary('olmi/mysql');
@@ -169,20 +191,20 @@
 		}
 
 		public static function getEntityInstance($entity_name) {
-			return self::getResourceInstance($entity_name, APP_RESOURCE_TYPE_ENTITY);
+			return self::getResourceInstance(APP_RESOURCE_TYPE_ENTITY, $entity_name);
 		}
 
 		// TODO: Переименовать в getBlockInstance
 		public static function getBlock($block_name) {
-			return self::getResourceInstance($block_name, APP_RESOURCE_TYPE_BLOCK);
+			return self::getResourceInstance(APP_RESOURCE_TYPE_BLOCK, $block_name);
 		}
 
 		// TODO: Переименовать в getFilterInstance
 		public static function getFilter($filter_name) {
-			return self::getResourceInstance($filter_name, APP_RESOURCE_TYPE_FILTER);
+			return self::getResourceInstance(APP_RESOURCE_TYPE_FILTER, $filter_name);
 		}
 
-		public static function getResourceInstance($resource_name, $resource_type) {			
+		public static function getResourceInstance($resource_type, $resource_name) {			
 			$resource_class = coreResourceLibrary::getEffectiveClass($resource_type, $resource_name);
 			if ($resource_class) return new $resource_class();
 			else die("Can't instantiate $resource_name $resource_type" );
@@ -212,6 +234,7 @@
 				//self::loadLibrary('smarty/Smarty.Class');
 
 				$smarty = new coreSmartyLibrary();
+				//$smarty->assign('here', 1);
 
 				$cache_dir = Application::getSitePath().Application::getTempDirectory().'/smarty/cache/';
 				$compile_dir = Application::getSitePath().Application::getTempDirectory().'/smarty/compile/';
