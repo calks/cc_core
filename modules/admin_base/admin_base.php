@@ -194,9 +194,9 @@
 		}
 		
 		protected function getObjectCountString($shown, $total) {
-			$obj_count_noun = coreFormattingLibrary::getNounForNumber($shown, 'объект', 'объекта', 'объектов');
-			$shown_str = coreFormattingLibrary::getNounForNumber($shown, 'Показан', 'Показано', 'Показано');
-			return  "$shown_str $shown $obj_count_noun из $total";
+			$shown_str = Application::ngettext('Showing', 'Showing', $shown);
+			$obj_count_noun = Application::ngettext('object', 'objects', $shown);						
+			return  Application::gettext("%s %d %s out of %d", $shown_str, $shown, $obj_count_noun, $total);
 		}
 		
 		

@@ -61,34 +61,24 @@
         	return isset($subresources[$subresource_name]) ? $subresources[$subresource_name]->class : null;        	
         }
         
+        
         public function findEffectiveSubresourcePath($subresource_type, $subresource_name, $subresource_sub_path=null, $extension='php') {
         	$subresources = $this->findEffectiveSubresources($subresource_type, $subresource_name, $subresource_sub_path, $extension);        	
         	return isset($subresources[$subresource_name]) ? $subresources[$subresource_name]->path : null;        	
-        }
-        
+        }        
         
                 
-        public function gettext($message) {
-        	
-        	if (CURRENT_LANGUAGE != LANGUAGES_ENGLISH) {
-        		$language_code = coreRealWordEntitiesLibrary::getLanguageCode(CURRENT_LANGUAGE); 
-        		if ($language_code) {
-        			$translation_subresources = $this->findEffectiveSubresources('translation', $language_code);
-        			foreach ($translation_subresources as $ts) {
-        				$translation_class = $ts->class;
-        				$translation_object = new $translation_class();
-        				$translations = $translation_object->getTranslations();
-        				if (isset($translations[$message])) {
-        					$message = $translations[$message];
-        					break;
-        				}       				        				
-        			}        		
-        		}
-        	}
-        	$sprintf_params = func_get_args();
-        	$sprintf_params[0] = $message;
-        	return call_user_func_array('sprintf', $sprintf_params);
+        public function gettext($message) { 
+        	$params = func_get_args();
+        	array_unshift($params, $this);        	
+        	return call_user_func_array(array('coreGettextLibrary', 'gettext'), $params);
         }
+        
+		
+        public static function ngettext($message, $message_plural, $n) {
+        	return coreGettextLibrary::ngettext($this, $message, $message_plural, $n);
+        }
+        
         
 	
 	}

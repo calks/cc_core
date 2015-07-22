@@ -33,6 +33,7 @@
 					
 						{assign var="tr" value="0"}
 						{include file=$line_template_path objects=$objects}
+						
 					</tbody>
 				</table>
 				<div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix">
