@@ -333,7 +333,7 @@
 			
 			foreach ($sql_scripts as $script_name=>$script_list) {
 				foreach ($script_list as $script) {
-					$path = $script->path;
+					$path = $script->path;					
 					$path_abs = coreResourceLibrary::getAbsolutePath($path);
 					$script = file_get_contents($path_abs);
 					$script = str_replace("\r\n", "\n", $script);
@@ -341,7 +341,7 @@
 					$script = preg_replace("/^$bom/", '', $script);
 					$queries = explode(";\n", $script);
 					foreach ($queries as $q) {
-						$q = trim($q);
+						$q = trim($q);						
 						if (!$q) continue;
 						$succeed = $succeed && (bool)$db->execute($q);
 					}
