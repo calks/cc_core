@@ -1,3 +1,3 @@
 
-	<h1>Ошибка 404</h1>
-	<p>Страница не найдена.</p>
+	<h1>{$module->gettext('Error 404')}</h1>
+	<p>{$module->gettext('Page not found')}</p>
