@@ -29,4 +29,19 @@
 		}
 		
 		
+		public static function restrictLoadParams($user, $entity, &$load_params) {
+			$access_rule_resources = coreResourceLibrary::findEffective('access_rule');
+			if (!$access_rule_resources) return false;
+			
+			foreach ($access_rule_resources as $arr) {
+				$rule_class = $arr->class;
+				if($rule_class == 'coreBaseAccessRule') continue;
+				
+				$rule = new $rule_class();
+				$rule->restrictLoadParams($user, $entity, $load_params);
+			}
+			
+		}
+		
+		
 	}
