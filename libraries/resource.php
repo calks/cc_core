@@ -124,6 +124,22 @@
 		}
 		
 		
+		protected static function getResourceRoutingRule($resource_type, $resource_name) {
+			$resource_routing = Application::getResourceRouting();
+			foreach ($resource_routing as $matching_resources => $routing_rule) {
+				$matching_resources = explode('/', $matching_resources);
+				
+				$rule_resource_type = $matching_resources[0];
+				if (!in_array($rule_resource_type, array($resource_type, '*'))) continue;
+				
+				$rule_resource_name = isset($matching_resources[1]) ? $matching_resources[1] : null;
+				if (!is_null($rule_resource_name) && !in_array($rule_resource_name, array($resource_name, '*'))) continue;
+				
+				return $routing_rule;				
+			}
+			
+			return $resource_routing['default'];
+		}
 		
 		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
 						
@@ -135,10 +151,10 @@
 			$sub_path = trim($sub_path, ' /');
 			
 			$out = array();
-			
-			$resource_routing = Application::getResourceRouting();
-			
-			$routing_rule = isset($resource_routing[$resource_name]) ? $resource_routing[$resource_name] : $resource_routing['default'];
+						
+			//echo $resource_type;
+			$routing_rule = self::getResourceRoutingRule($resource_type, $resource_name);
+			//print_r($routing_rule);
 			$paths = array();
 			foreach ($routing_rule as $rule) {
 				if ($rule == APP_RESOURCE_CONTAINER_CORE) {
