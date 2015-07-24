@@ -53,7 +53,7 @@
 
         protected function terminate() {        	
         	if ($this->isAjax()) {        		
-        		Application::stackError('Ошибка в запросе');
+        		Application::stackError($this->gettext('Wrong request'));
         	}
         	else {
         		$this->html = Application::runModule('page404');
