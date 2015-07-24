@@ -37,9 +37,13 @@
     
             $out = array();
             foreach ($resource_hierarchy as $resource) {
-	        	$out = array_merge($out, coreResourceLibrary::findAll($resource['type'], $resource['name'], $sub_path, $extension));
+            	$subresources = coreResourceLibrary::findAll($resource['type'], $resource['name'], $sub_path, $extension);
+            	foreach ($subresources as $sr_name => $sr_list) {
+            		if (!isset($out[$sr_name])) $out[$sr_name] = array();
+            		foreach ($sr_list as $sr) $out[$sr_name][] = $sr;
+            	}
             }
-        	
+
             return $out;
         }
         
