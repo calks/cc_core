@@ -12,8 +12,9 @@
 		protected static function getElementClass($element_type) {
 						
 			$fields_available = coreResourceLibrary::findEffective('form_field', $element_type);
+			
 			if (!$fields_available) {
-				die("No $element_type form element");
+				die("$element_type form field not found");
 			}
 			$file_path = coreResourceLibrary::getAbsolutePath($fields_available[$element_type]->path);
 			//die($file_path);

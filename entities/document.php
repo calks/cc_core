@@ -38,7 +38,7 @@
 		function mandatory_fields() {
 			return array(
 				//'url' => 'URL', 
-				'title' => 'Заголовок'			
+				'title' => 'Название в меню'			
 			);
 		}
 
@@ -157,32 +157,26 @@
 			Application::loadLibrary('fields');
 			Application::loadLibrary('olmi/editor');
 
-			$form->addField(new THiddenField("id"));
-			$form->addField(new TEditField("url", "", 85, 255));
-			$form->addField(new TEditField("open_link", "", 85, 255));
-			$form->addField(new THiddenField("id", NULL));
-			$form->addField(new THiddenField("seq", NULL));
-			$form->addField(new CollectionCheckBoxField("menu", $this->getMenuNames(), $this->menu));
+			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
+			$form->addField(coreFormElementsLibrary::get('text', 'url'));
+			$form->addField(coreFormElementsLibrary::get('text', 'open_link'));
+			$form->addField(coreFormElementsLibrary::get('hidden', 'seq'));			
+			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'menu', array(
+				'options' => $this->getMenuNames()
+			)));
 
-			$form->addField(new TCheckboxField("active", "1", null, 'class="uniform"'));
-			$form->addField(new TSelectField('category', '', $this->getDocumentCategories(),  'class="uniform"'));
-			
-			$form->addField(new TSelectField('parent_id', '', $this->get_parent_select_options($language_id), 'class="uniform"'));
-			$form->addField(new TFileField("page_image", "", "", 255));
-			$form->addField(new TCheckboxField("is_script", "1", false));
-			$form->addField(new TCheckboxField("open_new_window", "1", false,  'class="uniform"'));
-			$form->addField(new TEditField("url_image", "", 85, 255));
-			$form->addField(new TEditField("color", "", 7, 7));
+			$form->addField(coreFormElementsLibrary::get('checkbox', "active"));
+			$form->addField(coreFormElementsLibrary::get('select', "category")->setOptions($this->getDocumentCategories()));
+			$form->addField(coreFormElementsLibrary::get('select', "parent_id")->setOptions($this->get_parent_select_options($language_id)));
+			$form->addField(coreFormElementsLibrary::get('checkbox', "open_new_window"));
 
-			$form->addField(new TEditField("title", "", 85, 255));
-			$form->addField(new TEditField("meta_title", "", 85, 255));
-			$form->addField(new TEditorField("content", "", null, 500));
-
-			$form->addField(new TTextField("meta_desc", "", 85, 4));
-			$form->addField(new TTextField("meta_key", "", 85, 4));
-
-			$form->addField(new THiddenField("language_id", $language_id));
-			
+			$form->addField(coreFormElementsLibrary::get('text', 'title'));
+			$form->addField(coreFormElementsLibrary::get('text', 'meta_title'));
+			$form->addField(coreFormElementsLibrary::get('rich_editor', 'content'));
+			$form->addField(coreFormElementsLibrary::get('textarea', 'meta_desc'));
+			$form->addField(coreFormElementsLibrary::get('textarea', 'meta_key'));
+			$form->addField(coreFormElementsLibrary::get('hidden', 'language_id')->setValue($language_id));
+						
 			return $form;
 		}
 

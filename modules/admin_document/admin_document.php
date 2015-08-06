@@ -1,7 +1,7 @@
 <?php
 
 	
-	class coreAdminDocumentModule extends coreAdminBaseModule {
+	class coreAdminDocumentModule extends coreCrudBaseModule {
 		
 		protected function getObjectName() {
 			return 'document';
@@ -134,8 +134,10 @@
 				$this->normalizeSeq($object->parent_id);
 			}
 			
+			
 			$message = 'Объект перемещен ';// . $direction=='up' ? 'выше' : 'ниже';
-			$redirect_url = "/admin/{$this->getName()}?action=list&message=" . urldecode($message);
+			Application::stackMessage($message);
+			$redirect_url = "/admin/{$this->getName()}?action=list";
 			Redirector::redirect($redirect_url);
 						
 		}

@@ -14,4 +14,10 @@
 			);	
 		}
 		
+		
+		function GetAsHTML($tableAttr = array(), $checkBoxAttr = array()) {
+			$tableAttr['class'] = "checkbox-collection";
+			return parent::GetAsHTML($tableAttr, $checkBoxAttr);
+		}
+		
 	}

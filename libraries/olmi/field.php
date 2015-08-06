@@ -439,6 +439,7 @@
 		}
 
 		function GetAsHTML($tableAttr = array(), $checkBoxAttr = array()) {
+			
 			$res = "<table ".HtmlUtils::attributes($tableAttr)." summary=\"\">\n<tr>";
 			$i = 0;
 

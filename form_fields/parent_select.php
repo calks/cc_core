@@ -3,21 +3,23 @@
 	class coreParentSelectFormField extends coreSelectFormField {
 		
 		public function GetAsHTML() {
-			$Res = '<select name="'.htmlspecialchars($this->Name).'"'.HtmlUtils::attributes($this->attributes).'>';
-			foreach ($this->Options as $opt) {
-				$value = $opt->Value;
-				$text = $opt->Text;
-				$disabled = strpos($text, '[disabled]') !== false ? 'disabled="disabled"' : '';
-				$selected = $this->Value == $value ? 'selected="selected"' : '';
+			
+			$attr_string = $this->getAttributesString();
+			
+			$out = "<select name=\"$this->field_name\" $attr_string>";
+			
+			foreach ($this->options as $value=>$caption) {
+				$selected = $value==$this->value ? 'selected="selected"' : '';
+				$value = $this->getSafeAttrValue($value);
 				$replace = array(
 					'[space]' => '&nbsp;',
 					'[disabled]' => ''
 				);
-				$text = str_replace(array_keys($replace), $replace, $text);
-			
-				$Res .= "<option value=\"$value\" $disabled $selected>$text</option>";
+				$caption = str_replace(array_keys($replace), $replace, $caption);
+				$out .= "<option $selected value=\"$value\">$caption</option>";	
 			}
-			$Res .= "</select>";
-			return $Res;
+			
+			$out .= "</select>";
+			return $out;
 		}			
 	}

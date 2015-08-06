@@ -42,8 +42,12 @@
 			
 			call_user_func(array($this, $method_name), $params);
 			
+			foreach ($this->errors as $e) {
+				Application::stackError($e);
+			}
+			
 			$smarty = Application::getSmarty();
-			$smarty->assign('errors', $this->errors);
+
 			$smarty->assign('action', $this->action);
 			$smarty->assign('app_img_dir', Application::getSiteUrl()."/applications/".Application::getApplicationName() . '/static/img');
 						
@@ -251,8 +255,9 @@
 							else {
 								$redirect_url = "/{$this->getName()}?action=list";
 							}
-							$redirect_url .= "&message=" . urldecode('Объект сохранен');
 							
+							Application::stackMessage('Объект сохранен');
+														
 							
 							$url_addition = $this->url_addition;						
 							if ($this->page > 1) $url_addition .= $url_addition ? "&page=$this->page" : "page=$this->page";
@@ -330,6 +335,7 @@
 			$this->beforeObjectDelete();
 
 			$message = count($this->objects)> 1 ? 'Объекты удалены' : 'Объект удален';
+			Application::stackMessage($message);
 			
 			foreach($this->objects as $obj) {				
 				$obj->delete();
@@ -337,7 +343,7 @@
 			$this->afterObjectDelete();
 			$this->normalizeSeq();
 			
-			$redirect_url = "/{$this->getName()}?action=list&message=" . urldecode($message);
+			$redirect_url = "/{$this->getName()}?action=list";
 			$url_addition = $this->url_addition;
 			if ($this->page > 1) $url_addition .= $url_addition ? "&page=$this->page" : "page=$this->page";
 			if ($url_addition) $redirect_url .= '&' . $url_addition;
@@ -418,7 +424,8 @@
 			}
 			
 			$message = 'Объект перемещен ';// . $direction=='up' ? 'выше' : 'ниже';
-			$redirect_url = "/{$this->getName()}?action=list&message=" . urldecode($message);
+			Application::stackMessage($message);
+			$redirect_url = "/{$this->getName()}?action=list";
 			$url_addition = $this->url_addition;
 			if ($this->page > 1) $url_addition .= $url_addition ? "&page=$this->page" : "page=$this->page";
 			if ($url_addition) $redirect_url .= '&' . $url_addition;

@@ -49,20 +49,16 @@
 		}
 
 		public function make_form(&$form) {
-			$form->addField(new THiddenField('id'));
-			$form->addField(new TEditField('name', '', 30, 255));
-			$form->addField(new TEditField('family_name', '', 30, 255));
+			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
+			$form->addField(coreFormElementsLibrary::get('text', 'name'));
+			$form->addField(coreFormElementsLibrary::get('text', 'family_name'));			
 			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles', array(
 				'options' => $this->getRoleSelect()
 			)));			
-			$form->addField(new TEditField('email', '', 30, 100));
-			$form->addField(new TEditField('login', '', 30, 100));
-			//$form->addField(new TEditField('pass', '', 30, 100));
+			$form->addField(coreFormElementsLibrary::get('text', 'email'));
+			$form->addField(coreFormElementsLibrary::get('text', 'login'));
 
-			$form->addField(new TCheckboxField('active', ''));
-			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles', array(
-				'options' => $this->getRoleSelect()
-			)));
+			$form->addField(coreFormElementsLibrary::get('checkbox', 'active'));
 			
 			return $form;
 		}

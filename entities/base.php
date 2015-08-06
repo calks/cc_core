@@ -68,7 +68,7 @@
 					$errors[] = "Не заполнено поле &laquo;$err_out&raquo;";
 				}
 			}
-			if (sizeof($errors) == 0) {
+			//if (sizeof($errors) == 0) {
 				$unique = $this->unique_fields();
 				$unique_keys = array_keys($unique);
 
@@ -77,17 +77,17 @@
 				if ($this->$pkey) $extrasql = " and $pkey <> ".$this->$pkey;
 				foreach ($this as $key => $value) {
 					if (in_array($key, $unique_keys)) {
-						$query = "select count(*) from ".$table." where ".$key."='".addslashes($key)."' ".$extrasql;
+						$query = "select count(*) from ".$table." where ".$key."='".addslashes($value)."' ".$extrasql;						
 						if ($db->executeScalar($query) > 0) {
 							if (isset($unique[$key]) && $unique[$key] != "") $err_out = $unique[$key];
 							else $err_out = $key;
 
-							$errors[] = "Выбранное вами для поля ".$err_out." значение уже используется.";
+							$errors[] = "Выбранное вами значение для поля ".$err_out." уже используется.";
 						}
 
 					}
 				}
-			}
+			//}
 			return $errors;
 		}
 
