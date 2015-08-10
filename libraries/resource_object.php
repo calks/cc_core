@@ -67,8 +67,9 @@
         
         
         public function findEffectiveSubresourcePath($subresource_type, $subresource_name, $subresource_sub_path=null, $extension='php') {
-        	$subresources = $this->findEffectiveSubresources($subresource_type, $subresource_name, $subresource_sub_path, $extension);        	
-        	return isset($subresources[$subresource_name]) ? $subresources[$subresource_name]->path : null;        	
+        	$subresources = $this->findEffectiveSubresources($subresource_type, $subresource_name, $subresource_sub_path, $extension);
+        	$key_to_check = array_pop(explode('/', $subresource_name));        	
+        	return isset($subresources[$key_to_check]) ? $subresources[$key_to_check]->path : null;        	
         }        
         
                 

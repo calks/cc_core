@@ -45,7 +45,7 @@
 			
 			$smarty->assign('tree', $tree);
 			$smarty->assign('group_names', coreSettingsLibrary::getGroupNames());
-			$smarty->assign('message_stack_block', Application::getBlock('message_stack'));
+			$smarty->assign('message_stack', Application::getBlock('message_stack'));
 			
 			return parent::taskDefault($params);
 		}

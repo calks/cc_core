@@ -19,12 +19,18 @@ class corePagePropertiesHelperLibrary {
 	 * Function tries to fetch title, meta description and meta keywords
 	 * from documents basing on the page's URL.
 	 */
-	public static function findDocument() {
+	public static function findDocument($internal_url=null) {
 		$module_name = Router::getModuleName();
 		$doc = Application::getEntityInstance('document');
+		
+		if(!$internal_url) {
+			$url = Router::getRewrittenUrl();
+		}
+		else {
+			$url = $internal_url;
+		}
 
-
-		$url = trim(Router::getRewrittenUrl(), ' /');
+		$url = trim($url, ' /');
 
 		// removing GET params
 		if (($qmark = strpos($url, '?')) !== false)

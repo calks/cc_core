@@ -42,9 +42,8 @@
 				'alias' => 'Ссылка'
 			);
 			
-			$type_field = coreFormElementsLibrary::get('radio', 'link_type', array(
-				'options' => $link_type_options
-			));
+			$type_field = coreFormElementsLibrary::get('radio', 'link_type');
+			$type_field->setOptions($link_type_options);
 			$this->form->addField($type_field);
 			$type_field->setValue($object->open_link ? 'alias' : 'page_itself');
 		}
