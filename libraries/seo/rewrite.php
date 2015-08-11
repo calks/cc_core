@@ -67,7 +67,7 @@
 
             $rules =& self::getRules();
                         
-            $rule_name = $module_name . '_rule';
+            $rule_name = $module_name;
             if (isset($rules[$rule_name])) {
                 $rule = $rules[$rule_name];                
                 $url = new URL($url);

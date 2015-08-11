@@ -12,8 +12,7 @@
 			$breadcrumbs->addNode(Application::getSeoUrl("/"), "Главная" );
 			$breadcrumbs->addNode(Application::getSeoUrl("/$document->url"), $document->title);
 			
-			corePagePropertiesHelperLibrary::setTitleDescKeysFromObject($document);
-			
+			corePagePropertiesHelperLibrary::setTitleDescKeysFromObject($document);			
 			$smarty = Application::getSmarty();
 			$smarty->assign('document', $document);
 			$template_path = $this->getTemplatePath();

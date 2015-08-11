@@ -95,6 +95,18 @@
 			return $formatter->format($amount, $preset_name);
 		}
 		
+		
+		public static function formatPhone($phone, $preset_name='default') {
+			$formatters = coreResourceLibrary::findEffective('formatter', 'phone');
+			$formatter = $formatters ? array_shift($formatters) : null;
+			if (!$formatter) return $phone;
+			
+			$formatter = new $formatter->class();
+			return $formatter->format($phone, $preset_name);
+		}
+		
+		
+		
 		public static function dateMysqlToRussian($mysql_date, $default=null) {
 			return preg_replace('/(\d+)-(\d+)-(\d+)/', '$3.$2.$1', $mysql_date);
 		}
@@ -250,6 +262,53 @@
 		}
 	
 		
+		public static function transliterate($str, $reverse=false) {
+    	    $one_letter = array(
+        	    "А"=>"A","Б"=>"B","В"=>"V","Г"=>"G",
+            	"Д"=>"D","Е"=>"E","Ё"=>"E","Ж"=>"J","З"=>"Z","И"=>"I",
+	            "Й"=>"Y","К"=>"K","Л"=>"L","М"=>"M","Н"=>"N",
+    	        "О"=>"O","П"=>"P","Р"=>"R","С"=>"S","Т"=>"T",
+        	    "У"=>"U","Ф"=>"F","Х"=>"H",
+	            "Э"=>"E","а"=>"a","б"=>"b",
+    	        "в"=>"v","г"=>"g","д"=>"d","е"=>"e","ё"=>"e","ж"=>"j",
+        	    "з"=>"z","и"=>"i","й"=>"y","к"=>"k","л"=>"l",
+            	"м"=>"m","н"=>"n","о"=>"o","п"=>"p","р"=>"r",
+	            "с"=>"s","т"=>"t","у"=>"u","ф"=>"f","х"=>"h",
+    	        "ъ"=>"y","э"=>"e"
+	        );
+
+	        $multiple_letters = array(
+				"Ц"=>"TS","Ч"=>"CH","Ш"=>"SH","Щ"=>"SCH","Ы"=>"YI",
+	            "Ю"=>"YU","Я"=>"YA","ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch",
+        	    "ы"=>"yi","ю"=>"yu","я"=>"ya"
+	        );
+	        
+	        $european_letters = array(
+	        	'ї'=>'e', 'і'=>'i', 'І'=>'I', 'є'=>'e', 'Є'=>'E'
+	        );
+			
+	        $empty_letters = array(
+	        	"Ъ"=>"","Ь"=>"","ь"=>""
+	        );
+	        
+	        if ($reverse) {	        	
+	        	$str = strtr($str,array_flip($one_letter));
+	        	return strtr($str,array_flip($one_letter));	        	
+	        }
+	        else {
+	        	$tr = array_merge($one_letter, $multiple_letters, $empty_letters, $european_letters);
+	        	return strtr($str,$tr);
+	        }
+		}
+		
+		
+		public static function getUrlSafeString($string) {
+			$string = self::removePunctuation($string);
+			$string = self::transliterate($string);
+			$string = strtolower($string);
+			$string = trim(preg_replace("/\s+/", '-', $string));
+			return $string;
+		}		
 		
 	}
 	

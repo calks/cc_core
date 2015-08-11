@@ -20,7 +20,7 @@
 
 			$this->runTask($this->task, $params);	
 			
-			return $this->returnResponse();			
+			return $this->returnResponse();
 		}
 		
 		
