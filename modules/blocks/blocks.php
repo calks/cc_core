@@ -32,7 +32,7 @@
 			
 			$out = array();
 			foreach($request_raw as $block_name => $params) {
-				if (!Application::resourceExists($block_name, APP_RESOURCE_TYPE_BLOCK)) continue;
+				if (!Application::resourceExists(APP_RESOURCE_TYPE_BLOCK, $block_name)) continue;
 				$out[$block_name] = array(
 					'task' => isset($params['task']) ? $params['task'] : null,
 					'data' => isset($params['data']) ? $params['data'] : null				
