@@ -70,7 +70,7 @@
     			FROM $table
     			WHERE login='$login' AND pass='$pass' AND active=1
     		");
-    		
+
     		if (!$user_id) return false;
     		    		    		
     		self::$user_account = $user->load($user_id);

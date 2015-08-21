@@ -45,7 +45,7 @@ function CheckAuthentication()
 	$user_session = Application::getUserSession();
 	if (!$user_session->userLogged()) return false;
 	$user_account = $user_session->getUserAccount();	
-	if (!in_array(USER_ROLE_ADMIN, $user_account->roles)) return false;
+	if (!$user_account->hasRole('admin')) return false;
     return true;
 }
 

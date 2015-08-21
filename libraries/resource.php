@@ -142,7 +142,7 @@
 		}
 		
 		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
-						
+			//echo "findAll('$resource_type', '$resource_name', '$sub_path', '$extension')\n";
 			$cache_key = md5("$resource_type.$resource_name.$sub_path,$extension");
 			if (isset(self::$path_cache[$cache_key])) return self::$path_cache[$cache_key]; 
 						
@@ -178,7 +178,7 @@
 					die("Bad resource routing rule");
 				}
 			}	
-			
+			//print_r($paths);
 			foreach ($paths as $path) {
 				$absolute_path = Application::getSitePath() . $path;								
 				if (is_file($absolute_path)) {			
@@ -228,7 +228,7 @@
 					closedir($d);
 				}
 			}
-			
+			//print_r($out);
 			self::$path_cache[$cache_key] = $out;
 			return $out;			
 		}

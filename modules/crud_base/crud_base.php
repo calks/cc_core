@@ -1,6 +1,6 @@
 <?php
 
-	Application::loadLibrary('core/admin_module');
+	
 
 	class coreCrudBaseModule extends coreAdminBaseModule {
 		

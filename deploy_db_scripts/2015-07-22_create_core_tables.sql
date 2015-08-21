@@ -52,14 +52,14 @@ CREATE TABLE `settings` (
 
 DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(30),
   `name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `user_role` (`id`, `name`) VALUES
-(1, 'Admin'),
-(2, 'User');
+('admin', 'Administrator'),
+('registered', 'Registered User');
 
 
 DROP TABLE IF EXISTS `user`;
@@ -84,20 +84,54 @@ CREATE TABLE `user` (
 
 
 INSERT INTO `user` VALUES (
-  1, 'Admin', '', 'admin@site.com', 'admin', '21232f297a57a5a743894a0e4a801fc3', 1, '2015-06-04 10:35:26', 38, 41, '', '', 0
+  1, 'Admin', '', 'admin@site.com', 'admin@site.com', '21232f297a57a5a743894a0e4a801fc3', 1, '2015-06-04 10:35:26', 38, 41, '', '', 0
 );
 
 
 DROP TABLE IF EXISTS `user_role_coupling`;
 CREATE TABLE `user_role_coupling` (
   `user_id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
+  `role_id` varchar(30) NOT NULL,
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `con_user_role_coupling_02` (`role_id`),
   CONSTRAINT `con_user_role_coupling_01` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `con_user_role_coupling_02` FOREIGN KEY (`role_id`) REFERENCES `user_role` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `user_role_coupling` VALUES (1,1);
+INSERT INTO `user_role_coupling` VALUES (1,'admin');
+
+
+
+DROP TABLE IF EXISTS `document`;
+CREATE TABLE `document` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
+  `seq` int(11) NOT NULL DEFAULT '0',
+  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `url` varchar(64) NOT NULL DEFAULT '',
+  `menu` int(1) NOT NULL DEFAULT '0',
+  `category` int(1) NOT NULL DEFAULT '0',
+  `open_new_window` tinyint(1) DEFAULT NULL,
+  `open_link` varchar(255) DEFAULT NULL,
+  `protected` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `document_content`;
+CREATE TABLE  `document_content` (
+  `document_id` int(11) NOT NULL,
+  `language_id` int(11) NOT NULL DEFAULT '0',
+  `title` varchar(255) NOT NULL,
+  `content` longtext,
+  `meta_title` varchar(255) NOT NULL DEFAULT '',
+  `meta_desc` text,
+  `meta_key` text,
+  PRIMARY KEY (`document_id`,`language_id`),
+  KEY `document_content_fk1` (`language_id`),
+  CONSTRAINT `document_content_fk1` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`),
+  CONSTRAINT `document_content_fk2` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 SET FOREIGN_KEY_CHECKS=1;

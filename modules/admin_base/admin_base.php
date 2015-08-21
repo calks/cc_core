@@ -79,18 +79,6 @@
 			}
 		}
 		
-		protected function commonLogic(&$params=array()) {
-			$user_session = Application::getUserSession();
-			if (!$user_session->userLogged()) Redirector::redirect(Application::getSeoUrl('/login'));
-			
-			$user = $user_session->getUserAccount();
-			if (!in_array(USER_ROLE_ADMIN, $user->roles)) {
-				$user_session->logout();
-				Redirector::redirect('/login');
-			}
-			
-			parent::commonLogic($params);
-		}
 		
 		protected function getObjectName() {
 			return '';

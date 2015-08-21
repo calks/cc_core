@@ -86,15 +86,9 @@
 
 		public function runModule($module_name, $params = array()) {
 
-			if (USE_PROFILER) {
-				$profiler = new profiler("Module $module_name");
-				$profiler->start();
-			}
-
 			$module = self::getResourceInstance(APP_RESOURCE_TYPE_MODULE, $module_name);
 			$out = call_user_func(array($module, 'run'), $params);
 
-			if (USE_PROFILER) $profiler->stop();
 			return $out;
 
 		}
