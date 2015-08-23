@@ -50,9 +50,7 @@
 			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
 			$form->addField(coreFormElementsLibrary::get('text', 'name'));
 			$form->addField(coreFormElementsLibrary::get('text', 'family_name'));			
-			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles', array(
-				'options' => $this->getRoleSelect()
-			)));			
+			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles')->setOptions($this->getRoleSelect()));			
 			$form->addField(coreFormElementsLibrary::get('text', 'email'));
 			$form->addField(coreFormElementsLibrary::get('text', 'login'));
 

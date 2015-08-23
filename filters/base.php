@@ -12,9 +12,9 @@
 
 			$this->add_fields();
 
-			$this->addField(new THiddenField('search_order_field'));
-			$this->addField(new THiddenField('search_order_direction'));
-
+			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_field'));
+			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_direction'));
+			
 			if ($this->isSearchQueryPosted()) {
 				$this->LoadFromRequest($_REQUEST);
 				$this->saveToSession();

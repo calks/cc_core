@@ -1,6 +1,5 @@
 <?php
 
-	Application::loadLibrary('olmi/field');
 
 	class coreTextFormField extends coreBaseFormField {
 		

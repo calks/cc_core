@@ -94,7 +94,7 @@
 		}
 		
 		public function SetFromPost($POST) {
-			$value = isset($_POST[$this->field_name]) ? $_POST[$this->field_name] : '';						
+			$value = isset($POST[$this->field_name]) ? $POST[$this->field_name] : '';						
 			if (!$this->html_allowed) {				
 				$value = strip_tags($value);
 			}

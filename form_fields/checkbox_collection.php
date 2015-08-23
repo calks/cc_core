@@ -1,23 +1,47 @@
 <?php
 
-	Application::loadLibrary('olmi/field');
-
-	class coreCheckboxCollectionFormField extends CollectionCheckBoxField {
+	
+	class coreCheckboxCollectionFormField extends coreBaseFormField {
 		
-		public function __construct($name, $params) {
-			parent::CollectionCheckBoxField(
-				$name, 
-				isset($params['options']) ? $params['options'] : array(),
-				isset($params['value']) ? $params['value'] : array(),
-				isset($params['limiter']) ? $params['limiter'] : null,
-				isset($params['mode_view']) ? $params['mode_view'] : 'horizontally'				
-			);	
-		}
+		protected $options = array();
+		protected $max_columns = 1;
 		
-		
-		function GetAsHTML($tableAttr = array(), $checkBoxAttr = array()) {
-			$tableAttr['class'] = "checkbox-collection";
-			return parent::GetAsHTML($tableAttr, $checkBoxAttr);
+		function GetAsHTML() {
+			
+			if (!$this->options) return '';
+			
+			$this->addClass('checkbox-collection');
+			
+			$options_chunked = array_chunk($this->options, $this->max_columns);
+			
+			$columns_count = count($this->options) < $this->max_columns ? count($this->options) : $this->max_columns;  
+			
+			$attr_string = $this->getAttributesString();
+			
+			$out = "<table $attr_string>";
+			foreach ($options_chunked as $row=>$cells) {
+				$out .= "<tr>";
+				foreach ($cells as $value=>$caption) {
+					$checked = in_array($value, $this->value) ? 'checked="checked"' : '';
+					$value = $this->getSafeAttrValue($value);
+					$out .= "<td class=\"checkbox\"><input type=\"checkbox\" value=\"$value\" $checked></td>";
+					$out .= "<td class=\"caption\">$caption</td>";
+				}
+				
+				$missing_columns_count = $columns_count - count($cells);
+				
+				for ($i=1; $i<=$missing_columns_count; $i++) {
+					$out .= "<td class=\"checkbox\"></td>";
+					$out .= "<td class=\"caption\"></td>";
+				}
+				
+				$out .= "</tr>";
+			}
+						
+			$out .= "</table>";
+			
+			return $out;		
+			
 		}
 		
 	}

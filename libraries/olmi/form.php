@@ -1,7 +1,6 @@
 <?php // $Id: form.inc.php,v 1.1 2010/11/11 09:51:41 nastya Exp $
 
-    Application::loadLibrary('olmi/field');
-    Application::loadLibrary('olmi/fck');
+
 
     class BaseForm {
         /**

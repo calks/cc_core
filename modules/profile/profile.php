@@ -77,12 +77,14 @@
 			Application::loadLibrary('olmi/form');
 			$profile_form = new BaseForm();
 			
-			$profile_form->addField(new TEditField('name', '', 50, 255));
-			$profile_form->addField(new TEditField('family_name', '', 50, 255));
-			$profile_form->addField(new TEditField('email', '', 50, 255));
-			$profile_form->addField(new TPasswordField('new_pass', '', 50, 100));
-			$profile_form->addField(new TPasswordField('new_pass_confirmation', '', 50, 100));
 			
+			$profile_form->addField(coreFormElementsLibrary::get('text', 'name'));
+			$profile_form->addField(coreFormElementsLibrary::get('text', 'family_name'));
+			$profile_form->addField(coreFormElementsLibrary::get('text', 'email'));
+			
+			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass'));
+			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass_confirmation'));
+
 			return $profile_form;			
 		}
 		

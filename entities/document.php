@@ -155,15 +155,12 @@
 
 		function make_form(&$form, $language_id = CURRENT_LANGUAGE) {
 			Application::loadLibrary('fields');
-			Application::loadLibrary('olmi/editor');
-
+			
 			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
 			$form->addField(coreFormElementsLibrary::get('text', 'url'));
 			$form->addField(coreFormElementsLibrary::get('text', 'open_link'));
 			$form->addField(coreFormElementsLibrary::get('hidden', 'seq'));			
-			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'menu', array(
-				'options' => $this->getMenuNames()
-			)));
+			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'menu')->setOptions($this->getMenuNames()));
 
 			$form->addField(coreFormElementsLibrary::get('checkbox', "active"));
 			$form->addField(coreFormElementsLibrary::get('select', "category")->setOptions($this->getDocumentCategories()));

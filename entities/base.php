@@ -44,7 +44,7 @@
 		}
 
 		function make_form(&$form) {
-			$form->addField(new THiddenField($this->getPrimaryKeyField()));
+			$form->addField(coreFormElementsLibrary::get('hidden', $this->getPrimaryKeyField()));
 			return $form;
 		}
 

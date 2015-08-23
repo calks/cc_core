@@ -4,12 +4,9 @@
 				
 		function add_fields() {
         	$user = Application::getEntityInstance('user');        	
-        	
-        	$this->addField(new TEditField('search_keyword', '', 50, 255));        	
-        	//$this->addField(new CollectionCheckBoxField('search_role_id', $user->getRoleSelect(), array()));
-        	$this->addField(coreFormElementsLibrary::get('checkbox_collection', 'search_role_id', array(
-        		'options' => $user->getRoleSelect()
-        	)));
+        	        	
+        	$this->addField(coreFormElementsLibrary::get('text', 'search_keyword'));        	
+        	$this->addField(coreFormElementsLibrary::get('checkbox_collection', 'search_role_id')->setOptions($user->getRoleSelect()));
         }
         
         function set_params(&$params) {
