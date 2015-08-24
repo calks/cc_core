@@ -14,7 +14,8 @@
 	define('APP_RESOURCE_CONTAINER_CORE', 5);
 	
 	
-	define('CORE_MISSING_RESOURCE_ERROR', 100);	
+	define('CORE_MISSING_RESOURCE_ERROR', 100);
+	define('CORE_DIRECTORY_CREATION_FAILED', 101);		
 	
 	class coreException extends Exception {
 	
