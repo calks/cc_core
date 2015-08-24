@@ -78,7 +78,7 @@
 			}
 			else {
 				$url = '/' . ltrim($url, ' /');				
-				return Application::getSeoUrl($url);
+				return $url;
 			}
 		}
 		
@@ -123,8 +123,11 @@
 				
 				//$object->lang_version = document::check_lang_version(2, $object->id);
 
-				$item->link = $this->getDocumentLink($url);
-
+				$internal_link = $this->getDocumentLink($url);
+				
+				$item->link = Application::getSeoUrl($internal_link);				
+				$item->front_link = str_replace('/admin/', '/', $item->link);
+ 
 				$this->unpackMenuInfo($item);
 			}
 			

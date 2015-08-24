@@ -23,7 +23,7 @@
 			self::$site_root = realpath(dirname(__FILE__)."/../..");
 
 			$config_path = self::$site_root."/applications/$application_name/conf.php";
-			include_once $config_path;
+			@include $config_path;
 
 			self::$config = $config;
 			
@@ -43,7 +43,7 @@
 			self::$breadcrumbs = null;
 			self::$message_stack = null;
 
-			session_start();
+			@session_start();
 			
 			self::loadLibrary('misc');    
     		
@@ -168,15 +168,13 @@
 
 
 		public function getResourceRouting() {
-			$resource_routing = isset(self::$config['resource_routing']) ? self::$config['resource_routing'] : array();
-
-			if (!isset($resource_routing['default'])) {
-				$resource_routing['default'] = array(
-					'applications/' . Application::getApplicationName(),
-					APP_RESOURCE_CONTAINER_PACKAGES,
-					APP_RESOURCE_CONTAINER_CORE
-				);
-			}
+			$resource_routing = array();
+			
+			$resource_routing['default'] = array(
+				'applications/' . Application::getApplicationName(),
+				APP_RESOURCE_CONTAINER_PACKAGES,
+				APP_RESOURCE_CONTAINER_CORE
+			);
 			
 			return $resource_routing;
 			

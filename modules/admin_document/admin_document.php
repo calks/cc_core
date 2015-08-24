@@ -31,7 +31,6 @@
 				$item->edit_link = "/admin/{$this->getName()}?action=edit&amp;ids[]=$item->id";
 				$item->delete_link = "/admin/{$this->getName()}?action=delete&amp;ids[]=$item->id";
 				$this->afterListLoad($item->children);
-				$item->link = str_replace('/admin/', '/', $item->link);
 			}
 		}
 		

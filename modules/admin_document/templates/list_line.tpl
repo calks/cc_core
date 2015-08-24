@@ -35,7 +35,11 @@
 						        	</a>	
 						        </td>
 						        <td>
-						        	{if $object->open_link != ''}[{$object->link|strip_tags:false|escape:"htmlall"}]{else}{$object->link|strip_tags:false|escape:"htmlall"}{/if}
+						        	{if $object->open_link != ''}
+						        		[{$object->front_link}]
+						        	{else}
+						        		{$object->front_link}
+						        	{/if}
 						        </td>
 						        
 							        <td class="center ordering">
