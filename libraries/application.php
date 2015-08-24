@@ -47,6 +47,7 @@
 		
 		
 		public static function loader($class_name) {
+			
 			self::loadLibrary('name_utils');
 			self::loadLibrary('resource');
 			$path = coreNameUtilsLibrary::relativePathFromClass($class_name);

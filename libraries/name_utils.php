@@ -77,7 +77,9 @@
 				'subresource_name' => null						
 			);
 
-			$resource_types = coreResourceLibrary::getResourceTypeList();			
+			$resource_types = coreResourceLibrary::getResourceTypeList();
+			ksort($resource_types);
+			$resource_types = array_reverse($resource_types, 1);			
 			$resource_type_regexp = implode('|', $resource_types);
 			
 			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')(?P<sub_name>.*)$/isU';

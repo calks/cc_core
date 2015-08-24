@@ -47,6 +47,23 @@
 			$form->addField(coreFormElementsLibrary::get('hidden', $this->getPrimaryKeyField()));
 			return $form;
 		}
+		
+		
+		public function getFieldProperties() {
+			$out = array();
+			
+			$pk_field = $this->getPrimaryKeyField();
+			
+			if ($pk_field) {
+				$out[$pk_field] = array(
+					'type' => 'hidden'					
+				);
+			}
+			
+			return $out;
+			
+		}
+		
 
 		function validate() {
 			$db = Application::getDb();

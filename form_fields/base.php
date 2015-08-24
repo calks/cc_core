@@ -8,14 +8,17 @@
 		protected $css_classes;
 		protected $html_allowed;
 		
-		public function __construct($name) {
-			$this->field_name = $this->normalizeName($name);
+		public function __construct($field_name) {
+			$this->field_name = $this->normalizeName($field_name);
 			$this->value = null;
 			$this->attributes = array();
 			$this->css_classes = array();
 			$this->html_allowed = false;
 		}
 		
+		public function getFieldName() {
+			return $this->field_name;
+		}
 		
 		public function allowHtml() {
 			$this->html_allowed = true;
@@ -75,6 +78,10 @@
 		
 
 		abstract public function getAsHtml();
+		
+		public function render() {
+			return $this->getAsHtml();
+		}
 		
 		public function isEditable() {
 			return true;

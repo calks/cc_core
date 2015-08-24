@@ -6,7 +6,11 @@
 		public function getResourceType() {
 			$resource_class = get_class($this);
 			return coreNameUtilsLibrary::getResourceType($resource_class);
-		} 
+		}
+
+		public function getResourceName() {
+			return $this->getName();
+		}
 		
         public function getName() {
         	return coreNameUtilsLibrary::getResourceName(get_class($this));
