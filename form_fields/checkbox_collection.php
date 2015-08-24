@@ -6,13 +6,13 @@
 		protected $options = array();
 		protected $max_columns = 1;
 		
-		function GetAsHTML() {
+		public function GetAsHTML() {
 			
 			if (!$this->options) return '';
 			
 			$this->addClass('checkbox-collection');
 			
-			$options_chunked = array_chunk($this->options, $this->max_columns);
+			$options_chunked = array_chunk($this->options, $this->max_columns, true);
 			
 			$columns_count = count($this->options) < $this->max_columns ? count($this->options) : $this->max_columns;  
 			
@@ -20,11 +20,12 @@
 			
 			$out = "<table $attr_string>";
 			foreach ($options_chunked as $row=>$cells) {
+				
 				$out .= "<tr>";
 				foreach ($cells as $value=>$caption) {
 					$checked = in_array($value, $this->value) ? 'checked="checked"' : '';
 					$value = $this->getSafeAttrValue($value);
-					$out .= "<td class=\"checkbox\"><input type=\"checkbox\" value=\"$value\" $checked></td>";
+					$out .= "<td class=\"checkbox\"><input type=\"checkbox\" name=\"{$this->field_name}[]\" value=\"$value\" $checked></td>";
 					$out .= "<td class=\"caption\">$caption</td>";
 				}
 				
@@ -42,6 +43,18 @@
 			
 			return $out;		
 			
+		}
+		
+		
+		public function SetFromPost($POST) {
+			$this->value = array();
+			
+			$data = isset($POST[$this->field_name]) ? $POST[$this->field_name] : array();			
+			foreach ($data as $v) {				
+				if (array_key_exists($v, $this->options)) {
+					$this->value[] = $v;
+				}
+			}
 		}
 		
 	}
