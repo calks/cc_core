@@ -27,8 +27,15 @@
 				'field' => $field
 			);
 		}
+				
+		public function replaceField(coreBaseFormField $field) {
+			$field_name = $field->getFieldName();
+			if ($this->hasField($field_name)) {
+				$this->fields[$field_name]['field'] = $field;				
+			}
+		}
 		
-		
+				
 		public function hasField($field_name) {
 			return isset($this->fields[$field_name]);
 		}
@@ -89,11 +96,12 @@
 					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
 					$field_data['errors'][] = Application::gettext("Required field \"%s\" is empty", $caption);
 				}
-				elseif ($field_data['field']->isMalformed()) {
+				elseif (!$field_data['field']->isEmpty() && $field_data['field']->isMalformed()) {
 					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
 					$field_data['errors'][] = Application::gettext("Field \"%s\" contains malformed value", $caption);
 				}
-			}			
+			}
+			
 		}
 		
 		
@@ -150,5 +158,24 @@
 				$field['field']->SetFromPost($request);
 			}
 		}
+		
+		public function setFieldsOrder($order) {
+			if (!$order) return;
+			$ordered_fields = array();
+			foreach ($order as $field_name) {
+				if (!$this->hasField($field_name)) continue;
+				$ordered_fields[$field_name] = $this->fields[$field_name];
+				unset($this->fields[$field_name]);
+			}
+			
+			foreach ($this->fields as $field_name=>$field_data) {
+				$ordered_fields[$field_name] = $field_data;
+			}
+			
+			$this->fields = $ordered_fields;
+			
+		}
+		
+		
 	
 	}

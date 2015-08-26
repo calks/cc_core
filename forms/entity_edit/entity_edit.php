@@ -8,7 +8,9 @@
 
 			foreach ($entity_fields as $field_name) {
 				if (substr($field_name, 0, 1) === '_') continue;
-				$field_properties = isset($entity_field_properties[$field_name]) ? $entity_field_properties[$field_name] : array();
+				if (!isset($entity_field_properties[$field_name])) continue;
+								
+				$field_properties = $entity_field_properties[$field_name];
 				$caption = isset($field_properties['caption']) ? $field_properties['caption'] : str_replace('_', ' ', $field_name);
 				$type = isset($field_properties['type']) ? $field_properties['type'] : 'text';
 				$required = isset($field_properties['required']) ? $field_properties['required'] : false;
@@ -36,6 +38,8 @@
 			$entity_fields = $entity->getFields();
 			foreach ($entity_fields as $field_name) {
 				if ($this->hasField($field_name)) {
+					$field_is_fixed = $this->getField($field_name)->getResourceName() == 'fixed_value';
+					if ($field_is_fixed) continue;
 					$entity->$field_name = $this->getValue($field_name);
 				}
 			}

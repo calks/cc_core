@@ -105,7 +105,10 @@
 				$item->moveup_link = Application::getSeoUrl($moveup_link);
 				$item->movedown_link = Application::getSeoUrl($movedown_link);
 				
-				$this->addLinks($item->children);
+				if (isset($item->children)) {
+					$this->addLinks($item->children);
+				}
+				
 			}
 			
 		}
@@ -280,9 +283,6 @@
 			
 			$this->links['back'] = $back_link;
 
-			//$deleteimage_link = "/{$this->getName()}?action=deleteimage&ids[]=$object->id"  . $url_addition;						
-			//$smarty->assign('deleteimage_link', $deleteimage_link);
-			
 			$smarty->assign('form', $this->form);
 			$smarty->assign('object', $object);
 		}
