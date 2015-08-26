@@ -17,7 +17,7 @@
 				'maxlength' => $this->maxlength
 			));			
 			$attr_string = $this->getAttributesString();
-			$value = $this->getSafeAttrValue($this->value);
+			$value = $this->getSafeAttrValue($this->value);		
 			return "
 				<input type=\"text\" name=\"$this->field_name\" $attr_string value=\"$value\" />
 			";
@@ -39,7 +39,7 @@
 			}
 		}
 		
-		public function __construct($name, $params) {
+		public function __construct($name, $params=array()) {
 			
 			parent::__construct($name);
 			$this->processLegacyParams($params);

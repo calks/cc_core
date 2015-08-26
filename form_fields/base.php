@@ -176,6 +176,14 @@
 			
 			return implode(' ', $out);
 		}
+				
+		public function isEmpty() {
+			return !$this->value;
+		}
+				
+		public function isMalformed() {
+			return false;
+		}
 		
 		
 	}

@@ -2,7 +2,21 @@
 
 		
 	class corePasswordFormField extends coreTextFormField {
-		function getInputType() {
-			return 'password';
+		
+		public function __construct($field_name) {
+			parent::__construct($field_name);
+			$this->allowHtml();
+		}
+		
+		public function getAsHtml() {
+			$this->attr(array(
+				'size' => $this->size,
+				'maxlength' => $this->maxlength
+			));			
+			$attr_string = $this->getAttributesString();
+			$value = $this->getSafeAttrValue($this->value);		
+			return "
+				<input type=\"password\" name=\"$this->field_name\" $attr_string value=\"$value\" />
+			";
 		}
 	}

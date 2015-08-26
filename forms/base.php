@@ -85,10 +85,14 @@
 				$value = $this->getValue($field_name);
 				$is_required = isset($field_data['required']) && $field_data['required'];
 				
-				if ($is_required && empty($value)) {					
+				if ($is_required && $field_data['field']->isEmpty()) {					
 					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
 					$field_data['errors'][] = Application::gettext("Required field \"%s\" is empty", $caption);
-				}								 	
+				}
+				elseif ($field_data['field']->isMalformed()) {
+					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
+					$field_data['errors'][] = Application::gettext("Field \"%s\" contains malformed value", $caption);
+				}
 			}			
 		}
 		
