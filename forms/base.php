@@ -57,7 +57,7 @@
 		}
 		
 		public function setFieldCaption($field_name, $caption) {
-			if ($this->hasField($field_name)) {
+			if ($this->hasField($field_name)) { 
 				$this->fields[$field_name]['caption'] = $caption;
 			}
 		}

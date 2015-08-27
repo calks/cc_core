@@ -5,7 +5,7 @@
 		
 		
 		public function SetFromPost($POST) {
-			$checked = isset($POST[$this->field_name]) ? true : false;						
+			$checked = Request::isFieldValueSet($this->field_name, $POST);						
 			$this->SetValue($checked);			
 		}
 		

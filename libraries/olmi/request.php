@@ -1,57 +1,7 @@
-<?php // $Id: request.inc.php,v 1.1 2010/11/11 09:51:40 nastya Exp $
+<?php 
 
 define('CANCEL_BUTTON_NAME', 'com_olmisoft_html_cancel');
 
-/**
- * This class contains information about uploaded file.
- */
-class HttpPostedFile {
-
-  /**
-   * @access protected
-   */
-  var $fileInfo;
-
-  /**
-   * @constructor
-   * @param array $fileInfo
-   */
-  function HttpPostedFile($fileInfo) {
-    $this->fileInfo = $fileInfo;
-  }
-
-  /**
-   * Returns size of the uploaded file.
-   * @return int
-   */
-  function getContentLength() {
-    return $this->fileInfo['size'];
-  }
-
-  /**
-   * Returns Content-Type of the uploaded file.
-   * @return string
-   */
-  function getContentType() {
-    return $this->fileInfo['type'];
-  }
-
-  /**
-   * Returns name of the file on the client's computer.
-   * @return string
-   */
-  function getFileName() {
-    return $this->fileInfo['name'];
-  }
-
-  /**
-   * Returns temporary filename of the file in which the uploaded file was stored on the server.
-   * @return string
-   */
-  function getTempFileName() {
-    return $this->fileInfo['tmp_name'];
-  }
-}
 
 class Request {
   /**
@@ -105,6 +55,33 @@ class Request {
       return $default;
     }
   }
+  
+  
+  
+	public static function isFieldValueSet($field_name, $request) {
+		$uid = md5(uniqid());
+		return self::getFieldValue($field_name, $request, $uid) != $uid;
+	}  
+  
+	public static function getFieldValue($field_name, $request, $default=null) {		
+		$field_name_parts = explode('[', $field_name);
+		$ptr = &$request;
+		
+		while ($field_name_parts) {			
+			$key = array_shift($field_name_parts);
+			$key = trim($key, ']');
+			
+			if (!isset($ptr[$key])) {				
+				return $default;
+			}
+			else {
+				$ptr = &$ptr[$key];				
+			} 
+		}
+		
+		return $ptr;		
+	}
+  
 
   /**
    * Returns slashed value of variable from request
@@ -250,38 +227,6 @@ class Request {
     return $_SERVER['HTTP_HOST'];
   }
 
-  /**
-   * Returns array of successfully uploaded files.
-   * @return array
-   */
-  function getFiles() {
-    $files = array();
-    foreach ($_FILES as $name => $fileInfo) {
-      if ($fileInfo['error'] === UPLOAD_ERR_OK && $fileInfo['name']) {
-        $files[$name] = new HttpPostedFile($fileInfo);
-      }
-    }
-    return $files;
-  }
 
-  /**
-   * Checks was button clicked (button can be input_type=submit or input_type=image)
-   * @param string
-   * @return bool
-   */
-  function isClicked($buttonName) {
-    return array_key_exists($buttonName, $_REQUEST)
-      || (array_key_exists($buttonName.'_x', $_REQUEST)
-          && array_key_exists($buttonName.'_y', $_REQUEST));
-  }
-
-  /**
-   * Executes addslashes() if input is not already transformed due to 'magic_quotes_gpc' setting.
-   */
-  function escapeQuotes($value) {
-    return get_magic_quotes_gpc() ? $value : addslashes($value);
-  }
 
 }
-
-?>

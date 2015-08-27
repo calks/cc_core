@@ -96,18 +96,18 @@
 		}
 		
 		public function SetValue($value) {
+			if (!$this->html_allowed) {				
+				$value = strip_tags($value);
+			}			
 			$this->value = $value;
 			return $this;
 		}
 		
-		public function SetFromPost($POST) {
-			$value = isset($POST[$this->field_name]) ? $POST[$this->field_name] : '';						
-			if (!$this->html_allowed) {				
-				$value = strip_tags($value);
-			}
-			$this->SetValue($value);			
+		public function SetFromPost($POST) {						
+			$value = Request::getFieldValue($this->field_name, $POST);
+			$this->SetValue($value);
 		}
-		
+				
 		protected function normalizeName($attr_name) {
 			return strtolower(trim($attr_name));
 		}

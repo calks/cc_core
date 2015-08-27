@@ -3,11 +3,13 @@
 	Application::loadLibrary('olmi/form');
 	Application::loadLibrary('fields');
 
-	class coreBaseFilter extends BaseForm {
+	class coreBaseFilter extends coreBaseForm {
 
 		protected $session_key;
 
-		function __construct() {
+		public function __construct() {
+			
+			$this->setMethod('post');
 			if (is_null($this->fields )) $this->fields = array();
 
 			$this->add_fields();
@@ -43,7 +45,7 @@
 
 		}
 
-		function isSearchQueryPosted() {
+		protected function isSearchQueryPosted() {
 			if (!Request::isPostMethod()) return false;
 			foreach ($this->fields as $field_name => $field) {
 				if (isset($_POST[$field_name])) return true;
@@ -51,7 +53,8 @@
 			return false;
 		}
 
-		function set_params(&$params) {
+		
+		public function setEntityLoadParams(&$params) {
 			$order_option = $this->getValue('search_order_field');
 
 			$order_direction = $this->getValue('search_order_direction');
@@ -69,7 +72,12 @@
 			}
 		}
 
-		function reset_values() {
+		
+		public function set_params(&$params) {
+			return $this->setEntityLoadParams($params);	
+		}
+		
+		public function reset_values() {
 			unset($this->fields);
 			$this->add_fields();
 			$this->saveToSession();
@@ -83,8 +91,14 @@
 			}
 		}
 
-		function add_fields() {
+		protected function add_fields() {
+			return $this->initFieldSet();
 		}
+		
+		protected function initFieldSet() {
+		
+		}
+		
 
 		function printGetSearch() {
 			$this->trimField();
@@ -110,7 +124,7 @@
 		}
 	}
 
-	function initWithGetSearch($get_str) {
+	public function initWithGetSearch($get_str) {
 		$this->reset_values();
 		$input = array();
 		parse_str($get_str, $input);
@@ -118,14 +132,14 @@
 		$this->saveToSession();
 	}
 
-	function saveToSession() {
+	protected function saveToSession() {
 		$session_key = $this->getSessionKey();
 		foreach (array_keys($this->fields) as $field) {
 			$_SESSION[$session_key][$field] = $this->getValue($field);
 		}
 	}
 
-	function loadFromSession() {
+	protected function loadFromSession() {
 		$session_key = $this->getSessionKey();
 		foreach (array_keys($this->fields) as $field) {
 			if (!isset($_SESSION[$session_key][$field])) continue;
@@ -133,17 +147,17 @@
 		}
 	}
 
-	function getSessionKey() {
+	protected function getSessionKey() {
 		$fields = array_keys($this->fields);
 		$fields_hash = md5(implode('|', $fields).Application::getApplicationName().get_class($this));
 		return "filter_state_$fields_hash";
 	}
 
-	function getSortLinkOptions() {
+	protected function getSortLinkOptions() {
 		return array();
 	}
 
-	function sortLink($caption, $order_option, $base, $url_addition = null, $default_direction = 'asc') {
+	public function sortLink($caption, $order_option, $base, $url_addition = null, $default_direction = 'asc') {
 
 		$current_order_field = $this->getValue('search_order_field');
 		$current_order_direction = $this->getValue('search_order_direction');

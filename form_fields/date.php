@@ -11,8 +11,8 @@
 		
 		public function __construct($name, $params) {
 			parent::__construct($name, $params);
-			$this->class = 'datepicker_' . md5(uniqid());
-			$this->addClasses($params, $this->class);
+			$this->id = 'datepicker_' . md5(uniqid());
+			$this->attr('id', $this->id);
 			
 			$use_russian_locale = defined('CURRENT_LANGUAGE') && defined('LANGUAGES_RUSSIAN') && CURRENT_LANGUAGE == LANGUAGES_RUSSIAN;  
 			
@@ -42,7 +42,7 @@
 			
 			$out .= "
 				<script type=\"text/javascript\">
-					jQuery('input[name=$fieldname].".$this->class."').datepicker({
+					jQuery('#".$this->id."').datepicker({
 						dayNamesMin: $day_names,
 						monthNames: $month_names,			
 						monthNamesShort: $month_names_short,
@@ -71,11 +71,10 @@
 			return coreFormattingLibrary::dateToMysql($this->value, $this->date_format);
 		}
 		
-		public function SetFromPost($POST) {			
-			$value = isset($_POST[$this->field_name]) ? $_POST[$this->field_name] : '';						
-			if (!$this->html_allowed) {				
-				$value = strip_tags($value);
-			}
+		
+		
+		public function SetFromPost($POST) {						
+			$value = Request::getFieldValue($this->field_name, $POST);
 			$this->value = $value;
 		}
 		

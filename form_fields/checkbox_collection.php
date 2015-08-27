@@ -49,7 +49,7 @@
 		public function SetFromPost($POST) {
 			$this->value = array();
 			
-			$data = isset($POST[$this->field_name]) ? $POST[$this->field_name] : array();			
+			$data = Request::getFieldValue($this->field_name, $POST, array());			
 			foreach ($data as $v) {				
 				if (array_key_exists($v, $this->options)) {
 					$this->value[] = $v;
