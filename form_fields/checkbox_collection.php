@@ -6,6 +6,11 @@
 		protected $options = array();
 		protected $max_columns = 1;
 		
+		public function __construct($field_name) {
+			parent::__construct($field_name);
+			$this->value = array();
+		}
+		
 		public function GetAsHTML() {
 			
 			if (!$this->options) return '';
