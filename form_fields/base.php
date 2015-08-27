@@ -94,11 +94,28 @@
 		public function GetValue() {
 			return $this->value;
 		}
+
+		
+		protected function sanitizeValue(&$value) {
+			if (is_array($value)) {
+				foreach ($value as $k=>$v) {
+					$this->sanitizeValue($value[$k]);
+				}
+			}
+			elseif (is_object($value)) {
+				foreach ($value as $k=>&$v) {
+					$this->sanitizeValue($value->$k);
+				}
+			}
+			else {
+				if (!$this->html_allowed) {				
+					$value = strip_tags($value);
+				}
+			}
+		}
 		
 		public function SetValue($value) {
-			if (!$this->html_allowed) {				
-				$value = strip_tags($value);
-			}			
+			$this->sanitizeValue($value);			
 			$this->value = $value;
 			return $this;
 		}
