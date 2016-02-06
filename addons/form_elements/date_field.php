@@ -3,22 +3,24 @@
 		
 	class coreFormElementsAddonDateField extends coreFormElementsAddonEditField {
 		
+		protected $uniqid;
+		
 		public function __construct($name, $params) {
 			$page = Application::getPage();
-			$this->class = 'datepicker_' . md5(uniqid());
-			$this->addClasses($params, $this->class);
+						
+			parent::__construct($name, $params);
 			
-			return parent::__construct($name, $params);
+			$this->uniqid = 'datepicker_' . md5(uniqid());
+			$this->addClass($this->uniqid);			
 		}
 		
-		public function GetAsHTML() {
+		public function GetAsHTML() {			
 			$out = parent::GetAsHTML();
-			$fieldname = $this->Name;
-			
+			$fieldname = $this->Name;			
 			
 			$out .= "
 				<script type=\"text/javascript\">
-					jQuery('input[name=$fieldname].".$this->class."').datepicker({
+					jQuery('input.".$this->uniqid."').datepicker({
 						dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
 						monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],			
 						monthNamesShort: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
