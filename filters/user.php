@@ -15,8 +15,6 @@
         function set_params(&$params) {
         	parent::set_params($params);
         	
-            $db = Application::getDb();
-
             $user = Application::getEntityInstance('user');
             $table = $user->getTableName();
                         
