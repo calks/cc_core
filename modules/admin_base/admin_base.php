@@ -489,7 +489,14 @@
         	return parent::terminate();
         }
 		
-		
+        
+        protected function redirectToAction($action, $same_list_page=false) {
+			$redirect_url = "/{$this->getName()}?action=$action";			
+			if ($this->url_addition) $redirect_url .= '&' . $this->url_addition;
+			if ($same_list_page && $this->page>1) $redirect_url .= "&page=$this->page";			
+			Redirector::redirect(Application::getSeoUrl($redirect_url));
+        }
+        
 		
 	}
 	
