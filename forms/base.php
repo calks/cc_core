@@ -148,6 +148,7 @@
         	$smarty->assign('method', $this->method);
         	$smarty->assign('heading', $this->heading);
         	$smarty->assign('fields', $this->fields);
+        	$smarty->assign('form', $this);
         	
         	return $smarty->fetch($layout_template_path);		
 		}

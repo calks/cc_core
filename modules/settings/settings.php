@@ -1,6 +1,6 @@
 <?php
 
-	class coreSettingsModule extends coreAdminBaseModule {
+	class coreSettingsModule extends coreCrudBaseModule {
 	
 		
 		protected function taskList($params=array()) { 
@@ -12,10 +12,10 @@
 				$errors = coreSettingsLibrary::getErrors();
 				if (!$errors) {
 					if (!coreSettingsLibrary::saveTree()) {
-						Application::stackError('Не удалось сохранить настройки');
+						Application::stackError($this->gettext('Failed to save settings'));
 					}
 					else {
-						Application::stackMessage("Настройки сохранены");
+						Application::stackMessage($this->gettext('Settins saved successfully'));
 						Redirector::redirect(Application::getSeoUrl('/' . $this->getName()));
 					}
 				}
@@ -29,14 +29,14 @@
 			$smarty = Application::getSmarty();
 			
 			$smarty->assign('tree', $tree);
-			$smarty->assign('group_names', coreSettingsLibrary::getGroupNames());
-			$smarty->assign('message_stack', Application::getBlock('message_stack'));
+			$smarty->assign('group_names', coreSettingsLibrary::getGroupNames());			
+			$smarty->assign('module', $this);
 			
 			return parent::taskDefault($params);
 		}
 		
 		public function getPageTitle() {
-			return 'Настройки';
+			return $this->gettext('Settings');
 		}
 		
 		public function getPageSubtitle() {

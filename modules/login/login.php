@@ -141,7 +141,7 @@
 			
 			if (!$user) return false;
 			
-			$user_name = "$user->name $user->family_name";
+			$user_name = "$user->first_name $user->last_name";
 			$user_email = $user->email;
 			
 			$smarty = Application::getSmarty();

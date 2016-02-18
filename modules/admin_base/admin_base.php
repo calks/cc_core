@@ -297,10 +297,32 @@
 		}
 		
 		protected function createForm($object) {			
-			Application::loadLibrary('olmi/form');	
+			/*Application::loadLibrary('olmi/form');	
 			$this->form = new BaseForm();			
 			$this->form = $object->make_form($this->form);
-			$this->form->LoadFromObject($object);			
+			$this->form->LoadFromObject($object);*/
+
+			$form_class = coreResourceLibrary::getEffectiveClass('form', $this->getObjectName());
+			if (!$form_class) {				
+				throw new coreException("No form class found for {$this->getObjectName()} entity");
+				
+			}
+			$this->form = new $form_class();
+			$this->form->initWithEntityFields($object);
+			//$this->form->setHeading($this->action == 'add' ? 'Добавление заявки' : 'Редактирование заявки');
+			
+			$action_field = coreFormElementsLibrary::get('hidden', 'action');
+			$action_field->setValue($this->action);
+			$this->form->addField($action_field);
+						
+			$form_action = "/{$this->getName()}";
+			if ($this->page > 1) $form_action .= "?page=$this->page";			
+			$form_action = Application::getSeoUrl($form_action);			
+			$this->form->setAction($form_action);
+			
+			$this->form->setMethod('post');			
+			
+			return $this->form;
 		}
 		
 		protected function updateObjectFromRequest($object) {

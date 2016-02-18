@@ -34,7 +34,7 @@
     			return;
     		}
     		
-    		if (!self::$user_account->active) {
+    		if (!self::$user_account->is_active) {
     			self::$user_id = null;
     			return;
     		}
@@ -68,7 +68,7 @@
     		$user_id = $db->executeScalar("
     			SELECT id
     			FROM $table
-    			WHERE login='$login' AND pass='$pass' AND active=1
+    			WHERE login='$login' AND pass='$pass' AND is_active=1
     		");
 
     		if (!$user_id) return false;
@@ -83,7 +83,7 @@
     		$user = Application::getEntityInstance('user');
     		$user = $user->load($user_id);
     		
-    		if (!$user || !$user->active) return false;
+    		if (!$user || !$user->is_active) return false;
 
     		self::$user_id = $user_id;
     		self::$user_account  = $user;

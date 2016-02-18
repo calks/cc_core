@@ -65,12 +65,12 @@ INSERT INTO `user_role` (`id`, `name`) VALUES
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `family_name` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
   `email` varchar(100) NOT NULL DEFAULT '',
   `login` varchar(100) NOT NULL DEFAULT '',
   `pass` varchar(100) NOT NULL DEFAULT '',
-  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `registered` datetime DEFAULT NULL,
   `language_id` int(11) DEFAULT NULL,
   `country_id` int(11) DEFAULT NULL,

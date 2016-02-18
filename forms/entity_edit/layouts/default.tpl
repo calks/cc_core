@@ -6,8 +6,9 @@
 			{/if}	
 	
 			<div class="col-sm-4 pull-right">
-				<input type="button" class="btn btn-default navbar-btn pull-right back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="Вернуться назад">				
-				<input type="submit" class="btn btn-primary navbar-btn pull-right save-button" name="save" value="Сохранить">
+				<input type="button" class="btn btn-default navbar-btn pull-right back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="{$form->gettext('Back')}">
+				<input type="submit" class="btn btn-primary navbar-btn pull-right apply-button" name="apply" value="{$form->gettext('Apply')}">				
+				<input type="submit" class="btn btn-primary navbar-btn pull-right save-button" name="save" value="{$form->gettext('Save')}">
 			</div>
 	    </nav>
 	    
@@ -26,8 +27,9 @@
 	    {/foreach}
 		
 		<div class="form-group">								
-			<input type="submit" class="btn btn-primary navbar-btn save-button" name="save" value="Сохранить">
-			<input type="button" class="btn btn-default navbar-btn back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="Вернуться назад">
+			<input type="submit" class="btn btn-primary navbar-btn save-button" name="save" value="{$form->gettext('Save')}">
+			<input type="submit" class="btn btn-primary navbar-btn apply-button" name="apply" value="{$form->gettext('Apply')}">
+			<input type="button" class="btn btn-default navbar-btn back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="{$form->gettext('Back')}">
 		</div>
 
 	</form>
