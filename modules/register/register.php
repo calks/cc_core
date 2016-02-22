@@ -105,7 +105,7 @@
 			$user->login = $user->email;
 			$user->setPassword($this->user_form->getValue('password'));
 			
-			//$user->roles[] = 'user';
+			$user->addRole('registered');
 			$user->is_active = 1;
 			return $user;
 		}
