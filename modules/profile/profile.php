@@ -74,18 +74,10 @@
 		}
 		
 		protected function getProfileForm() {			
-			Application::loadLibrary('olmi/form');
-			$profile_form = new BaseForm();
 			
-			
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'name'));
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'family_name'));
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'email'));
-			
-			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass'));
-			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass_confirmation'));
-
-			return $profile_form;			
+			$form_class = coreResourceLibrary::getEffectiveClass('form', 'profile_edit');
+			$form = new $form_class();			
+			return $form;
 		}
 		
 		protected function emailIsUnique($email) {
@@ -145,7 +137,7 @@
 			$smarty = Application::getSmarty();
 			
 			$form = $this->getProfileForm();
-			$form->loadFromObject($this->user);
+			$form->setValues($this->user);
 			
 			if (Request::isPostMethod()) {
 				$form->LoadFromRequest($_REQUEST);

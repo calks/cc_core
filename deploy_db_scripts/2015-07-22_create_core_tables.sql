@@ -107,13 +107,13 @@ CREATE TABLE `document` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) NOT NULL DEFAULT '0',
   `seq` int(11) NOT NULL DEFAULT '0',
-  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `url` varchar(64) NOT NULL DEFAULT '',
   `menu` int(1) NOT NULL DEFAULT '0',
   `category` int(1) NOT NULL DEFAULT '0',
   `open_new_window` tinyint(1) DEFAULT NULL,
   `open_link` varchar(255) DEFAULT NULL,
-  `protected` tinyint(1) DEFAULT '0',
+  `protected` tinyint(1) DEFAULT '0',  
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

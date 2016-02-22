@@ -10,7 +10,7 @@
 		var $parent_id;
 		var $category;
 		var $seq;
-		var $active;
+		var $is_active;
 		var $url;
 		var $menu; // bit mask
 		var $open_new_window;
@@ -35,16 +35,6 @@
 			return self::TABLE_NAME_CONTENT;
 		}
 
-		function mandatory_fields() {
-			return array(
-				//'url' => 'URL', 
-				'title' => 'Название в меню'			
-			);
-		}
-
-		/*function unique_fields() {
-			return array("url" => "URL");
-		}*/
 
 		function get_content_subquery($language_id = CURRENT_LANGUAGE) {
 			$table = $this->get_content_table_name();
@@ -156,7 +146,7 @@
 			
 		}
 
-		function make_form(&$form, $language_id = CURRENT_LANGUAGE) {
+		/*function make_form(&$form, $language_id = CURRENT_LANGUAGE) {
 			Application::loadLibrary('fields');
 			
 			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
@@ -178,11 +168,101 @@
 			$form->addField(coreFormElementsLibrary::get('hidden', 'language_id')->setValue($language_id));
 						
 			return $form;
-		}
+		}*/
 
 		
+		public function getFieldProperties() {
+			
+			$out = parent::getFieldProperties();
+			
+			$out['url'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('URL slug'),
+				'required' => true
+			);
+			
+			$out['open_link'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('Link'),
+				'required' => true
+			);
+						
+			$out['menu'] = array(
+				'type' => 'checkbox_collection',
+				'caption' => $this->gettext('Display in menu'),
+				'init' => array(
+					'set_options' => $this->getMenuNames() 
+				)
+			);
+			
+			$out['is_active'] = array(
+				'type' => 'checkbox',
+				'caption' => $this->gettext('Is active')				
+			);
+
+			$out['category'] = array(
+				'type' => 'select',
+				'caption' => $this->gettext('Type'),
+				'init' => array(
+					'set_options' => $this->getDocumentCategories() 
+				)
+			);
+			
+			$out['parent_id'] = array(
+				'type' => 'select',
+				'caption' => $this->gettext('Parent'),
+				'init' => array(
+					'set_options' => $this->get_parent_select_options(CURRENT_LANGUAGE) 
+				)
+			);
+			
+			
+			$out['open_new_window'] = array(
+				'type' => 'checkbox',
+				'caption' => $this->gettext('Open in new window')				
+			);
+			
+			
+			$out['title'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('Heading (H1)')				
+			);
+			
+			
+			$out['meta_title'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('Title (browser tab)')				
+			);
+			
+			
+			$out['content'] = array(
+				'type' => 'rich_editor',
+				'caption' => $this->gettext('Content')				
+			);
+			
+			
+			$out['meta_desc'] = array(
+				'type' => 'textarea',
+				'caption' => $this->gettext('META Description')				
+			);
+			
+			$out['meta_key'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('META Keywords')				
+			);
+			
+			$out['language_id'] = array(
+				'type' => 'hidden'				
+			);
+			
+		
+			return $out;
+			
+		}	
+		
+		
 		function get_parent_select_options($language_id) {
-			$out = get_empty_select('--- Верхний уровень ---');
+			$out = get_empty_select($this->gettext('-- Top level --'));
 			foreach ($this->get_categories($language_id) as $cat) {
 				$out[$cat->id] = $cat->title;
 			}
@@ -212,7 +292,10 @@
 		}
 
 		function getDocumentCategories($argument = '') {
-			$status = array(0 => "раздел", 2 => "страница");
+			$status = array(
+				0 => $this->gettext('folder'), 
+				2 => $this->gettext('page')
+			);
 			if ($argument == '') return $status;
 			else return $status[$argument];
 		}
@@ -268,8 +351,8 @@
 
 		function getMenuNames() {
 			return array(
-				SITE_MENUS_TOP_MENU => 'Верхнее меню',
-				SITE_MENUS_FOOTER_MENU => 'Меню в футере',
+				SITE_MENUS_TOP_MENU => $this->gettext('top menu'),
+				SITE_MENUS_FOOTER_MENU => $this->gettext('footer menu'),
 			);
 		}
 
@@ -285,7 +368,7 @@
 
 			foreach ($object->menu as $item) {
 				if ($object->menu_str) $object->menu_str .= ', ';
-				$object->menu_str .= empty($menu_names[$item]) ? 'Неизвестно' : $menu_names[$item];
+				$object->menu_str .= empty($menu_names[$item]) ? $this->getTableName('Unknown') : $menu_names[$item];
 			}
 		}
 
@@ -380,29 +463,5 @@
 			return parent::delete();
 		}
 
-		/*function normalizeSeq($parent_id) {
-			$db = Application::getDb();
-
-			$table = $this->getTableName();
-			$sql = "
-                SELECT `id`
-                FROM {$table}
-                WHERE `parent_id` = '{$parent_id}'
-                ORDER BY `seq` ASC
-                ";
-
-			$rows = $db->executeSelectAll($sql);
-			$i = 0;
-			foreach ($rows as $row) {
-				$update = "
-                    UPDATE {$table}
-                    SET `seq` = '{$i}'
-                    WHERE `id` = '{$row['id']}'
-                    ";
-
-				$db->execute($update);
-				$i++;
-			}
-		}*/
 	}
 

@@ -82,7 +82,7 @@
 				if (in_array($key, $mandatory_keys) && $value == '') {
 					if (isset($mandatory[$key]) && $mandatory[$key] != "") $err_out = $mandatory[$key];
 					else $err_out = $key;
-					$errors[] = "Не заполнено поле &laquo;$err_out&raquo;";
+					$errors[] = $this->gettext("You should fill in &laquo;%s&raquo;", $err_out);
 				}
 			}
 			//if (sizeof($errors) == 0) {
@@ -99,7 +99,7 @@
 							if (isset($unique[$key]) && $unique[$key] != "") $err_out = $unique[$key];
 							else $err_out = $key;
 
-							$errors[] = "Выбранное вами значение для поля ".$err_out." уже используется.";
+							$errors[] = $this->gettext("Value for &laquo;%s&raquo; field is already used", $err_out);
 						}
 
 					}

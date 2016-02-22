@@ -149,6 +149,9 @@
         	$smarty->assign('heading', $this->heading);
         	$smarty->assign('fields', $this->fields);
         	$smarty->assign('form', $this);
+        	if (!$layout_template_path) {
+        		return "There is no $layout_name layout for {$this->getName()} form";
+        	}
         	
         	return $smarty->fetch($layout_template_path);		
 		}
@@ -157,6 +160,13 @@
 		public function loadFromRequest($request) {			
 			foreach ($this->fields as $field) {
 				$field['field']->SetFromPost($request);
+			}
+		}
+		
+		
+		public function setValues($struct) {
+			foreach ($struct as $field_name=>$value) {
+				$this->setValue($field_name, $value);
 			}
 		}
 		
