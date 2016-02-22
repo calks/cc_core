@@ -150,9 +150,16 @@
 				if (!$form_errors) {
 					$form->UpdateObject($this->user);
 					$new_pass = $form->getValue('new_pass');
-					if ($new_pass) $this->user->setPassword($new_pass);
+					$password_changed = false;
+					if ($new_pass) {
+						$this->user->setPassword($new_pass);
+						$password_changed = true;
+					}
 					if ($this->user->save()) {
 						Application::stackMessage($this->gettext('Profile saved successfully'));
+						if ($password_changed) {
+							Application::stackMessage($this->gettext('Password changed'));
+						}
 						Redirector::redirect(Application::getSeoUrl("/{$this->getName()}/$this->task"));		
 					}
 					else {

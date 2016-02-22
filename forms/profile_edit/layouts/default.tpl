@@ -13,9 +13,10 @@
 	    	{/if}
 	    {/foreach}
 		
-										
-		<input type="submit" name="save" value="Save changes">
-		<input type="reset" name="reset" value="Reset">
+		<div class="form-group">						
+			<input type="submit" name="save" value="Save changes">
+			<input type="reset" name="reset" value="Reset">
+		</div>
 		
 	</form>
 
