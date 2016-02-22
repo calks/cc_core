@@ -12,7 +12,7 @@
                 return Application::runModule('page404');
             }
             
-            if (!$page->active) {
+            if (!$page->is_active) {
             	return Application::runModule('page404');
             }
             

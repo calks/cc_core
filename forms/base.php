@@ -6,7 +6,11 @@
 		
 		protected $action = '';
 		protected $method = 'get';
-		protected $heading = '';		
+		protected $heading = '';
+		
+		protected $buttons = array();
+		
+
 		
 		public function setHeading($heading) {
 			$this->heading = $heading;
@@ -154,6 +158,14 @@
         	}
         	
         	return $smarty->fetch($layout_template_path);		
+		}
+		
+		
+		public function renderField($field_name) {
+			if ($this->hasField($field_name)) {
+				return $this->getField($field_name)->getAsHtml();
+			}			
+			
 		}
 	
 		

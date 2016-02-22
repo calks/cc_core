@@ -37,8 +37,7 @@
 
 		public function unique_fields() {
 			return array(
-				'email' => 'Email',
-				'login' => 'Логин'
+				'email' => 'Email'
 			);
 		}
 
@@ -208,8 +207,7 @@
 			
 			$out['last_name'] = array(
 				'type' => 'text',
-				'caption' => $this->gettext('Last Name'),
-				'required' => true
+				'caption' => $this->gettext('Last Name')				
 			);
 						
 			$out['email'] = array(

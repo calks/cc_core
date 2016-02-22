@@ -52,13 +52,10 @@
 				
 		protected function getUserForm() {
 			Application::loadLibrary('olmi/form');
-			$form = new BaseForm();
-			
-			$form->addField(coreFormElementsLibrary::get('edit', 'name'));
-			$form->addField(coreFormElementsLibrary::get('edit', 'family_name'));
-			$form->addField(coreFormElementsLibrary::get('edit', 'email'));
-			$form->addField(coreFormElementsLibrary::get('password', 'password'));
-			$form->addField(coreFormElementsLibrary::get('password', 'password_confirmation'));
+			$form_class = coreResourceLibrary::getEffectiveClass('form', 'registration');
+			$form = new $form_class();
+			$form->setAction(Application::getSeoUrl("/{$this->getName()}/save"));
+			$form->setMethod('post');
 			
 			return $form;
 		}
@@ -67,61 +64,20 @@
 		
 		}
 		
-		
-		protected function getFormErrors() {
-			$errors = array();
-			
-			if(!$this->user_form->getValue('name')) {
-				$errors['name'] = "Вы не ввели имя";				
-			}
-			
-			if(!$this->user_form->getValue('family_name')) {
-				$errors['family_name'] = "Вы не ввели фамилию";
-			}
-			
-			$email = $this->user_form->getValue('email');
-			if (!$email) {
-				$errors['email'] = "Вы не ввели Email";
-			}
-			elseif (!email_valid($email)) {
-				$errors['email'] = "Вы ввели неправильный Email";
-			}
-			elseif (!$this->isEmailVacant($email)) {
-				$errors['email'] = "На указанный Email уже зарегистрирован аккаунт";
-			}
-			
-			$pass = $this->user_form->getValue('password');
-			$pass_confirmation = $this->user_form->getValue('password_confirmation');
-			
-			if (!$pass) {
-				$errors['password'] = "Вы не ввели пароль";
-			}
-			elseif ($pass !== $pass_confirmation) {
-				$errors['password'] = "Пароль и подтверждение не совпадают";
-			}
-			
-			return $errors;
-		}
-		
-		protected function isEmailVacant($email) {
-			$user = Application::getEntityInstance('user');
-			return (int)$user->getIdByEmail($email) == 0;
-		}
-		
 		protected function updateFormFromRequest() {
 			$this->user_form->loadFromRequest($_REQUEST);
-			foreach ($this->user_form->fields as $f) {
+			/*foreach ($this->user_form->fields as $f) {
 				if (!in_array($f->Name, array('password', 'password_confirmation'))) {
 					$f->setValue(trim($f->getValue()));
 				}
-			}
+			}*/
 		}
 		
 		
 		protected function taskSave($params=array()) {
 			$this->updateFormFromRequest();
-			$form_errors = $this->getFormErrors();
-			
+			$this->user_form->validate();
+			$form_errors = $this->user_form->getErrors();			
 			if (!$form_errors) {				
 				$user = $this->createUser();
 				$registered_user_id = $user->save();
@@ -129,25 +85,28 @@
 					return $this->onSuccess($registered_user_id);
 				}
 				else {
-					Application::stackError("Не удалось завершить регистрацию");
+					Application::stackError($this->gettext("Failed to registr a user"));
 				}
 			}
 			else {
-				Application::stackError(implode('<br />', $form_errors));
+				foreach ($form_errors as $field_name => $errors) {
+					Application::stackError(implode('<br />', $errors));
+				}
+				
 			}
 		}
 		
 		
 		protected function createUser() {
 			$user = Application::getEntityInstance('user');
-			$user->name = $this->user_form->getValue('name');
-			$user->family_name = $this->user_form->getValue('family_name');
+			$user->first_name = $this->user_form->getValue('first_name');
+			$user->last_name = $this->user_form->getValue('last_name');
 			$user->email = $this->user_form->getValue('email');
 			$user->login = $user->email;
 			$user->setPassword($this->user_form->getValue('password'));
 			
-			$user->roles[] = USER_ROLE_CONSUMER;
-			$user->active = 1;
+			//$user->roles[] = 'user';
+			$user->is_active = 1;
 			return $user;
 		}
 		
@@ -155,7 +114,7 @@
 		protected function onSuccess($registered_user_id) {			
 			$user_session = Application::getUserSession();
 			$user_session->forceLogin($registered_user_id);
-			Application::stackMessage("Вы успешно зарегистрировались на сайте");			
+			Application::stackMessage($this->gettext('You have registered successfully'));			
 			Redirector::redirect($this->back_url ? $this->back_url : Application::getSeoUrl("/profile"));
 		}
 		

@@ -1,12 +1,12 @@
 
 	{if $page->content}
-	    <div class="text">
+	    <div class="content">
 	    
 	    	{if $breadcrumbs}
 	    		{$breadcrumbs->render()}
 	    	{/if}	
 	
-	        <h1>{$page->meta_title|escape:"htmlall":"utf-8"|strip_tags:false}</h1>
+	        <h1>{$page->title|escape:"htmlall":"utf-8"|strip_tags:false}</h1>
 	
 	        {$page->content}
 	    </div>
