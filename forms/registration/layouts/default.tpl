@@ -13,8 +13,10 @@
 	    	{/if}
 	    {/foreach}
 		
-		<input type="submit" name="save" value="Register">
-		<a href="{$login_link}">Login</a>
+		<div class="form-group">
+			<input type="submit" name="save" value="Register">
+			<a href="{$login_link}">Login</a>
+		</div>	
 
 	</form>
 
