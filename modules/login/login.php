@@ -125,6 +125,11 @@
 			if ($this->back_url) $login_link .= '?back=' . rawurlencode($this->back_url);
 			$smarty->assign('login_link', Application::getSeoUrl($login_link));
 			
+			$register_link = "/register";			
+			if ($this->back_url) $register_link .= '?back=' . rawurlencode($this->back_url);
+			$smarty->assign('register_link', Application::getSeoUrl($register_link));
+			
+			
 			$form_action = "/{$this->getName()}/$this->action";
 			if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
 			$smarty->assign('form_action', Application::getSeoUrl($form_action));

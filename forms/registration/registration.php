@@ -53,9 +53,9 @@
 		}
 		
 		public function render($layout_name='default') {
-			$smarty = Application::getSmarty($layout_name);
-			$login_link = '/login';
-			$smarty->assign('login_link', Application::getSeoUrl($login_link));
+			$smarty = Application::getSmarty('form_' . $this->getName());
+			$login_link = Application::getSeoUrl('/login');			
+			$smarty->assign('login_link', $login_link);
 			return parent::render($layout_name);
 		}
 		
