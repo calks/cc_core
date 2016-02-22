@@ -14,40 +14,8 @@
 	    {/foreach}
 		
 										
-		<input type="submit" name="save" value="Register">
-		<a href="{$login_link}">Login</a>
-
+		<input type="submit" name="save" value="Save changes">
+		<input type="reset" name="reset" value="Reset">
+		
 	</form>
 
-	{*<form action="{$form_action}" method="POST" enctype="multipart/form-data">
-		<div class="form-group required">
-			<label class="control-label" for="name">Имя</label>
-			{$profile_form->render('name')}
-		</div>
-		<div class="form-group required">
-			<label class="control-label" for="name">Фамилия</label>
-			{$profile_form->render('family_name')}		</div>
-
-		<div class="form-group required">	
-			<label class="control-label" for="email">Email</label>
-			{$profile_form->render('email')}
-		</div>
-		<div class="form-group">	
-			<label class="control-label" for="email">Новый пароль</label>
-			{$profile_form->render('new_pass')}
-		</div>
-
-		<div class="form-group">	
-			<label class="control-label" for="email">Новый пароль еще раз</label>
-			{$profile_form->render('new_pass_confirmation')}
-		</div>
-
-		<div class="form-group">								
-			<input type="submit" class="btn btn-primary navbar-btn" name="save" value="Сохранить">
-			<input type="reset" class="btn btn-default navbar-btn" name="reset" value="Сбросить">
-		</div>
-
-		
-		<input type="hidden" name="action" value="{$action}">
-
-	</form>*}

@@ -76,7 +76,10 @@
 		protected function getProfileForm() {			
 			
 			$form_class = coreResourceLibrary::getEffectiveClass('form', 'profile_edit');
-			$form = new $form_class();			
+			$form = new $form_class();
+			$form->setAction(Application::getSeoUrl("/{$this->getName()}"));
+			$form->setMethod('post');
+			
 			return $form;
 		}
 		
@@ -141,21 +144,25 @@
 			
 			if (Request::isPostMethod()) {
 				$form->LoadFromRequest($_REQUEST);
-				$form_errors = $this->getProfileFormErrors($form);
+				$form->validate();
+				$form_errors = $form->getErrors();			
+				
 				if (!$form_errors) {
 					$form->UpdateObject($this->user);
 					$new_pass = $form->getValue('new_pass');
 					if ($new_pass) $this->user->setPassword($new_pass);
 					if ($this->user->save()) {
-						Application::stackMessage("Изменения сохранены");
+						Application::stackMessage($this->gettext('Profile saved successfully'));
 						Redirector::redirect(Application::getSeoUrl("/{$this->getName()}/$this->task"));		
 					}
 					else {
-						Application::stackError("Не удалось сохранить профиль");
+						Application::stackError($this->gettext('Failed to save profile'));
 					}
 				}
 				else {
-					Application::stackError(implode('<br />', $form_errors));
+					foreach ($form_errors as $field_name => $errors) {
+						Application::stackError(implode('<br />', $errors));
+					}	
 				}
 			}
 
