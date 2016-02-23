@@ -206,7 +206,8 @@
 			
 			$out['title'] = array(
 				'type' => 'text',
-				'caption' => $this->gettext('Menu and breadcrumbs title')
+				'caption' => $this->gettext('Menu and breadcrumbs title'),
+				'required' => true
 			);
 			
 			
