@@ -1,6 +1,5 @@
 <?php
 
-	define('INDEX_PAGE_ID', 1);
 
     class coreDocumentMenuBlock extends coreBaseBlock {    	
     	
@@ -33,7 +32,7 @@
         		return $url;
         	}  
         	$url = trim($url, ' /');
-        	return $item->open_link ? Application::getSeoUrl("/$url") : Application::getSeoUrl("/document/$url");
+        	return $item->open_link ? Application::getSeoUrl("/$url") : Application::getSeoUrl("/textpage/$url");
         }
 
         
@@ -68,7 +67,7 @@
                 	id, parent_id, open_link, url, open_new_window, title,
                 	0 AS important
                 FROM $table JOIN $subquery AS content ON content.document_id = $table.id
-                WHERE parent_id IN($parent_id) AND active = 1 AND $menu
+                WHERE parent_id IN($parent_id) AND is_active = 1 AND $menu
                 GROUP BY document_id ORDER BY seq ASC
             ";
             
