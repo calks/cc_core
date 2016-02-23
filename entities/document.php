@@ -141,34 +141,9 @@
 				}				
 			}
 
-
 			return $list;			
 			
 		}
-
-		/*function make_form(&$form, $language_id = CURRENT_LANGUAGE) {
-			Application::loadLibrary('fields');
-			
-			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
-			$form->addField(coreFormElementsLibrary::get('text', 'url'));
-			$form->addField(coreFormElementsLibrary::get('text', 'open_link'));
-			$form->addField(coreFormElementsLibrary::get('hidden', 'seq'));			
-			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'menu')->setOptions($this->getMenuNames()));
-
-			$form->addField(coreFormElementsLibrary::get('checkbox', "active"));
-			$form->addField(coreFormElementsLibrary::get('select', "category")->setOptions($this->getDocumentCategories()));
-			$form->addField(coreFormElementsLibrary::get('select', "parent_id")->setOptions($this->get_parent_select_options($language_id)));
-			$form->addField(coreFormElementsLibrary::get('checkbox', "open_new_window"));
-
-			$form->addField(coreFormElementsLibrary::get('text', 'title'));
-			$form->addField(coreFormElementsLibrary::get('text', 'meta_title'));
-			$form->addField(coreFormElementsLibrary::get('rich_editor', 'content'));
-			$form->addField(coreFormElementsLibrary::get('textarea', 'meta_desc'));
-			$form->addField(coreFormElementsLibrary::get('textarea', 'meta_key'));
-			$form->addField(coreFormElementsLibrary::get('hidden', 'language_id')->setValue($language_id));
-						
-			return $form;
-		}*/
 
 		
 		public function getFieldProperties() {
@@ -178,13 +153,19 @@
 			$out['url'] = array(
 				'type' => 'text',
 				'caption' => $this->gettext('URL slug'),
-				'required' => true
+				'required' => true,
+				'init' => array(
+					'addClass' => 'type-page_itself'			
+				)
 			);
 			
 			$out['open_link'] = array(
 				'type' => 'text',
 				'caption' => $this->gettext('Link'),
-				'required' => true
+				'required' => true,
+				'init' => array(
+					'addClass' => 'type-alias'			
+				)
 			);
 						
 			$out['menu'] = array(
@@ -201,7 +182,7 @@
 			);
 
 			$out['category'] = array(
-				'type' => 'select',
+				'type' => 'radio',
 				'caption' => $this->gettext('Type'),
 				'init' => array(
 					'set_options' => $this->getDocumentCategories() 
@@ -225,30 +206,42 @@
 			
 			$out['title'] = array(
 				'type' => 'text',
-				'caption' => $this->gettext('Heading (H1)')				
+				'caption' => $this->gettext('Menu and breadcrumbs title')
 			);
 			
 			
 			$out['meta_title'] = array(
 				'type' => 'text',
-				'caption' => $this->gettext('Title (browser tab)')				
+				'caption' => $this->gettext('&lt;title&gt; (browser tab heading)'),
+				'init' => array(
+					'addClass' => 'type-page_itself'			
+				)				
 			);
 			
 			
 			$out['content'] = array(
 				'type' => 'rich_editor',
-				'caption' => $this->gettext('Content')				
+				'caption' => $this->gettext('Content'),
+				'init' => array(
+					'addClass' => 'type-page_itself'			
+				)				
 			);
 			
 			
 			$out['meta_desc'] = array(
 				'type' => 'textarea',
-				'caption' => $this->gettext('META Description')				
+				'caption' => $this->gettext('META Description'),
+				'init' => array(
+					'addClass' => 'type-page_itself'			
+				)
 			);
 			
 			$out['meta_key'] = array(
 				'type' => 'text',
-				'caption' => $this->gettext('META Keywords')				
+				'caption' => $this->gettext('META Keywords'),
+				'init' => array(
+					'addClass' => 'type-page_itself'			
+				)				
 			);
 			
 			$out['language_id'] = array(
