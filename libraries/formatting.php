@@ -2,8 +2,10 @@
 
 	class coreFormattingLibrary {
 		
-		public static function getNounForNumber($number, $one, $two, $five) {			
+		public static function getNounForNumber($number, $one, $two, $five=null) {			
 			$number = (int)$number;
+			
+			if (!$five) $five = $two;
 			
 			$number_str = (string)$number;
 			$last_digits = strlen($number_str) <= 2 ? $number_str : substr($number_str, strlen($number_str) - 2);   
