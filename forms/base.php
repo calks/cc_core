@@ -139,7 +139,7 @@
 			}			
 		}
 		
-		public function render($layout_name='default') {                    	
+		public function render($layout_name='default') {
         	            
         	$layout_template_path = $this->findEffectiveSubresourcePath('layout', $layout_name, null, 'tpl');
         	$smarty = Application::getSmarty('form_' . $this->getName());

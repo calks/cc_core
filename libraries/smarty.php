@@ -26,13 +26,14 @@
 		}
 		
 		public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = false) {
-			$display_errors = ini_get('display_errors');
-			ini_set('display_errors', 0);
+			/*$display_errors = ini_get('display_errors');
+			ini_set('display_errors', 0);*/
+			$this->error_reporting = E_ERROR;
 			if (!is_object($template)) {
 				$template = coreResourceLibrary::getAbsolutePath($template);
 			}
 			$out = parent::fetch($template, $cache_id, $compile_id, $parent, $display, $merge_tpl_vars, $no_output_filter);
-			ini_set('display_errors', $display_errors);
+			//ini_set('display_errors', $display_errors);
 			return $out;
 		}
 		
