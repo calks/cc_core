@@ -74,18 +74,13 @@
 		}
 		
 		protected function getProfileForm() {			
-			Application::loadLibrary('olmi/form');
-			$profile_form = new BaseForm();
 			
+			$form_class = coreResourceLibrary::getEffectiveClass('form', 'profile_edit');
+			$form = new $form_class();
+			$form->setAction(Application::getSeoUrl("/{$this->getName()}"));
+			$form->setMethod('post');
 			
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'name'));
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'family_name'));
-			$profile_form->addField(coreFormElementsLibrary::get('text', 'email'));
-			
-			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass'));
-			$profile_form->addField(coreFormElementsLibrary::get('password', 'new_pass_confirmation'));
-
-			return $profile_form;			
+			return $form;
 		}
 		
 		protected function emailIsUnique($email) {
@@ -145,25 +140,36 @@
 			$smarty = Application::getSmarty();
 			
 			$form = $this->getProfileForm();
-			$form->loadFromObject($this->user);
+			$form->setValues($this->user);
 			
 			if (Request::isPostMethod()) {
 				$form->LoadFromRequest($_REQUEST);
-				$form_errors = $this->getProfileFormErrors($form);
+				$form->validate();
+				$form_errors = $form->getErrors();			
+				
 				if (!$form_errors) {
 					$form->UpdateObject($this->user);
 					$new_pass = $form->getValue('new_pass');
-					if ($new_pass) $this->user->setPassword($new_pass);
+					$password_changed = false;
+					if ($new_pass) {
+						$this->user->setPassword($new_pass);
+						$password_changed = true;
+					}
 					if ($this->user->save()) {
-						Application::stackMessage("Изменения сохранены");
+						Application::stackMessage($this->gettext('Profile saved successfully'));
+						if ($password_changed) {
+							Application::stackMessage($this->gettext('Password changed'));
+						}
 						Redirector::redirect(Application::getSeoUrl("/{$this->getName()}/$this->task"));		
 					}
 					else {
-						Application::stackError("Не удалось сохранить профиль");
+						Application::stackError($this->gettext('Failed to save profile'));
 					}
 				}
 				else {
-					Application::stackError(implode('<br />', $form_errors));
+					foreach ($form_errors as $field_name => $errors) {
+						Application::stackError(implode('<br />', $errors));
+					}	
 				}
 			}
 

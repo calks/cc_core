@@ -3,12 +3,12 @@
 	
 	class coreUserEntity extends coreBaseEntity {		
 		
-		public $name;		
-		public $family_name;
+		public $first_name;		
+		public $last_name;
 		public $email;
 		public $login;
 		public $pass;
-		public $active;
+		public $is_active;
 		
 		public function __construct() {			
 			parent::__construct();
@@ -37,46 +37,18 @@
 
 		public function unique_fields() {
 			return array(
-				'email' => 'Email',
-				'login' => 'Логин'
+				'email' => 'Email'
 			);
 		}
 
 		public function order_by() {
-			return '`active` ASC, `id` DESC';
+			return '`is_active` ASC, `id` DESC';
 		}
 
-		public function make_form(&$form) {
-			$form->addField(coreFormElementsLibrary::get('hidden', 'id'));
-			$form->addField(coreFormElementsLibrary::get('text', 'name'));
-			$form->addField(coreFormElementsLibrary::get('text', 'family_name'));			
-			$form->addField(coreFormElementsLibrary::get('checkbox_collection', 'roles')->setOptions($this->getRoleSelect()));			
-			$form->addField(coreFormElementsLibrary::get('text', 'email'));
-			$form->addField(coreFormElementsLibrary::get('text', 'login'));
-
-			$form->addField(coreFormElementsLibrary::get('checkbox', 'active'));
-			
-			return $form;
-		}
-		
-		public function validate() {
-			$errors = parent::validate();
-			if (!email_valid($this->email)) {
-				$errors[] = 'Неправильный Email';
-			}
-			
-			if (!$this->pass) {
-				$errors[] = 'Не задан пароль';
-			}
-			
-			return $errors;
-		}
-		
-		
 		
 		public function load_list($params=array()) {
 			$table = $this->getTableName();
-			$params['fields'][] = "CONCAT($table.name, ' ', $table.family_name) AS user_name";
+			$params['fields'][] = "CONCAT($table.first_name, ' ', $table.last_name) AS user_name";
 			
 			$list = parent::load_list($params);
 			
@@ -221,6 +193,44 @@
 		public function hasRole($role) {
 			return array_key_exists($role, $this->roles);
 		}
+		
+		
+		public function getFieldProperties() {
+			
+			$out = parent::getFieldProperties();
+			
+			$out['first_name'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('First Name'),
+				'required' => true
+			);
+			
+			$out['last_name'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('Last Name')				
+			);
+						
+			$out['email'] = array(
+				'type' => 'email',
+				'caption' => $this->gettext('Email'),
+				'required' => true
+			);
+			
+			$out['login'] = array(
+				'type' => 'text',
+				'caption' => $this->gettext('Login'),				
+				'required' => true
+			);
+			
+			$out['is_active'] = array(
+				'type' => 'checkbox',
+				'caption' => $this->gettext('Is active')				
+			);
+			
+			return $out;
+			
+		}			
+		
 		
 	}
 

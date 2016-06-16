@@ -65,12 +65,12 @@ INSERT INTO `user_role` (`id`, `name`) VALUES
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `family_name` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
   `email` varchar(100) NOT NULL DEFAULT '',
   `login` varchar(100) NOT NULL DEFAULT '',
   `pass` varchar(100) NOT NULL DEFAULT '',
-  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `registered` datetime DEFAULT NULL,
   `language_id` int(11) DEFAULT NULL,
   `country_id` int(11) DEFAULT NULL,
@@ -107,13 +107,13 @@ CREATE TABLE `document` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) NOT NULL DEFAULT '0',
   `seq` int(11) NOT NULL DEFAULT '0',
-  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `url` varchar(64) NOT NULL DEFAULT '',
   `menu` int(1) NOT NULL DEFAULT '0',
   `category` int(1) NOT NULL DEFAULT '0',
   `open_new_window` tinyint(1) DEFAULT NULL,
   `open_link` varchar(255) DEFAULT NULL,
-  `protected` tinyint(1) DEFAULT '0',
+  `protected` tinyint(1) DEFAULT '0',  
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

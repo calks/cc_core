@@ -67,7 +67,7 @@
 		}
 		
 		
-		protected static function parseResourceClass($class) {
+		protected static function parseResourceClass($class, $ignore_subname=false) {
 			$out = array(				
 				'container_type' => null,
 				'container_name' => null,
@@ -81,8 +81,9 @@
 			ksort($resource_types);
 			$resource_types = array_reverse($resource_types, 1);			
 			$resource_type_regexp = implode('|', $resource_types);
+			$subname_regex = $ignore_subname ? '' : '(?P<sub_name>.*)'; 
 			
-			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')(?P<sub_name>.*)$/isU';
+			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')'.$subname_regex.'$/isU';
 									
             $matched = preg_match($regexp, $class, $matches);
             if (!$matched) return $out;
@@ -106,8 +107,8 @@
             $out['resource_name'] = self::camelToUnderscored($resource_name);
             
             
-            $sub_name = $matches['sub_name'];
-            if ($sub_name) {
+            $sub_name = isset($matches['sub_name']) ? $matches['sub_name'] : '';
+            if ($sub_name) { 
             	$subresource_dir = coreNameUtilsLibrary::getPluralNoun($out['resource_type']) . '/' . $out['resource_name'];
             	$subresource_types = coreResourceLibrary::getResourceTypeList($subresource_dir);
             	$subresource_type_regexp = implode('|', $subresource_types);
@@ -119,8 +120,10 @@
             		$out['subresource_type'] = self::camelToUnderscored($subresource_type);
             		$out['subresource_name'] = self::camelToUnderscored($subresource_name);
             	}
+            	elseif(!$ignore_subname) {
+            		$out = self::parseResourceClass($class, true);
+            	}
             }
-            
             return $out;			
 		}
 		

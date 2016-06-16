@@ -77,7 +77,7 @@
         
         public function getTemplatePath($template_name = '') {        	        	
             $template_name_supplied = $template_name != '';        	
-        	if (!$template_name_supplied) $template_name = $this->getName();            
+        	if (!$template_name_supplied) $template_name = $this->getName();             
         	return $this->findEffectiveSubresourcePath('template', $template_name, null, 'tpl');
         }
 		

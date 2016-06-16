@@ -6,7 +6,11 @@
 		
 		protected $action = '';
 		protected $method = 'get';
-		protected $heading = '';		
+		protected $heading = '';
+		
+		protected $buttons = array();
+		
+
 		
 		public function setHeading($heading) {
 			$this->heading = $heading;
@@ -94,11 +98,11 @@
 				
 				if ($is_required && $field_data['field']->isEmpty()) {					
 					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
-					$field_data['errors'][] = Application::gettext("Required field \"%s\" is empty", $caption);
+					$this->setFieldError($field_name, Application::gettext("Required field \"%s\" is empty", $caption));					
 				}
 				elseif (!$field_data['field']->isEmpty() && $field_data['field']->isMalformed()) {
-					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
-					$field_data['errors'][] = Application::gettext("Field \"%s\" contains malformed value", $caption);
+					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);					
+					$this->setFieldError($field_name, Application::gettext("Field \"%s\" contains malformed value", $caption));
 				}
 			}
 			
@@ -148,14 +152,33 @@
         	$smarty->assign('method', $this->method);
         	$smarty->assign('heading', $this->heading);
         	$smarty->assign('fields', $this->fields);
+        	$smarty->assign('form', $this);
+        	if (!$layout_template_path) {
+        		return "There is no $layout_name layout for {$this->getName()} form";
+        	}
         	
         	return $smarty->fetch($layout_template_path);		
+		}
+		
+		
+		public function renderField($field_name) {
+			if ($this->hasField($field_name)) {
+				return $this->getField($field_name)->getAsHtml();
+			}			
+			
 		}
 	
 		
 		public function loadFromRequest($request) {			
 			foreach ($this->fields as $field) {
 				$field['field']->SetFromPost($request);
+			}
+		}
+		
+		
+		public function setValues($struct) {
+			foreach ($struct as $field_name=>$value) {
+				$this->setValue($field_name, $value);
 			}
 		}
 		
@@ -174,6 +197,13 @@
 			
 			$this->fields = $ordered_fields;
 			
+		}
+		
+		
+		protected function setFieldError($field_name, $error) {
+			if ($this->hasField($field_name)) {
+				$this->fields[$field_name]['errors'][] = $error;
+			}
 		}
 		
 		

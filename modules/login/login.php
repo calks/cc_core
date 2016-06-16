@@ -65,6 +65,8 @@
 			if ($this->back_url) $register_link .= '?back=' . rawurlencode($this->back_url);
 			$smarty->assign('register_link', Application::getSeoUrl($register_link));
 			
+			
+			
 			$form_action = "/{$this->getName()}";
 			if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
 			$smarty->assign('form_action', Application::getSeoUrl($form_action));
@@ -86,10 +88,10 @@
 				$email_ok = true;
 				
 				if (!$email) {
-					Application::stackError("Вы не ввели Email");					
+					Application::stackError($this->gettext('Please enter your email address'));					
 				}
 				elseif (!email_valid($email)) {
-					Application::stackError("Вы ввели неправильный Email");					
+					Application::stackError($this->gettext('Email is malformed'));					
 				}
 				else {
 					$user = Application::getEntityInstance('user');
@@ -97,17 +99,17 @@
 					$user = $user->load($user_id);
 					
 					if (!$user_id) {
-						Application::stackWarning("Пользователь с таким Email не найден");
+						Application::stackWarning($this->gettext('No users found with this email'));
 					}
 					else {
 						$new_pass = $this->generatePassword();
 						if (!$this->sendNewPassword($user_id, $new_pass)) {
-							Application::stackError("Не удалось сбросить пароль");
+							Application::stackError($this->gettext('Failed to reset password'));
 						}
 						else {
 							$user->setPassword($new_pass);
 							$user->save();
-							Application::stackMessage("Письмо c новым паролем отправлено на адрес $email");
+							Application::stackMessage($this->gettext('New passwort was sent to %s', $email));
 							$redirect_url = Application::getSeoUrl("/{$this->getName()}/$this->action");
 							Redirector::redirect($redirect_url);
 						}
@@ -122,6 +124,11 @@
 			$login_link = "/{$this->getName()}";
 			if ($this->back_url) $login_link .= '?back=' . rawurlencode($this->back_url);
 			$smarty->assign('login_link', Application::getSeoUrl($login_link));
+			
+			$register_link = "/register";			
+			if ($this->back_url) $register_link .= '?back=' . rawurlencode($this->back_url);
+			$smarty->assign('register_link', Application::getSeoUrl($register_link));
+			
 			
 			$form_action = "/{$this->getName()}/$this->action";
 			if ($this->back_url) $form_action .= '?back=' . rawurlencode($this->back_url);			
@@ -141,16 +148,18 @@
 			
 			if (!$user) return false;
 			
-			$user_name = "$user->name $user->family_name";
+			$user_name = "$user->first_name $user->last_name";
 			$user_email = $user->email;
 			
 			$smarty = Application::getSmarty();
 			$default_content = $smarty->fetch($this->getTemplatePath('recover_email'));
 			
-			$email_template = mailPkgTemplateLibrary::get('Новый пароль после сброса');
-			$email_template->setDefaultContent($default_content);
+			$email_template = mailPkgTemplateHelperLibrary::get('New password');
+			$email_template->setDefaultContent('Your new password', $default_content);
 			$email_template->setLegend(array(
-				'new_pass' => 'Новый пароль',				
+				'new_pass' => 'New password',
+				'user_name' => 'User name',
+				'user_email' => 'User Email'			
 			));
 			$email_template->setReplacements(array(
 				'new_pass' => $password,
@@ -159,12 +168,13 @@
 			));
 
 			
-			$body = $email_template->getFilledContent();
+			$body = $email_template->getFilledContent('body_content');
+			$subject = $email_template->getFilledContent('subject_content');
 			
 			$mailer = Application::getMailer();
  			
 			$mailer->setBody($body);				
-			$mailer->setSubject("Сброс пароля");
+			$mailer->setSubject($subject);
 
 			$mailer->AddAddress($user_email, $user_name);
 				
