@@ -146,7 +146,7 @@
 			// если нет, создаем новый и вставляем в дерево			
 			$params = coreResourceLibrary::findEffective('setting_param', $param_type);			
 			if (!isset($params[$param_type])) {
-				throw new Exception("settings/$type param not found", 999);
+				throw new Exception("settings/$param_type param not found", 999);
 				return null;
 			}
 			$out = new $params[$param_type]->class();
