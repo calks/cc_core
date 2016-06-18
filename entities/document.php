@@ -24,6 +24,7 @@
 			$this->meta_desc = '';
 			$this->meta_key = '';
 			$this->category = 2;
+			$this->language_id = CURRENT_LANGUAGE;
 		}
 		
 
@@ -249,7 +250,10 @@
 				'type' => 'hidden'				
 			);
 			
-		
+			$out['seq'] = array(
+				'type' => 'hidden'				
+			);
+			
 			return $out;
 			
 		}	
@@ -379,7 +383,7 @@
 			$this->menu = (int)$this->menu;
 			$this->open_new_window = (int)$this->open_new_window;
 			$this->language_id = isset($this->language_id) ? $this->language_id : CURRENT_LANGUAGE;
-			$this->active = (int)$this->active;
+			$this->is_active = (int)$this->is_active;
 			
 			$db = Application::getDb();
 			$table = $this->getTableName();

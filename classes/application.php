@@ -64,6 +64,11 @@
 			
 		}
 		
+		
+		protected function preparePage($page) {
+			
+		}
+		
 
 		public function isMobile() {
 			if (is_null(self::$mobile)) {
@@ -119,6 +124,7 @@
 		public function getPage() {
 			if (!self::$page) {
 				self::$page = corePageLibrary::getInstance();
+				$this->preparePage(self::$page);
 			}
 
 			return self::$page;

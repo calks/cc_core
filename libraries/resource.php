@@ -152,9 +152,9 @@
 			
 			$out = array();
 						
-			//echo $resource_type;
+
 			$routing_rule = self::getResourceRoutingRule($resource_type, $resource_name);
-			//print_r($routing_rule);
+
 			$paths = array();
 			foreach ($routing_rule as $rule) {
 				if ($rule == APP_RESOURCE_CONTAINER_CORE) {
@@ -178,7 +178,7 @@
 					die("Bad resource routing rule");
 				}
 			}	
-			//print_r($paths);
+
 			foreach ($paths as $path) {
 				$absolute_path = Application::getSitePath() . $path;								
 				if (is_file($absolute_path)) {			
@@ -228,7 +228,7 @@
 					closedir($d);
 				}
 			}
-			//print_r($out);
+
 			self::$path_cache[$cache_key] = $out;
 			return $out;			
 		}
