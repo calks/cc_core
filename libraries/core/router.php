@@ -35,10 +35,8 @@
 				array_unshift($url_parts, $possible_module_name);
 			}
 
-			//self::$module_params = array_merge($url_parts, $url->getGetParams());
 			self::$module_params = $url_parts;
 
-			//foreach ($_POST as $key => $value) self::$module_params[$key] = $value;
 		}
 
 		public function getModuleName() {
