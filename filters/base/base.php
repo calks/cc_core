@@ -44,6 +44,13 @@
 			}
 
 		}
+		
+		
+		public function setValue($field_name, $value) {
+			$out = parent::setValue($field_name, $value);
+			$this->saveToSession();
+			return $out;		
+		}
 
 		protected function isSearchQueryPosted() {
 			if (!Request::isPostMethod()) return false;
