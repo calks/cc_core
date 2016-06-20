@@ -42,13 +42,11 @@
 				$this->setValue('search_order_direction', $_GET['search_order_direction']);
 				$this->saveToSession();
 			}
-
 		}
 		
 		
 		public function setValue($field_name, $value) {
 			$out = parent::setValue($field_name, $value);
-			$this->saveToSession();
 			return $out;		
 		}
 
