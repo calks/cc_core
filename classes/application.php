@@ -50,20 +50,6 @@
 		}
 		
 		
-		public function render() {			
-			self::init($application_name);		    
-			if (USE_PROFILER) {
-		        Application::loadLibrary('core/profiler');
-		        $profiler = new profiler("Total time consumption");
-		        $profiler->start();
-		    }
-			
-		    require self::getSitePath()."/applications/$application_name/index.php";
-		    
-		    if (USE_PROFILER) $profiler->stop();			
-			
-		}
-		
 		
 		protected function preparePage($page) {
 			
@@ -282,7 +268,7 @@
 		}
 
 		public function getSeoUrl($internal_url) {
-			return UrlRewriter::internalToSeo($internal_url);
+			return coreUrlRewriterLibrary::internalToSeo($internal_url);
 		}
 
 		public function getTempDirectory() {

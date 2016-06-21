@@ -51,7 +51,7 @@
 		}
 				
 		protected function getUserForm() {
-			Application::loadLibrary('olmi/form');
+			
 			$form_class = coreResourceLibrary::getEffectiveClass('form', 'registration');
 			$form = new $form_class();
 			$form->setAction(Application::getSeoUrl("/{$this->getName()}/save"));

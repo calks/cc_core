@@ -1,9 +1,9 @@
 <?php
 
-    include_once 'rule.php';
+    /*include_once 'rule.php';*/
     include_once 'url.php';
 
-    class UrlRewriter {
+    class coreUrlRewriterLibrary {
 
         static protected $rules;
 

@@ -13,7 +13,7 @@
 
 		public function route($url) {
 			self::$source_url = $url;
-			self::$rewritten_url = UrlRewriter::seoToInternal($url);
+			self::$rewritten_url = coreUrlRewriterLibrary::seoToInternal($url);
 			self::$module_params = array();
 			self::$request_params = array();
 			self::$module_name = self::$defaultModuleName;

@@ -65,8 +65,8 @@ class corePagePropertiesHelperLibrary {
 	protected function getDocumentIdByUrl($url) {
 		$db = Application::getDb();
 		$url = addslashes($url);
-		$seo_url = addslashes(UrlRewriter::internalToSeo($url));
-		$internal_url = addslashes(UrlRewriter::seoToInternal($url));
+		$seo_url = addslashes(coreUrlRewriterLibrary::internalToSeo($url));
+		$internal_url = addslashes(coreUrlRewriterLibrary::seoToInternal($url));
 		$doc = Application::getEntityInstance('document');
 
 		$table = $doc->getTableName();

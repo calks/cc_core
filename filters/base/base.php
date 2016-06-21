@@ -1,8 +1,5 @@
 <?php
 
-	Application::loadLibrary('olmi/form');
-	Application::loadLibrary('fields');
-
 	class coreBaseFilter extends coreBaseForm {
 
 		protected $session_key;
