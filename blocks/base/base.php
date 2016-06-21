@@ -17,6 +17,7 @@
 		public function render() {			
 			$smarty = Application::getSmarty();
 			$template_path = $this->getTemplatePath();
+			$smarty->assign('block', $this);
 			$this->html = $smarty->fetch($template_path);
 			return $this->html;
 		}
