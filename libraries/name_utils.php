@@ -83,8 +83,7 @@
 			$resource_type_regexp = implode('|', $resource_types);
 			$subname_regex = $ignore_subname ? '' : '(?P<sub_name>.*)'; 
 			
-			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')'.$subname_regex.'$/isU';
-									
+			$regexp = '/^(?P<container_complex_name>(?P<container_name>[a-z][a-zA-Z0-9]+)(?P<container_type>App|Pkg)|core)(?P<resource_name>[A-Z][a-zA-Z0-9]+)(?P<resource_type>'.$resource_type_regexp.')'.$subname_regex.'$/sU';
             $matched = preg_match($regexp, $class, $matches);
             if (!$matched) return $out;
             
