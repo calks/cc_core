@@ -85,20 +85,6 @@ class Redirector {
     exit();
   }
 
-  function redirectWaitOnErrors($url) {
-    if (!headers_sent()) {
-      if (Request::isHTTP11() || !Request::isPostMethod()) {
-        Redirector::redirectLocation($url);
-      }
-      else {
-        Redirector::redirectMeta($url, 0);
-      }
-    }
-    else {
-      Redirector::redirectMeta($url, 5);
-    }
-    exit();
-  }
 
   function redirectLocation($url) {
     $url = Redirector::makeCompleteUrl($url);
@@ -153,4 +139,3 @@ class Redirector {
   }
 
 }
-?>

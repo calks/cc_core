@@ -73,8 +73,7 @@
 			}
 		}
 		
-		function load_list($params=array()) {
-			
+		public function load_list($params=array()) {
 			$params_original = $params;
 						
 			// prevent setting parent_id=0 condition
@@ -94,6 +93,7 @@
 			$table = $this->getTableName();
 			
 			$language_id = isset($params['language_id']) ? $params['language_id'] : CURRENT_LANGUAGE;
+			
 			$subquery = $this->get_content_subquery($language_id);
 			
 			$params['fields'][] = "content.*";
@@ -102,7 +102,8 @@
 				ON content.document_id = $table.id
 			"; 
 			
-			$params['order_by'][] = 'seq';
+			$params['group_by'][] = 'seq';
+			$params['order_by'][] = 'content.document_id';
 			
 			$list = parent::load_list($params);
 			
@@ -142,10 +143,45 @@
 				}				
 			}
 
+			$this->loadLanguageVersions($list);
+			
 			return $list;			
 			
 		}
 
+		
+		protected function loadLanguageVersions(&$list) {
+			if (!$list) return;
+			
+			$mapping = array();
+			
+			$languages = coreRealWordEntitiesLibrary::getLanguages(null, 'id', 'native_name');
+			
+			foreach ($list as $item) {
+				$item->language_versions = array();
+				$mapping[$item->id] = $item;
+			}
+			
+			$table = $this->get_content_table_name();
+			$db = Application::getDb();
+			$ids = implode(',', array_keys($mapping));
+			
+			
+			$data = $db->executeSelectAllObjects("
+				SELECT 
+					document_id,
+					language_id
+				FROM 
+					$table
+				WHERE
+					document_id IN($ids)			
+			");
+					
+			foreach ($data as $d) {
+				$mapping[$d->document_id]->language_versions[$d->language_id] = $languages[$d->language_id];
+			}
+			
+		}
 		
 		public function getFieldProperties() {
 			
@@ -194,7 +230,7 @@
 				'type' => 'select',
 				'caption' => $this->gettext('Parent'),
 				'init' => array(
-					'set_options' => $this->get_parent_select_options(CURRENT_LANGUAGE) 
+					'set_options' => $this->get_parent_select_options($this->language_id) 
 				)
 			);
 			
@@ -269,22 +305,10 @@
 		}
 		
 		function get_categories($language_id = CURRENT_LANGUAGE) {
-			$db = Application::getDb();
+
 			$table = $this->getTableName();
-
-			$subquery = $this->get_content_subquery($language_id);
-
-			$sql = "
-                SELECT id, title
-                FROM $table JOIN $subquery AS content
-                ON content.document_id = $table.id
-                WHERE category IN(0,1)
-                GROUP BY document_id
-                ORDER BY category, seq
-            ";
-
-			$categories = $db->executeSelectAllObjects($sql);
-
+			$params['where'][] = "$table.category IN(0,1)";
+			$categories = $this->load_list($params);
 			return $categories;
 
 		}
@@ -299,52 +323,17 @@
 		}
 
 		function loadToUrl($url, $language_id = CURRENT_LANGUAGE) {
-			$db = Application::getDb();
-			$table = $this->getTableName();
+			
+			$table = $this->getTableName();			
 			$url = addslashes(trim($url));
-
-			$subquery = $this->get_content_subquery($language_id);
-
-			$query = "
-                SELECT *
-                FROM $table JOIN $subquery AS content
-                ON content.document_id = $table.id
-                WHERE url = '$url'
-                GROUP BY document_id
-            ";
+			$params['where'][] = "$table.url = '$url'";
+						
+			$documents = $this->load_list($params);
+			if (!$documents) return null;
 					
-			$object = $db->executeSelectObject($query);
-			if (!$object) return NULL;
-
-			$content_table = $this->get_content_table_name();
-			$lang_versions = $db->executeSelectColumn("
-                SELECT language_id FROM $content_table
-                WHERE document_id = $object->id
-                AND language_id!=$language_id
-                AND content!=''
-            ");
-			if (!$lang_versions) $lang_versions = array();
-
-			$object->lang_versions = $lang_versions;
-
-			$object->content = stripcslashes($object->content);
-
-			return $object;
-		}
-
-		static function check_lang_version($language_id, $document_id) {
-			$db = Application::getDb();
-
-			$document = new self();
-			$content_table = $document->get_content_table_name();
-			$lang_versions = $db->executeSelectColumn("
-                SELECT language_id FROM $content_table
-                WHERE document_id = $document_id
-                AND language_id = $language_id
-                AND content != ''
-            ");
-			if (!$lang_versions) return false;
-			else return true;
+			$document = array_shift($documents);
+			
+			return $document;
 		}
 
 		function getMenuNames() {
@@ -442,7 +431,7 @@
 			return $id;
 		}
 
-		function delete() {
+		public function delete() {
 			$db = Application::getDb();
 			$table = $this->getTableName();
 			
@@ -459,6 +448,30 @@
 			");
 
 			return parent::delete();
+		}
+		
+		public function deleteLanguageVersion($language_id) {
+			
+			$deleting_only_version = count($this->language_versions) == 1 && array_key_exists($language_id, $this->language_versions);
+			if ($deleting_only_version) {
+				return $this->delete();
+			}
+			
+			$db = Application::getDb();
+			$content_table = $this->get_content_table_name();
+			$language_id = (int)$language_id;
+			
+			$sql = "
+				DELETE FROM $content_table
+				WHERE 
+					document_id=$this->id AND
+					language_id = $language_id
+			";
+			
+			$db->execute($sql);
+			
+			return (bool)mysql_errno()==0;
+						
 		}
 
 	}
