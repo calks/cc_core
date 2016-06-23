@@ -21,9 +21,12 @@
             $data = $this->getMenu($menu_type);
                         
             $smarty = Application::getSmarty();
-            $smarty->assign('menu', $data);
+            $smarty->assign('menu', $data);            
+			$smarty->assign('block', $this);
+			
+			$this->html = $smarty->fetch($template_path);
+			return $this->html;
             
-            return $smarty->fetch($template_path);
         }
 
         protected function getLink($item) {
@@ -35,19 +38,25 @@
         	return $item->open_link ? Application::getSeoUrl("/$url") : Application::getSeoUrl("/textpage/$url");
         }
 
+
+        protected function prepareMenu(&$documents) {
+
+        	$current_page_url = '/' . trim(Router::getSourceUrl(), ' /');
+        	
+			foreach ($documents as $doc) {
+				$doc->link = $this->getLink($doc);
+				$doc->active = $object->link == $current_page_url;
+				$this->prepareMenu($doc->children);
+			}
+        }
         
-        protected function getMenu($type, $parent_id=0, $language_id=CURRENT_LANGUAGE) {        	
+        protected function getMenu($type, $language_id=CURRENT_LANGUAGE) {        	
             $db = Application::getDb();
 
             $doc = Application::getEntityInstance('document');
 
             $table = $doc->getTableName();
-			
-            if (!is_array($parent_id)) $parent_id = array($parent_id);
-            elseif (!$parent_id) return array();
-                        
-            foreach ($parent_id as &$id) $id = (int)$id;
-            $parent_id = implode(',', $parent_id);
+            $content_table = $doc->get_content_table_name();
 
             switch ($this->menu_type) {
                 case 'top':
@@ -60,54 +69,25 @@
                     return array();
             }
 
-            $subquery = $doc->get_content_subquery($language_id);
-
-            $query = "
-                SELECT 
-                	id, parent_id, open_link, url, open_new_window, title,
-                	0 AS important
-                FROM $table JOIN $subquery AS content ON content.document_id = $table.id
-                WHERE parent_id IN($parent_id) AND is_active = 1 AND $menu
-                GROUP BY document_id ORDER BY seq ASC
-            ";
+            $params['where'][] = "$table.is_active=1";
+            $params['where'][] = $menu;
+            $params['fields'] = array(
+            	"$table.id", 
+            	"$table.parent_id",
+            	"$table.open_link",
+            	"$table.url",
+            	"$table.open_new_window",
+            	"content.title",
+                "0 AS `important`"
+            );
+            $params['fieldlist_mode'] = 'specified_only';
             
-            $objects_raw = $db->executeSelectAllObjects($query);
+            $documens = $doc->load_list($params);
             
-            $objects = array();
-            $id_s = array();
-            foreach($objects_raw as $obj) {
-                $id_s[] = $obj->id;
-                $obj->children = array();
-                $objects[$obj->id] = $obj;                
-            }
-
-            if (!$parent_id) {
-                $children = $this->getMenu($type, $id_s);
-
-                foreach ($children as $child) {
-                    $objects[$child->parent_id]->children[] = $child;
-                }
-                
-                $current_page_url = '/' . trim(Router::getSourceUrl(), ' /');
-                
-                foreach ($objects as &$object) {
-                    if($object->open_link != '') $url = $object->open_link;
-                    else $url = $object->url;
-
-                    $children = $object->children;
-
-                    foreach ($children as &$child) {
-                        $child->link = $this->getLink($child);
-                        $child->active = $child->link == $current_page_url;
-                    }
-
-                    $object->children = $children;
-                    $object->link = $this->getLink($object);
-                    $object->active = $object->link == $current_page_url;
-                }
-            }
-     
-            return $objects;
+            $this->prepareMenu($documents);
+            
+            return $documens;
+            
         }
 
     }

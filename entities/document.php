@@ -75,7 +75,7 @@
 		
 		public function load_list($params=array()) {
 			$params_original = $params;
-						
+
 			// prevent setting parent_id=0 condition
 			// if id requested
 			if (!isset($params['parent'])) {
@@ -96,7 +96,12 @@
 			
 			$subquery = $this->get_content_subquery($language_id);
 			
-			$params['fields'][] = "content.*";
+            $fieldlist_mode = isset($params['fieldlist_mode']) ? $params['fieldlist_mode'] : '';
+
+            if ($fieldlist_mode != 'specified_only') {
+            	$params['fields'][] = "content.*";
+            }
+			
 			$params['from'][] = "
 				JOIN $subquery AS content
 				ON content.document_id = $table.id
@@ -110,16 +115,10 @@
 			foreach ($list as $item) {
 				$item->text_category = $this->getDocumentCategories($item->category);				
 				$item->children = array();
-				
 				$url = $item->open_link ? $item->open_link : $item->url;
-				
-				//$object->lang_version = document::check_lang_version(2, $object->id);
-
 				$internal_link = $this->getDocumentLink($url);
-				
 				$item->link = Application::getSeoUrl($internal_link);				
 				$item->front_link = str_replace('/admin/', '/', $item->link);
- 
 				$this->unpackMenuInfo($item);
 			}
 			
