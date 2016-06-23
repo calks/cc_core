@@ -11,6 +11,12 @@
 			return isset($languages[$language_id]) ? $languages[$language_id] : null;	
 		}
 		
+		public static function getLanguageId($language_code) {
+			$languages = self::getLanguages(false, 'code', 'id');
+			return isset($languages[$language_code]) ? $languages[$language_code] : null;	
+		}
+		
+		
 		public static function getLanguages($add_null_item=false, $key='id', $value='english_name') {
 			
 			if (is_null(self::$languages)) {

@@ -1,5 +1,8 @@
 <?php
 
+	define('LANGUAGES_ENGLISH', 38);
+    define('LANGUAGES_RUSSIAN', 136);
+
 	
 	class coreApplicationClass {
 	
@@ -117,7 +120,7 @@
 
 		public function getUserSession() {
 			if (!self::$user_session) {				
-				$class_name = coreResourceLibrary::getEffectiveClass('service', 'user_session');				
+				$class_name = coreResourceLibrary::getEffectiveClass('service', 'user_session');								
 				self::$user_session = new $class_name();
 			}
 
