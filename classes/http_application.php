@@ -8,6 +8,8 @@
 		protected $module;
 				
 		public function render() {
+			
+			$this->initSession();
 		
 			$this->route();
 			
@@ -31,10 +33,12 @@
 			
 						
 			$page = $this->getPage();			
-			$this->displayPage($page, $content);
-		
+			$this->displayPage($page, $content);		
 		}
-		
+				
+		protected function initSession() {
+			@session_start();
+		}
 		
 		protected function route() {
 			

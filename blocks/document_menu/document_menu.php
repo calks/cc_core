@@ -34,7 +34,7 @@
         	if(preg_match( "/^http:\/\//i", $url)) {
         		return $url;
         	}  
-        	$url = trim($url, ' /');
+        	$url = trim($url, ' /');        	
         	return $item->open_link ? Application::getSeoUrl("/$url") : Application::getSeoUrl("/textpage/$url");
         }
 
@@ -45,7 +45,7 @@
         	
 			foreach ($documents as $doc) {
 				$doc->link = $this->getLink($doc);
-				$doc->active = $object->link == $current_page_url;
+				$doc->active = $doc->link == $current_page_url;
 				$this->prepareMenu($doc->children);
 			}
         }
@@ -82,11 +82,11 @@
             );
             $params['fieldlist_mode'] = 'specified_only';
             
-            $documens = $doc->load_list($params);
+            $documents = $doc->load_list($params);
             
             $this->prepareMenu($documents);
             
-            return $documens;
+            return $documents;
             
         }
 

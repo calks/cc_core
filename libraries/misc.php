@@ -1,6 +1,5 @@
 <?php
 
-    Application::loadLibrary('olmi/stringUtils');
     Application::loadLibrary('olmi/redirect');
 
     function website_address_valid($url) {

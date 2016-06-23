@@ -1,6 +1,7 @@
 <?php
         
-    class coreUserSessionLibrary {
+    class coreUserSessionService {
+    	
     	static $user_id;
     	static $user_account;    	
     	static $live;

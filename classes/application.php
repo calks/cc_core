@@ -43,7 +43,6 @@
 			self::$breadcrumbs = null;
 			self::$message_stack = null;
 
-			@session_start();
 			
 			self::loadLibrary('misc');    
     		
@@ -118,7 +117,8 @@
 
 		public function getUserSession() {
 			if (!self::$user_session) {				
-				self::$user_session = new coreUserSessionLibrary();
+				$class_name = coreResourceLibrary::getEffectiveClass('service', 'user_session');				
+				self::$user_session = new $class_name();
 			}
 
 			return self::$user_session;
