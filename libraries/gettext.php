@@ -14,16 +14,23 @@
 			}
 		}
 		
-		public static function gettext($resource, $message) {
+		public static function gettext($resource, $message, $checking_general_translations=false) {
 
-			foreach (self::getTranslationSubresources($resource) as $ts) {
-				$translation_class = $ts->class;
+			$translated = false;
+			
+			foreach (self::getTranslationSubresources($resource) as $ts) {				
+				$translation_class = $ts->class;				
 				$translation_object = new $translation_class();
 				$translations = $translation_object->getTranslations();
 				if (isset($translations[$message])) {
 					$message = $translations[$message];
+					$translated = true;
 					break;
-				}       				        				
+				}
+			}
+			
+			if (!$translated && !$checking_general_translations) {
+				return self::gettext(null, $message, true);
 			}
 			        		
         	$sprintf_params = func_get_args();        	
