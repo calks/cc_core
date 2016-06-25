@@ -1,6 +1,6 @@
 <?php
 
-	class coreBaseSettingGroup {
+	class coreBaseSettingGroup extends coreResourceObjectLibrary {
 		
 		public function getParamsTree() {
 			return array();

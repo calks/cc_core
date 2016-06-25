@@ -141,6 +141,7 @@
 			return $resource_routing['default'];
 		}
 		
+		// TODO: Make possible to find all resources with no-php extension (when only type is given)
 		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
 			//echo "findAll('$resource_type', '$resource_name', '$sub_path', '$extension')\n";
 			$cache_key = md5("$resource_type.$resource_name.$sub_path,$extension");
@@ -197,7 +198,6 @@
 					}
 				}
 				else {					
-					
 					$d = @opendir($absolute_path);
 					if (!$d) continue;
 					while ($filename = readdir($d)) {
@@ -222,7 +222,7 @@
 						
 						$entry = new stdClass();
 						$entry->path = $absolute_path_individual_dir ? "$path/$filename/$filename.$extension" : "$path/$filename";
-						$entry->class = coreNameUtilsLibrary::classFromRelativePath($path . '/' . $filename);						
+						$entry->class = coreNameUtilsLibrary::classFromRelativePath($entry->path);
 						$out[$name][] = $entry;
 					}
 					closedir($d);
