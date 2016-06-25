@@ -17,18 +17,18 @@
 			$user_logged = $user_session->getUserAccount();			
 			
 			if ($this->module_name) {
-				$this->module = Application::getResourceInstance('module', $this->module_name);
+				$this->module = $this->getResourceInstance('module', $this->module_name);
 												
 				if (coreAccessControlLibrary::accessAllowed($user_logged, $this->module)) {																				
 					$content = call_user_func(array($this->module, 'run'), $this->module_params);										
 				}
 				else {
-					$this->stackError(Application::gettext('You should login as admin'));
+					$this->stackError($this->gettext('You have no enough permissions to view this page. Please login.'));
 					$user_session->logout();
-					Redirector::redirect(Application::getSeoUrl('/login?back=' . Router::getSourceUrl()));
+					Redirector::redirect($this->getSeoUrl('/login?back=' . Router::getSourceUrl()));
 				}
 			} else {
-				$content = Application::runModule('page404');
+				$content = $this->runModule('page404');
 			}
 			
 						
@@ -60,7 +60,7 @@
 		
 		protected function displayPage($page, $content) {
 			$html_head = $page->getHtmlHead();
-			$smarty = Application::getSmarty();
+			$smarty = $this->getSmarty();
 			
 			$smarty->assign('html_head', $html_head);
 			$smarty->assign('content', $content);

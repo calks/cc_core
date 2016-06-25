@@ -98,7 +98,7 @@
 		
 		
 		public static function findEffective($resource_type, $resource_name=null, $sub_path=null) {
-			$all_files = self::findAll($resource_type, $resource_name, $sub_path);
+			$all_files = self::findAll($resource_type, $resource_name, $sub_path);			
 			$out = array();
 			foreach ($all_files as $name=>$items) {
 				$out[$name] = $items[0];

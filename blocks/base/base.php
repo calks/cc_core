@@ -18,6 +18,7 @@
 			$smarty = Application::getSmarty();
 			$template_path = $this->getTemplatePath();
 			$smarty->assign('block', $this);
+			$smarty->assign('block_id', $this->block_id);
 			$this->html = $smarty->fetch($template_path);
 			return $this->html;
 		}
