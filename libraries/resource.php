@@ -144,7 +144,7 @@
 		// TODO: Make possible to find all resources with no-php extension (when only type is given)
 		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
 			//echo "findAll('$resource_type', '$resource_name', '$sub_path', '$extension')\n";
-			$cache_key = md5("$resource_type.$resource_name.$sub_path,$extension");
+			$cache_key = md5(Application::getApplicationName() . "$resource_type.$resource_name.$sub_path,$extension");
 			if (isset(self::$path_cache[$cache_key])) return self::$path_cache[$cache_key]; 
 						
 			$dir = coreNameUtilsLibrary::getPluralNoun($resource_type);

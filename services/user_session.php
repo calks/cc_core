@@ -2,18 +2,30 @@
         
     class coreUserSessionService {
     	
-    	static $user_id;
-    	static $user_account;    	
-    	static $live;
+    	protected static $user_id;
+    	protected static $user_account;    	
+    	protected static $live;
     	    	
-    	var $auto_save;    	
+    	protected $auto_save;    	
     	
-    	function getSessionKey() {
+    	protected function getSessionKey() {
     		return Application::getApplicationName() . "UserSession"; 
     	}
     	
-    	function __construct() {    		    		
-    		if (self::$live) {    			
+    	protected function log($message) {    	
+    		return;
+    		$log_path = Application::getSitePath() . Application::getVarDirectory() . '/session.log';
+    		$url = 'http://' . $_SERVER['HTTP_HOST'] . @$_SERVER[REQUEST_URI];
+    		$session_key = $this->getSessionKey();
+    		$session_id = session_id();
+    		$cookie = @$_COOKIE['PHPSESSID'];
+    		file_put_contents($log_path, date('Y-m-d H:i:s') .  " $message ($session_key, $session_id, $cookie, $url)\n", FILE_APPEND);
+    	}
+    	
+    	public function __construct() {
+    		if (!session_id()) session_start();
+    		
+    		if (self::$live) {
     			$this->auto_save = 0;
     			return;
     		}
@@ -24,8 +36,9 @@
     		self::$user_account = null;    		
     		    		
     		self::$user_id = (int)@$_SESSION[$this->getSessionKey()];
-    		if (!self::$user_id) return;
+    		$this->log("loaded: " . self::$user_id);
     		
+    		if (!self::$user_id) return;
     		
     		$user = Application::getEntityInstance('user');
     		self::$user_account = $user->load(self::$user_id);
@@ -42,45 +55,55 @@
     		
     	}
     	
-    	function __destruct() {    		
+    	public function __destruct() {    		
     		if (!$this->auto_save) return;    		
-    		$_SESSION[$this->getSessionKey()] = self::$user_id;    		
+    		$_SESSION[$this->getSessionKey()] = self::$user_id;    
+    		$this->log("saved: " . self::$user_id);		
     	}
     	
-    	function getSerializableFields() {
+    	protected function getSerializableFields() {
     		return array("user_id");
     	}
     	
-    	function __sleep() {
+    	public function __sleep() {
     		return $this->getSerializableFields();
     	}
     	
-    	function auth($login, $pass) {
+    	
+    	public function findUserByLogin($login) {
+    		$user = Application::getEntityInstance('user');
+    		$table = $user->getTableName();
+    		$login = addslashes($login);
+    		$params['where'][] = "$table.login='$login'";
+    		$users = $user->load_list($params);    		
+    		return $users ? array_shift($users) : null;    		
+    	}
+    	
+    	public function findUserByCredentials($login, $pass) {
+    		$user = Application::getEntityInstance('user');
+    		$pass = $user->encriptPassword($pass);
+    		$user = $this->findUserByLogin($login);
+    		if (!$user) return null;
+    		if ($user->pass != $pass) return null;
+    		return $user;
+    	}
+    	
+    	public function auth($login, $pass) {
     		self::$user_id = null;
     		self::$user_account = null;
     		    		
-    		$user = Application::getEntityInstance('user');
-    		$table = $user->getTableName();
-    		$db = Application::getDb();
+    		$user = $this->findUserByCredentials($login, $pass);
 
-    		$login = addslashes($login);
-    		$pass = $user->encriptPassword($pass);
-    		
-    		$user_id = $db->executeScalar("
-    			SELECT id
-    			FROM $table
-    			WHERE login='$login' AND pass='$pass' AND is_active=1
-    		");
-
-    		if (!$user_id) return false;
+    		if (!$user) return false;
+    		if (!$user->is_active) return false;
     		    		    		
-    		self::$user_account = $user->load($user_id);
-    		self::$user_id = $user_id;
+    		self::$user_account = $user;
+    		self::$user_id = $user->id;
     		$_SESSION[$this->getSessionKey()] = self::$user_id;
     		return true; 
     	}
     	
-    	function forceLogin($user_id) {
+    	public function forceLogin($user_id) {
     		$user = Application::getEntityInstance('user');
     		$user = $user->load($user_id);
     		
@@ -93,22 +116,24 @@
     		return true; 
 	   	}
     	
-    	function logout() {
+    	public function logout() {
+			$this->log('logout');
+    		
     		unset($_SESSION[$this->getSessionKey()]);
     		self::$user_id = null;
     		self::$user_account = null;
     	}
     	
-    	function userLogged() {
+    	public function userLogged() {
     		return is_object(self::$user_account);
     	}
     	
-        function getUserAccount() {
+        public function getUserAccount() {
         	return self::$user_account;
         }
         
 
-        function getUserID() {
+        public function getUserID() {
         	return self::$user_id;
         }
         
