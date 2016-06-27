@@ -37,7 +37,7 @@
 		}
 				
 		protected function initSession() {
-			@session_start();
+			if (!session_id()) session_start();
 		}
 		
 		protected function route() {
