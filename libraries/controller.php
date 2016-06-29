@@ -76,9 +76,26 @@
         }
         
         public function getTemplatePath($template_name = '') {        	        	
-            $template_name_supplied = $template_name != '';        	
-        	if (!$template_name_supplied) $template_name = $this->getName();             
-        	return $this->findEffectiveSubresourcePath('template', $template_name, null, 'tpl');
+        	$template_name_supplied = $template_name != '';        	
+        	if (!$template_name_supplied) $template_name = $this->getName();
+        	
+        	$possible_names = array($template_name);
+        	
+        	if (!$template_name_supplied) {
+				$parents = class_parents($this);            
+	            foreach ($parents as $p) {	            	
+	            	$parent_name = coreNameUtilsLibrary::getResourceName($p);	            	
+	            	if (in_array($parent_name, $possible_names)) continue;            	
+	            	$possible_names[] = $parent_name;
+	            }	
+        	}
+        	
+            while($name = @array_shift($possible_names)) {
+            	$path = $this->findEffectiveSubresourcePath('template', $name, null, 'tpl');
+            	if ($path) return $path; 
+            }
+            
+        	return null;
         }
 		
 		
