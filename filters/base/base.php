@@ -44,6 +44,7 @@
 		
 		public function setValue($field_name, $value) {
 			$out = parent::setValue($field_name, $value);
+			$this->saveToSession();
 			return $out;		
 		}
 
