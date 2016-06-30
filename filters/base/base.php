@@ -27,33 +27,26 @@
 			if ($sort_link_options && !array_key_exists($current_sort_option, $sort_link_options)) {
 				$this->setValue('search_order_field', array_shift(array_keys($sort_link_options)));
 				$this->setValue('search_order_direction', null);
-				$this->saveToSession();
 			}
 
 			if (isset($_GET['search_order_field'])) {
 				$this->setValue('search_order_field', $_GET['search_order_field']);
-				$this->saveToSession();
 			}
 
 			if (isset($_GET['search_order_direction'])) {
 				$this->setValue('search_order_direction', $_GET['search_order_direction']);
-				$this->saveToSession();
 			}
 		}
 		
 		
-		public function setValue($field_name, $value) {
+		public function setValue($field_name, $value, $save_to_session=true) {
 			$out = parent::setValue($field_name, $value);
-			$this->saveToSession();
+			if ($save_to_session) $this->saveToSession();
 			return $out;		
 		}
 
 		protected function isSearchQueryPosted() {
-			if (!Request::isPostMethod()) return false;
-			foreach ($this->fields as $field_name => $field) {
-				if (isset($_POST[$field_name])) return true;
-			}
-			return false;
+			return isset($_REQUEST[$this->getFieldsGroupName()]);
 		}
 
 		
@@ -102,6 +95,9 @@
 		
 		}
 		
+		
+		
+		
 
 		function printGetSearch() {
 			$this->trimField();
@@ -109,109 +105,132 @@
 			foreach ($this->fields as $field_name => $field_object) {
 				$value = $field_object->getValue();
 				if (is_array($value)) {
-					foreach ($value as $v) $w[] = "{$field_name}
-				[]=$v";
+					foreach ($value as $v) $w[] = "{$field_name}[]=$v";
+				}
+				elseif ($value) {
+					$w[] = "{$field_name}=$value";
+				}
 			}
-			elseif ($value) {
-				$w[] = "{$field_name}=$value";
+	
+			asort($w);
+	
+			if (count($w) == 0) {
+				return "";
+			}
+			else {
+				return join("&", $w);
 			}
 		}
-
-		asort($w);
-
-		if (count($w) == 0) {
-			return "";
+	
+		public function initWithGetSearch($get_str) {
+			$this->reset_values();
+			$input = array();
+			parse_str($get_str, $input);
+			$this->LoadFromRequest($input);
+			$this->saveToSession();
 		}
-		else {
-			return join("&", $w);
+	
+		protected function saveToSession() {
+			$session_key = $this->getSessionKey();
+			foreach (array_keys($this->fields) as $field) {
+				$_SESSION[$session_key][$field] = $this->getValue($field);
+			}
 		}
+	
+		protected function loadFromSession() {
+			$session_key = $this->getSessionKey();
+			foreach (array_keys($this->fields) as $field) {
+				if (!isset($_SESSION[$session_key][$field])) continue;
+				$this->setValue($field, $_SESSION[$session_key][$field], false);
+			}
+		}
+	
+		protected function getSessionKey() {
+			$fields = array_keys($this->fields);
+			$fields_hash = md5(implode('|', $fields).Application::getApplicationName().get_class($this));
+			return "filter_state_$fields_hash";
+		}
+		
+		protected function getFieldsGroupName() {
+			return $this->getResourceName() . '_filter'; 
+		}
+		
+		public function addField($field) {
+			$out = parent::addField($field);
+			$field_group_name = $this->getFieldsGroupName();
+			$field_name = $field->getFieldName();
+
+			$first_bracket_pos = strpos($field_name, '[');
+			if ($first_bracket_pos !== false) {
+				$before_bracket = substr($field_name, 0, $first_bracket_pos);
+				$after_bracket = substr($field_name, $first_bracket_pos);
+				$new_field_name = $field_group_name . '[' . $before_bracket . ']' . $after_bracket;
+			}
+			else {
+				$new_field_name = $field_group_name . '[' . $field_name . ']';
+			}
+			
+			//echo "$field_name => $new_field_name<br>";
+			$field->setFieldName($new_field_name);
+			return $out;
+		}
+	
+		protected function getSortLinkOptions() {
+			return array();
+		}
+	
+		public function sortLink($caption, $order_option, $base, $url_addition = null, $default_direction = 'asc') {
+	
+			$current_order_field = $this->getValue('search_order_field');
+			$current_order_direction = $this->getValue('search_order_direction');
+			if (!in_array($current_order_direction, array('asc', 'desc'))) {
+				$current_order_direction = $default_direction;
+			}
+	
+			if ($current_order_field == $order_option) {
+				$new_order_direction = $current_order_direction == 'asc' ? 'desc' : 'asc';
+			}
+			else {
+				$new_order_direction = $default_direction;
+			}
+	
+			$classes = array('sort_link');
+			if ($current_order_field == $order_option) {
+				$classes[] = 'selected';
+				$classes[] = $current_order_direction;
+			}
+	
+			if (!in_array('selected', $classes)) {
+				$icon_class = 'ui-icon-carat-2-n-s';
+			}
+			else {
+				$icon_class = in_array('desc', $classes) ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-n';
+			}
+	
+			$classes = 'class="'.implode(' ', $classes).'"';
+	
+			$link = $base;
+			if (strpos($base, '?') === false) $link .= '?';
+			else $link .= '&';
+	
+			$link .= 'search_order_field='.rawurlencode($order_option);
+			$link .= '&search_order_direction='.rawurlencode($new_order_direction);
+	
+			$link = Application::getSeoUrl($link);
+	
+			if ($url_addition) {
+				$link .= "&$url_addition";
+			}
+	
+			//return "<a href=\"$link\" $classes>$caption</a>";
+	
+			return "
+	        		<div class=\"DataTables_sort_wrapper\">
+	        			<a href=\"$link\" $classes>$caption</a>
+	        			<span class=\"DataTables_sort_icon css_right ui-icon $icon_class\"></span>
+	        		</div>
+	        	";
+		}
+	
 	}
-
-	public function initWithGetSearch($get_str) {
-		$this->reset_values();
-		$input = array();
-		parse_str($get_str, $input);
-		$this->LoadFromRequest($input);
-		$this->saveToSession();
-	}
-
-	protected function saveToSession() {
-		$session_key = $this->getSessionKey();
-		foreach (array_keys($this->fields) as $field) {
-			$_SESSION[$session_key][$field] = $this->getValue($field);
-		}
-	}
-
-	protected function loadFromSession() {
-		$session_key = $this->getSessionKey();
-		foreach (array_keys($this->fields) as $field) {
-			if (!isset($_SESSION[$session_key][$field])) continue;
-			$this->setValue($field, $_SESSION[$session_key][$field]);
-		}
-	}
-
-	protected function getSessionKey() {
-		$fields = array_keys($this->fields);
-		$fields_hash = md5(implode('|', $fields).Application::getApplicationName().get_class($this));
-		return "filter_state_$fields_hash";
-	}
-
-	protected function getSortLinkOptions() {
-		return array();
-	}
-
-	public function sortLink($caption, $order_option, $base, $url_addition = null, $default_direction = 'asc') {
-
-		$current_order_field = $this->getValue('search_order_field');
-		$current_order_direction = $this->getValue('search_order_direction');
-		if (!in_array($current_order_direction, array('asc', 'desc'))) {
-			$current_order_direction = $default_direction;
-		}
-
-		if ($current_order_field == $order_option) {
-			$new_order_direction = $current_order_direction == 'asc' ? 'desc' : 'asc';
-		}
-		else {
-			$new_order_direction = $default_direction;
-		}
-
-		$classes = array('sort_link');
-		if ($current_order_field == $order_option) {
-			$classes[] = 'selected';
-			$classes[] = $current_order_direction;
-		}
-
-		if (!in_array('selected', $classes)) {
-			$icon_class = 'ui-icon-carat-2-n-s';
-		}
-		else {
-			$icon_class = in_array('desc', $classes) ? 'ui-icon-triangle-1-s' : 'ui-icon-triangle-1-n';
-		}
-
-		$classes = 'class="'.implode(' ', $classes).'"';
-
-		$link = $base;
-		if (strpos($base, '?') === false) $link .= '?';
-		else $link .= '&';
-
-		$link .= 'search_order_field='.rawurlencode($order_option);
-		$link .= '&search_order_direction='.rawurlencode($new_order_direction);
-
-		$link = Application::getSeoUrl($link);
-
-		if ($url_addition) {
-			$link .= "&$url_addition";
-		}
-
-		//return "<a href=\"$link\" $classes>$caption</a>";
-
-		return "
-        		<div class=\"DataTables_sort_wrapper\">
-        			<a href=\"$link\" $classes>$caption</a>
-        			<span class=\"DataTables_sort_icon css_right ui-icon $icon_class\"></span>
-        		</div>
-        	";
-	}
-
-}
 
