@@ -178,7 +178,9 @@
 				else {
 					die("Bad resource routing rule");
 				}
-			}	
+			}
+
+			$paths = array_unique($paths);
 
 			foreach ($paths as $path) {
 				$absolute_path = Application::getSitePath() . $path;								
