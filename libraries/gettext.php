@@ -7,11 +7,31 @@
 			$language_code = coreRealWordEntitiesLibrary::getLanguageCode(CURRENT_LANGUAGE);
 			if (!$language_code) return array();
 			if ($resource) {
-				return $resource->findEffectiveSubresources('translation', $language_code);
+				$preferred = $resource->findEffectiveSubresources('translation', $language_code);
+				$alternative = $resource->findAllSubresources('translation', $language_code);
 			} 
 			else {
-				return coreResourceLibrary::findEffective('translation', $language_code);
+				$preferred = coreResourceLibrary::findEffective('translation', $language_code);
+				$alternative = coreResourceLibrary::findAll('translation', $language_code);
 			}
+			
+			$out = array();
+			
+			$preferred_class = null;
+			if (isset($preferred[$language_code])) {
+				$out[] = $preferred[$language_code];
+				$preferred_class = $preferred[$language_code]->class;
+			}
+			
+			if (isset($alternative[$language_code])) {
+				foreach ($alternative[$language_code] as $alt) {
+					if ($preferred_class && $alt->class == $preferred_class) continue;
+					$out[] = $alt;	
+				}
+			}
+			
+			return $out;
+			
 		}
 		
 		public static function gettext($resource, $message, $checking_general_translations=false) {
