@@ -323,7 +323,8 @@
         public function getStaticList() {
         	$out = array(
         		'css' => array(),
-        		'js' => array()
+        		'js' => array(),
+        		'literal' => array()
         	);
         	foreach ($this->_adding_order as $item_data) {
             	$array_name = $item_data['array_name'];
@@ -335,13 +336,17 @@
         		
             	switch ($array_name) {
             		case '_stylesheets':
-            			$out['css'][] = $item;            			
+            			$out['css'][] = $item;
             			break;
             		case '_scripts':
             			if ($index_1 == 'text/javascript') {
             				$out['js'][] = $item;
             			}            			          			
             			break;
+            		case '_literal':
+            			$out['literal'][] = $item;           			          			
+            			break;
+            			
             	}            	
         	}
         	
