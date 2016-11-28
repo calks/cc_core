@@ -202,5 +202,9 @@
 			return false;
 		}
 		
+		public function getFormatErrors() {
+			return array();
+		}
+		
 		
 	}

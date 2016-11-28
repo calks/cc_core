@@ -9,7 +9,7 @@
 		protected $heading = '';
 		
 		protected $buttons = array();
-		
+		protected $fields_common_name = '';
 
 		
 		public function setHeading($heading) {
@@ -30,6 +30,7 @@
 			$this->fields[$field_name] = array(
 				'field' => $field
 			);
+			$this->addCommonNameToFields();
 		}
 				
 		public function replaceField(coreBaseFormField $field) {
@@ -101,8 +102,16 @@
 					$this->setFieldError($field_name, Application::gettext("Required field \"%s\" is empty", $caption));					
 				}
 				elseif (!$field_data['field']->isEmpty() && $field_data['field']->isMalformed()) {
-					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);					
-					$this->setFieldError($field_name, Application::gettext("Field \"%s\" contains malformed value", $caption));
+					$format_errors = $field_data['field']->getFormatErrors();
+					$caption = isset($field_data['caption']) ? $field_data['caption'] : str_replace('_', ' ', $field_name);
+					if ($format_errors) {
+						foreach ($format_errors as $fe) {
+							$this->setFieldError($field_name, '"' . $caption . '": ' .  $fe);
+						}												
+					}
+					else {						
+						$this->setFieldError($field_name, Application::gettext("Field \"%s\" contains malformed value", $caption));
+					}
 				}
 			}
 			
@@ -207,5 +216,37 @@
 		}
 		
 		
-	
+		public function setFieldsCommonName($fields_common_name) {
+			$this->fields_common_name = $fields_common_name;
+			$this->addCommonNameToFields();
+		}
+		
+		
+		protected function addCommonNameToFields() {
+			
+			foreach (array_keys($this->fields) as $initial_field_name) {
+				if ($this->fields_common_name) {
+					$first_bracket_pos = strpos($initial_field_name, '[');
+					if ($first_bracket_pos !== false) {
+						$before_bracket = substr($initial_field_name, 0, $first_bracket_pos);
+						$after_bracket = substr($initial_field_name, $first_bracket_pos);
+						$new_field_name = $this->fields_common_name . '[' . $before_bracket . ']' . $after_bracket;
+					}
+					else {
+						$new_field_name = $this->fields_common_name . '[' . $initial_field_name . ']';
+					}
+				}
+				else {
+					$new_field_name = $initial_field_name;
+				}
+				$this->getField($initial_field_name)->setFieldName($new_field_name);
+			}
+
+		}
+		
 	}
+	
+	
+	
+	
+	

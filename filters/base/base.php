@@ -36,6 +36,8 @@
 			if (isset($_GET['search_order_direction'])) {
 				$this->setValue('search_order_direction', $_GET['search_order_direction']);
 			}
+			
+			$this->setFieldsCommonName($this->getFieldsGroupName());
 		}
 		
 		
@@ -155,25 +157,6 @@
 			return $this->getResourceName() . '_filter'; 
 		}
 		
-		public function addField($field) {
-			$out = parent::addField($field);
-			$field_group_name = $this->getFieldsGroupName();
-			$field_name = $field->getFieldName();
-
-			$first_bracket_pos = strpos($field_name, '[');
-			if ($first_bracket_pos !== false) {
-				$before_bracket = substr($field_name, 0, $first_bracket_pos);
-				$after_bracket = substr($field_name, $first_bracket_pos);
-				$new_field_name = $field_group_name . '[' . $before_bracket . ']' . $after_bracket;
-			}
-			else {
-				$new_field_name = $field_group_name . '[' . $field_name . ']';
-			}
-			
-			//echo "$field_name => $new_field_name<br>";
-			$field->setFieldName($new_field_name);
-			return $out;
-		}
 	
 		protected function getSortLinkOptions() {
 			return array();
