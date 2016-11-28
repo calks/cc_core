@@ -84,7 +84,7 @@ CREATE TABLE `user` (
 
 
 INSERT INTO `user` VALUES (
-  1, 'Admin', '', 'admin@site.com', 'admin@site.com', '21232f297a57a5a743894a0e4a801fc3', 1, '2015-06-04 10:35:26', 38, 41, '', '', 0
+  1, 'Admin', '', 'admin@site.com', 'admin@site.com', '21232f297a57a5a743894a0e4a801fc3', 1, '2015-06-04 10:35:26', 38, 41, NULL, NULL, 0
 );
 
 
