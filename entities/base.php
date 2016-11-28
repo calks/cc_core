@@ -4,6 +4,9 @@
 	     
 		public $id;
         
+		const RELATION_ONE_TO_MANY = 1;
+		const RELATION_MANY_TO_ONE = 2;
+		const RELATION_MANY_TO_MANY = 3;
 		
 		function hasField($fieldName) {
 			return array_key_exists($fieldName, get_object_vars($this));
@@ -150,8 +153,13 @@
 
         public function order_by() {
             $table = $this->getTableName();
-            $pkey = $this->getPrimaryKeyField();
-            return "`$table`.`$pkey`";
+            if ($this->hasField('seq')) {
+            	return "`$table`.`seq`";
+            }
+            else {
+            	$pkey = $this->getPrimaryKeyField();
+            	return "`$table`.`$pkey`";
+            }            
         }
 
         protected function wrap_term($term) {
@@ -371,6 +379,135 @@
 
             return $list;
         }
+        
+        
+        protected function loadRelatedEntities(&$list, $related_entity_name, $relation_type) {
+        	if (!$list) return;
+        	
+        	switch ($relation_type) {
+        	
+        		case self::RELATION_ONE_TO_MANY:
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();
+        			$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
+        			$foreign_key = $this->getName() . '_id';
+        			
+        			
+        			$mapping = array();
+        			foreach ($list as $item) {
+        				$item->$list_field = array();
+        				$mapping[$item->id] = $item;
+        			}
+        			
+        			$ids = array_keys($mapping);
+        			$ids = implode(',', $ids);
+        			
+        			$load_params['where'][] = "`$related_entity_table`.`$foreign_key` IN ($ids)"; 
+        			
+        			$related_entity_list = $related_entity->load_list($load_params);
+        			
+        			foreach ($related_entity_list as $re) {
+        				$re_list = &$mapping[$re->$foreign_key]->$list_field;
+        				$re_list[] = $re; 
+        			}
+        			
+        			break;
+        		default:
+        			throw new coreException('unknown relation type');
+        	
+        	}
+        	
+        }
+        
+        
+        protected function findUnrelatedEntityIds(&$related_list, $related_entity_name, $relation_type) {
+        	if (!$this->id) return array();
+        	        	
+        	switch ($relation_type) {        	
+        		case self::RELATION_ONE_TO_MANY:
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();        			
+        			$foreign_key = $this->getName() . '_id';
+        			
+        			$where[] = "`$related_entity_table`.`$foreign_key` = $this->id";
+
+        			if ($related_list) {
+        				$related_ids = array();
+        				foreach ($related_list as $item) {
+        					$related_ids[] = $item->$foreign_key;
+        				}
+        				
+        				$related_ids = implode(',', $related_ids);
+        				$where[] = "`$related_entity_table`.`id` NOT IN($related_ids)";
+        			}
+        			
+        			
+        			$where = implode(' AND ', $where);
+        			$db = Application::getDb();
+        			
+        			return $db->executeSelectColumn("
+        				SELECT 
+        					id
+        				FROM 
+        					$related_entity_table
+        				WHERE
+        					$where      			
+        			"); 
+        			
+					break;
+        		default:
+        			throw new coreException('unknown relation type');
+        			
+        	}
+        	
+        }
+        
+        protected function deleteUnrelatedEntities(&$related_list, $related_entity_name, $relation_type) {
+        	$unrelated_ids = $this->findUnrelatedEntityIds($related_list, $related_entity_name, $relation_type);
+        	if ($unrelated_ids) {
+        		$related_entity = Application::getEntityInstance($related_entity_name);
+        		$related_entity_table = $related_entity->getTableName();
+        		$unrelated_ids = implode(',', $unrelated_ids);
+        		$load_params['where'][] = "`$related_entity_table`.id IN($unrelated_ids)"; 
+        		$unrelated_list = $related_entity->load_list($load_params);
+        		foreach ($load_params as $item) {
+        			$item->delete();
+        		}
+        	}
+        	
+        	
+        }        
+        
+        protected function updateUnrelatedEntities(&$related_list, $related_entity_name, $relation_type) {
+        	
+        }        
+        
+        protected function saveRelatedEntities(&$related_list, $related_entity_name, $relation_type) {
+        	
+        	if (!$this->id) return;
+        	
+        	switch ($relation_type) {
+        	
+        		case self::RELATION_ONE_TO_MANY:
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();        			
+        			$foreign_key = $this->getName() . '_id';
+        			
+        			foreach ($related_list as $item) {
+        				$item->$foreign_key = $this->id;
+        			}
+        			
+        			$related_entity->save_list($related_list);
+        			
+        			break;
+        		default:
+        			throw new coreException('unknown relation type');
+        			
+        	}
+        
+        }
+        
+        
 
         public function count_list($params = array()) {            
             $db = Application::getDb();
@@ -417,13 +554,7 @@
 
             foreach ($fields as $field) {            	
                 $sql_fields[] = "`$field`";
-                //$sql_values[] = $value;                
-                /*if ($field != $pkey) {
-                	$sql_update[] = "`$field`=VALUES(`$field`)";                	
-            	}*/
-                //if ($field == $pkey) continue;
                 $sql_update[] = $field==$pkey ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=VALUES(`$field`)";
-            	
             }
             
             $sql_values = array();
@@ -458,35 +589,9 @@
         }
         
         public function save() {
-            /*$object_table = $this->getTableName();
-            $fields = $this->get_save_fields();
-            
-            if (!$this->$pkey) {
-                $this->$pkey = null;
-            }
-
-            $insert_fields = array();
-            $insert_values = array();
-            $update = array();
-
-            foreach ($fields as $field) {            	
-                $value = $this->$field;                
-                $value = is_null($value) ? "NULL" : "'".addslashes($value)."'";
-                $insert_fields[] = "`$field`";
-                $insert_values[] = $value;
-                $update[] = ($field == $pkey) ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=$value";
-            }
-
-            $insert_fields = implode(', ', $insert_fields);
-            $insert_values = implode(', ', $insert_values);
-            $update = implode(', ', $update);
-
-            $sql = "INSERT INTO `$object_table` ($insert_fields) VALUES($insert_values)";
-            if ($this->$pkey) $sql .= " ON DUPLICATE KEY UPDATE $update";*/
-        	
         	$pkey = $this->getPrimaryKeyField();
         	$sql = $this->get_save_sql(array($this));
-//die($sql);
+
             $db = Application::getDb();
             $db->execute($sql);
 
@@ -521,7 +626,7 @@
             $object_table = $this->getTableName();
             $reload_params['where'][] = "`$object_table`.`$pkey` >= $first_inserted_item_pkey";
             $reload_params['limit'] = $new_items_count;
-            $reload_params['show_sql'] = 1;
+            //$reload_params['show_sql'] = 1;
             
             $just_inserted = $this->load_list($reload_params);
             if (count($just_inserted) != $new_items_count) {
