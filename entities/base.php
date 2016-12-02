@@ -383,15 +383,24 @@
         
         protected function loadRelatedEntities(&$list, $related_entity_name, $relation_type) {
         	if (!$list) return;
-        	
+
         	switch ($relation_type) {
         	
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();
         			$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
-        			$foreign_key = $this->getName() . '_id';
+
         			
+        			$is_related_by_entity_name_and_id = $related_entity->hasField('entity_name') && $related_entity->hasField('entity_id');
+        			if ($is_related_by_entity_name_and_id) {
+        				$entity_name = $this->getResourceName();        				
+        				$load_params['where'][] = "`$related_entity_table`.`entity_name` = '$entity_name'";
+        				$foreign_key = 'entity_id';
+        			}
+        			else {
+        				$foreign_key = $this->getName() . '_id';        				
+        			}
         			
         			$mapping = array();
         			foreach ($list as $item) {
@@ -426,22 +435,35 @@
         	switch ($relation_type) {        	
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
-        			$related_entity_table = $related_entity->getTableName();        			
-        			$foreign_key = $this->getName() . '_id';
+        			$related_entity_table = $related_entity->getTableName();
         			
-        			$where[] = "`$related_entity_table`.`$foreign_key` = $this->id";
-
-        			if ($related_list) {
-        				$related_ids = array();
-        				foreach ($related_list as $item) {
-        					$related_ids[] = $item->$foreign_key;
-        				}
-        				
-        				$related_ids = implode(',', $related_ids);
-        				$where[] = "`$related_entity_table`.`id` NOT IN($related_ids)";
+        			
+        			$is_related_by_entity_name_and_id = $related_entity->hasField('entity_name') && $related_entity->hasField('entity_id');
+        			if ($is_related_by_entity_name_and_id) {
+        				$entity_name = $this->getResourceName();
+        				$entity_id = $this->id;        				
+        				$where[] = "`$related_entity_table`.`entity_name` = '$entity_name'";
+        				$where[] = "`$related_entity_table`.`entity_id` = $entity_id";
+        				$foreign_key = 'entity_id';
+        			}
+        			else {
+        				$foreign_key = $this->getName() . '_id';
+        				$where[] = "`$related_entity_table`.`$foreign_key` = $this->id";
         			}
         			
-        			
+
+        			if ($related_list) {
+        				
+        				$related_ids = array();
+        				foreach ($related_list as $item) {
+        					$related_ids[] = $item->id;
+        				}
+
+        				$related_ids = implode(',', $related_ids);
+        				print_r($related_ids);
+        				$where[] = "`$related_entity_table`.`id` NOT IN($related_ids)";
+        			}
+
         			$where = implode(' AND ', $where);
         			$db = Application::getDb();
         			
@@ -462,7 +484,7 @@
         	
         }
         
-        protected function deleteUnrelatedEntities(&$related_list, $related_entity_name, $relation_type) {
+        protected function deleteUnrelatedEntities($related_list, $related_entity_name, $relation_type) {        	
         	$unrelated_ids = $this->findUnrelatedEntityIds($related_list, $related_entity_name, $relation_type);
         	if ($unrelated_ids) {
         		$related_entity = Application::getEntityInstance($related_entity_name);
@@ -470,17 +492,12 @@
         		$unrelated_ids = implode(',', $unrelated_ids);
         		$load_params['where'][] = "`$related_entity_table`.id IN($unrelated_ids)"; 
         		$unrelated_list = $related_entity->load_list($load_params);
-        		foreach ($load_params as $item) {
+        		foreach ($unrelated_list as $item) {
         			$item->delete();
         		}
         	}
-        	
-        	
         }        
         
-        protected function updateUnrelatedEntities(&$related_list, $related_entity_name, $relation_type) {
-        	
-        }        
         
         protected function saveRelatedEntities(&$related_list, $related_entity_name, $relation_type) {
         	
@@ -491,14 +508,25 @@
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();        			
-        			$foreign_key = $this->getName() . '_id';
         			
-        			foreach ($related_list as $item) {
-        				$item->$foreign_key = $this->id;
+        			$is_related_by_entity_name_and_id = $related_entity->hasField('entity_name') && $related_entity->hasField('entity_id');
+        			if ($is_related_by_entity_name_and_id) {
+        				$entity_name = $this->getResourceName();
+        				$entity_id = $this->id;
+        				foreach ($related_list as $item) {
+        					$item->entity_name = $entity_name;
+        					$item->entity_id = $entity_id;
+        				}
+        			}
+        			else {
+        				$foreign_key = $this->getName() . '_id';
+        				 
+        				foreach ($related_list as $item) {
+        					$item->$foreign_key = $this->id;
+        				}
         			}
         			
-        			$related_entity->save_list($related_list);
-        			
+        			$related_entity->save_list($related_list);        			
         			break;
         		default:
         			throw new coreException('unknown relation type');
