@@ -41,7 +41,7 @@
 				$db = Application::getDb();
 				self::$countries = $db->executeSelectAllObjects("
 					SELECT * FROM countries
-					WHERE code_a2 IN('ru', 'ua', 'kz', 'europe', 'asia', 'other')
+					WHERE code_a2 IN(/*'ru', 'ua', 'kz',*/ 'europe', 'asia', 'other')
 				");
 			}
 			
