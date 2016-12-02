@@ -57,7 +57,8 @@
         	}
         	else {
         		$this->html = Application::runModule('page404');
-        	}               
+        	}
+        	return $this->returnResponse();
         }
 
 		protected function getResponse() {
