@@ -4,9 +4,10 @@
 	     
 		public $id;
         
-		const RELATION_ONE_TO_MANY = 1;
-		const RELATION_MANY_TO_ONE = 2;
-		const RELATION_MANY_TO_MANY = 3;
+		const RELATION_ONE_TO_ONE = 1;
+		const RELATION_ONE_TO_MANY = 2;
+		const RELATION_MANY_TO_ONE = 3;
+		const RELATION_MANY_TO_MANY = 4;
 		
 		function hasField($fieldName) {
 			return array_key_exists($fieldName, get_object_vars($this));
@@ -386,6 +387,7 @@
 
         	switch ($relation_type) {
         	
+        		case self::RELATION_ONE_TO_ONE:
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();
@@ -404,7 +406,13 @@
         			
         			$mapping = array();
         			foreach ($list as $item) {
-        				$item->$list_field = array();
+        				if ($relation_type == self::RELATION_ONE_TO_MANY) {
+        					$item->$list_field = array();
+        				}
+        				else {
+        					$item->$related_entity_name = null;
+        				}
+        				
         				$mapping[$item->id] = $item;
         			}
         			
@@ -416,8 +424,13 @@
         			$related_entity_list = $related_entity->load_list($load_params);
         			
         			foreach ($related_entity_list as $re) {
-        				$re_list = &$mapping[$re->$foreign_key]->$list_field;
-        				$re_list[] = $re; 
+        				if ($relation_type == self::RELATION_ONE_TO_MANY) {
+        					$re_list = &$mapping[$re->$foreign_key]->$list_field;
+        					$re_list[] = $re;        					 
+        				}
+        				else {
+        					$mapping[$re->$foreign_key]->$related_entity_name = $re; 
+        				}
         			}
         			
         			break;
@@ -429,10 +442,11 @@
         }
         
         
-        protected function findUnrelatedEntityIds(&$related_list, $related_entity_name, $relation_type) {
+        protected function findUnrelatedEntityIds(&$related, $related_entity_name, $relation_type) {
         	if (!$this->id) return array();
         	        	
-        	switch ($relation_type) {        	
+        	switch ($relation_type) {
+        		case self::RELATION_ONE_TO_ONE:
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();
@@ -452,11 +466,17 @@
         			}
         			
 
-        			if ($related_list) {
+        			if ($related) {
         				
         				$related_ids = array();
-        				foreach ($related_list as $item) {
-        					$related_ids[] = $item->id;
+        				
+        				if ($relation_type == self::RELATION_ONE_TO_ONE) {
+        					$related_ids = array($related->id);
+        				}
+        				else {
+        					foreach ($related as $item) {
+        						$related_ids[] = $item->id;
+        					}
         				}
 
         				$related_ids = implode(',', $related_ids);
@@ -484,8 +504,8 @@
         	
         }
         
-        protected function deleteUnrelatedEntities($related_list, $related_entity_name, $relation_type) {        	
-        	$unrelated_ids = $this->findUnrelatedEntityIds($related_list, $related_entity_name, $relation_type);
+        protected function deleteUnrelatedEntities($related, $related_entity_name, $relation_type) {        	
+        	$unrelated_ids = $this->findUnrelatedEntityIds($related, $related_entity_name, $relation_type);
         	if ($unrelated_ids) {
         		$related_entity = Application::getEntityInstance($related_entity_name);
         		$related_entity_table = $related_entity->getTableName();
@@ -499,13 +519,27 @@
         }        
         
         
-        protected function saveRelatedEntities(&$related_list, $related_entity_name, $relation_type) {
+        protected function saveRelatedEntities(&$related, $related_entity_name, $relation_type) {
         	
         	if (!$this->id) return;
         	
         	switch ($relation_type) {
         	
+        		case self::RELATION_ONE_TO_ONE:
         		case self::RELATION_ONE_TO_MANY:
+        			
+        			if ($relation_type == self::RELATION_ONE_TO_ONE) {
+        				if (is_array($related)) {
+        					throw new coreException("saveRelatedEntities: Single related entity expected, array given");
+        				}
+        				$related = array($related);
+        			}
+        			else {
+        				if (!is_array($related)) {
+        					throw new coreException("saveRelatedEntities: Array of related entities expected, single entity given");
+        				}
+        			}
+        			
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();        			
         			
@@ -513,7 +547,7 @@
         			if ($is_related_by_entity_name_and_id) {
         				$entity_name = $this->getResourceName();
         				$entity_id = $this->id;
-        				foreach ($related_list as $item) {
+        				foreach ($related as $item) {
         					$item->entity_name = $entity_name;
         					$item->entity_id = $entity_id;
         				}
@@ -521,12 +555,17 @@
         			else {
         				$foreign_key = $this->getName() . '_id';
         				 
-        				foreach ($related_list as $item) {
+        				foreach ($related as $item) {
         					$item->$foreign_key = $this->id;
         				}
         			}
         			
-        			$related_entity->save_list($related_list);        			
+        			$related_entity->save_list($related);
+        			
+        			if ($relation_type == self::RELATION_ONE_TO_ONE) {
+        				$related = array_shift($related);
+        			}
+        			 
         			break;
         		default:
         			throw new coreException('unknown relation type');
