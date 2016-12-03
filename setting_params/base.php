@@ -39,7 +39,7 @@
 				$field->attr($this->constraints['field_attr']);
 			}
 			$field->setValue($this->param_value);
-			$out = $field->getAsHtml();
+			$out = $field->render();
 			if ($this->param_displayed_unit) $out .= " $this->param_displayed_unit"; 
 
 			return $out;

@@ -45,9 +45,6 @@
 			return parent::__call($name, $arguments);			
 		}
 		
-		public function getAsHtml() {
-			return $this->render();
-		}
 		
 		public function render() {
 			

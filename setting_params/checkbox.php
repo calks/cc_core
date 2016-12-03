@@ -10,7 +10,7 @@
 		public function renderField() {
 			$field = coreFormElementsLibrary::get('checkbox', $this->getFieldName());
 			$field->setValue($this->param_value);
-			return $field->getAsHtml();	
+			return $field->render();	
 		}
 		
 		public function setValueFromPost() {

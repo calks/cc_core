@@ -2,7 +2,7 @@
 
 	class coreHiddenFormField extends coreBaseFormField {
 		
-		public function getAsHtml() {
+		public function render() {
 			$attr_string = $this->getAttributesString();
 			$value = $this->getSafeAttrValue($this->value);
 			return "

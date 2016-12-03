@@ -9,7 +9,7 @@
 			$this->options = array();
 		}
 		
-		public function getAsHtml() {
+		public function render() {
 			$attr_string = $this->getAttributesString();
 			
 			$out = "<select name=\"$this->field_name\" $attr_string>";

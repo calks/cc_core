@@ -12,8 +12,8 @@
 			$this->time_field = coreFormElementsLibrary::get('time', $name . '_time');
 		}		
 		
-		public function getAsHtml() {			
-			return $this->date_field->getAsHtml() . ' в ' . $this->time_field->getAsHtml();		
+		public function render() {			
+			return $this->date_field->render() . ' в ' . $this->time_field->render();		
 		}
 		
 		

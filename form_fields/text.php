@@ -11,7 +11,7 @@
 			foreach ($classes as $class) $this->addClass($class);
 		}
 		
-		public function getAsHtml() {
+		public function render() {
 			$this->attr(array(
 				'size' => $this->size,
 				'maxlength' => $this->maxlength

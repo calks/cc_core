@@ -14,7 +14,7 @@
 		}
 		
 		
-		public function getAsHtml() {
+		public function render() {
 			$attr_string = $this->getAttributesString();			
 			return "
 				<span $attr_string>$this->value</span>

@@ -33,8 +33,8 @@
 			}			
 		}
 		
-		public function GetAsHTML() {
-			$out = parent::GetAsHTML();
+		public function render() {
+			$out = parent::render();
 			$fieldname = $this->field_name;
 			$day_names = json_encode($this->day_names);
 			$month_names = json_encode($this->month_names);

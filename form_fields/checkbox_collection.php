@@ -11,7 +11,7 @@
 			$this->value = array();
 		}
 		
-		public function GetAsHTML() {
+		public function render() {
 			
 			if (!$this->options) return '';
 			

@@ -10,7 +10,7 @@
 		}
 		
 		
-		public function getAsHtml() {
+		public function render() {
 			if ($this->value) {
 				$this->attr('checked', 'checked');
 			}

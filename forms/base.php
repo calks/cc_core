@@ -172,7 +172,7 @@
 		
 		public function renderField($field_name) {
 			if ($this->hasField($field_name)) {
-				return $this->getField($field_name)->getAsHtml();
+				return $this->getField($field_name)->render();
 			}			
 			
 		}

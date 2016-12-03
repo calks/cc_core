@@ -8,7 +8,7 @@
 			$this->allowHtml();
 		}
 		
-		public function getAsHtml() {
+		public function render() {
 			$this->attr(array(
 				'size' => $this->size,
 				'maxlength' => $this->maxlength

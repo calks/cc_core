@@ -2,7 +2,7 @@
 
 	class coreParentSelectFormField extends coreSelectFormField {
 		
-		public function GetAsHTML() {
+		public function render() {
 			
 			$attr_string = $this->getAttributesString();
 			

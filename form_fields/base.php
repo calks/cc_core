@@ -77,11 +77,8 @@
 		}
 		
 
-		abstract public function getAsHtml();
+		abstract public function render();
 		
-		public function render() {
-			return $this->getAsHtml();
-		}
 		
 		public function isEditable() {
 			return true;

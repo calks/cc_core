@@ -12,9 +12,9 @@
 			$this->time_field = coreFormElementsLibrary::get('time', $name . '_time');
 		}		
 		
-		public function getAsHtml() {
+		public function render() {
 			$at = $this->gettext(' at ');
-			return $this->date_field->getAsHtml() . $at . $this->time_field->getAsHtml();		
+			return $this->date_field->render() . $at . $this->time_field->render();		
 		}
 		
 		

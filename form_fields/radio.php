@@ -10,7 +10,7 @@
 		}
 		
 		
-		public function getAsHtml() {
+		public function render() {
 			
 			$this->addClass('input-group');
 			$attr_string = $this->getAttributesString();
