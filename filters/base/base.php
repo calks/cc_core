@@ -14,11 +14,13 @@
 			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_field'));
 			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_direction'));
 			
-			if ($this->isSearchQueryPosted()) {
+			$this->setFieldsCommonName($this->getFieldsGroupName());
+			
+			if ($this->isSearchQueryPosted()) {				
 				$this->LoadFromRequest($_REQUEST);
 				$this->saveToSession();
 			}
-			else {
+			else {				
 				$this->loadFromSession(Application::getApplicationName());
 			}
 
@@ -37,7 +39,6 @@
 				$this->setValue('search_order_direction', $_GET['search_order_direction']);
 			}
 			
-			$this->setFieldsCommonName($this->getFieldsGroupName());
 		}
 		
 		
