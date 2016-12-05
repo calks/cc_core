@@ -532,7 +532,7 @@
         				}
 
         				$related_ids = implode(',', $related_ids);
-        				print_r($related_ids);
+        				
         				$where[] = "`$related_entity_table`.`id` NOT IN($related_ids)";
         			}
 
