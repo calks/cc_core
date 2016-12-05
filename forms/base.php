@@ -67,6 +67,12 @@
 			}
 		}
 		
+		
+		public function getFieldCaption($field_name) {
+			return $this->hasField($field_name) ? $this->fields[$field_name]['caption'] : null;
+		}
+		
+		
 		public function setFieldComment($field_name, $comment) {
 			if ($this->hasField($field_name)) {
 				$this->fields[$field_name]['comment'] = $comment;
