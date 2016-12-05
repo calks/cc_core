@@ -200,6 +200,7 @@
 				'x' => 'xes',
 				'y' => 'ies',
 				'z' => 'zes',
+				'ch' => 'ches',
 				'static' => 'static'				
 			);			
 		}

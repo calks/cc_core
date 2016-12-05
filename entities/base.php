@@ -434,6 +434,58 @@
         			}
         			
         			break;
+        		case self::RELATION_MANY_TO_MANY:
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();
+        			$relation_table = $this->getTableName() . '_' . $related_entity_table;
+        			 
+        			$foreign_key_1 = $this->getResourceName() . '_id';
+        			$foreign_key_2 = $related_entity_name . '_id';
+        			
+        			$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
+        			
+        			
+        			$mapping = array();
+        			foreach ($list as $item) {
+        				$item->$list_field = array();
+        				$mapping[$item->id] = $item;        				
+        			}
+        			
+        			
+        			$item_ids = array_keys($mapping);
+        			$item_ids = implode(',', $item_ids);
+        			
+        			$db = Application::getDb();
+        			$relations = $db->executeSelectAllObjects("
+        				SELECT
+        					$foreign_key_1,
+        					$foreign_key_2
+        				FROM 
+        					$relation_table
+        				WHERE
+        					$foreign_key_1 IN($item_ids)	
+        			");
+        			
+        			$relations_mapping = array();
+        			foreach ($relations as $r) {
+        				$relations_mapping[$r->$foreign_key_2][] = $r->$foreign_key_1;
+        			}
+        			
+        			$related_ids = array_keys($relations_mapping);
+        			
+        			
+        			if ($related_ids) {
+        				$related_ids = implode(',', $related_ids);
+        				$related_load_params['where'][] = "$related_entity_table.id IN($related_ids)"; 
+        				$related = $related_entity->load_list($related_load_params);
+        				foreach ($related as $r) {
+        					foreach($relations_mapping[$r->id] as $foreign_key_1_value) {
+        						array_push($mapping[$foreign_key_1_value]->$list_field, $r);
+        					}
+        				}
+        			}
+        			 
+        			break;        			
         		default:
         			throw new coreException('unknown relation type');
         	
@@ -566,6 +618,34 @@
         				$related = array_shift($related);
         			}
         			 
+        			break;
+        			
+        		case self::RELATION_MANY_TO_MANY:        			
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();
+        			$relation_table = $this->getTableName() . '_' . $related_entity_table;
+        			
+        			$foreign_key_1 = $this->getResourceName() . '_id';
+        			$foreign_key_2 = $related_entity_name . '_id';
+        			
+        			$values = array();
+        			foreach ($related as $r) {        				
+        				$values[] = "($this->id, $r->id)";        				
+        			}
+        			
+        			$db = Application::getDb();
+        			$db->execute("
+        				DELETE FROM $relation_table 
+        				WHERE $foreign_key_1=$this->id
+        			");
+        			
+        			if ($values) {
+        				$values = implode(',', $values);
+        			}
+        			        			
+        			$db->execute("
+        				INSERT INTO $relation_table ($foreign_key_1, $foreign_key_2) VALUES $values
+        			");
         			break;
         		default:
         			throw new coreException('unknown relation type');
