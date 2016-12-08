@@ -382,8 +382,12 @@
         }
         
         
-        protected function loadRelatedEntities(&$list, $related_entity_name, $relation_type) {
+        protected function loadRelatedEntities(&$list, $related_entity_name, $relation_type, $list_field=null) {
         	if (!$list) return;
+        	
+        	if (!$list_field) {
+        		$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
+        	}
 
         	switch ($relation_type) {
         	
@@ -391,8 +395,7 @@
         		case self::RELATION_ONE_TO_MANY:
         			$related_entity = Application::getEntityInstance($related_entity_name);
         			$related_entity_table = $related_entity->getTableName();
-        			$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
-
+        			
         			
         			$is_related_by_entity_name_and_id = $related_entity->hasField('entity_name') && $related_entity->hasField('entity_id');
         			if ($is_related_by_entity_name_and_id) {
@@ -441,9 +444,6 @@
         			 
         			$foreign_key_1 = $this->getResourceName() . '_id';
         			$foreign_key_2 = $related_entity_name . '_id';
-        			
-        			$list_field = coreNameUtilsLibrary::getPluralNoun($related_entity_name);
-        			
         			
         			$mapping = array();
         			foreach ($list as $item) {
