@@ -641,11 +641,11 @@
         			
         			if ($values) {
         				$values = implode(',', $values);
+        				$db->execute("
+        					INSERT INTO $relation_table ($foreign_key_1, $foreign_key_2) VALUES $values
+        				");
         			}
         			        			
-        			$db->execute("
-        				INSERT INTO $relation_table ($foreign_key_1, $foreign_key_2) VALUES $values
-        			");
         			break;
         		default:
         			throw new coreException('unknown relation type');
