@@ -16,7 +16,7 @@
 			
 			$this->setFieldsCommonName($this->getFieldsGroupName());
 			
-			if ($this->isSearchQueryPosted()) {				
+			if ($this->isSearchQueryPosted()) {
 				$this->LoadFromRequest($_REQUEST);
 				$this->saveToSession();
 			}
@@ -48,7 +48,7 @@
 			return $out;		
 		}
 
-		protected function isSearchQueryPosted() {
+		protected function isSearchQueryPosted() {			
 			return isset($_REQUEST[$this->getFieldsGroupName()]);
 		}
 
@@ -98,15 +98,13 @@
 		
 		}
 		
-		
-		
-		
 
-		function printGetSearch() {
+		public function printGetSearch() {			
 			$this->trimField();
 			$w = array();
-			foreach ($this->fields as $field_name => $field_object) {
-				$value = $field_object->getValue();
+			foreach ($this->fields as $field_name => $field_params) {
+				$field_object = $field_params['field'];
+				$value = $field_object->getValue();				
 				if (is_array($value)) {
 					foreach ($value as $v) $w[] = "{$field_name}[]=$v";
 				}

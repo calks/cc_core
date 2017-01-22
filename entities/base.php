@@ -404,7 +404,7 @@
         				$foreign_key = 'entity_id';
         			}
         			else {
-        				$foreign_key = $this->getName() . '_id';        				
+        				$foreign_key = $this->getResourceName() . '_id';        				
         			}
         			
         			$mapping = array();
