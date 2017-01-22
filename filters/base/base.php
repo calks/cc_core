@@ -76,9 +76,9 @@
 			return $this->setEntityLoadParams($params);	
 		}
 		
-		public function reset_values() {
+		public function reset_values() {			
 			unset($this->fields);
-			$this->add_fields();
+			$this->add_fields();			
 			$this->saveToSession();
 		}
 
@@ -103,13 +103,13 @@
 			$this->trimField();
 			$w = array();
 			foreach ($this->fields as $field_name => $field_params) {
-				$field_object = $field_params['field'];
+				$field_object = $field_params['field'];				
 				$value = $field_object->getValue();				
 				if (is_array($value)) {
 					foreach ($value as $v) $w[] = "{$field_name}[]=$v";
 				}
 				elseif ($value) {
-					$w[] = "{$field_name}=$value";
+					$w[] = "{$field_object->getFieldName()}=$value";
 				}
 			}
 	
@@ -131,7 +131,7 @@
 			$this->saveToSession();
 		}
 	
-		protected function saveToSession() {
+		protected function saveToSession() {			
 			$session_key = $this->getSessionKey();
 			foreach (array_keys($this->fields) as $field) {
 				$_SESSION[$session_key][$field] = $this->getValue($field);
