@@ -41,7 +41,7 @@
     
             $out = array();
             foreach ($resource_hierarchy as $resource) {
-            	$subresources = coreResourceLibrary::findAll($resource['type'], $resource['name'], $sub_path, $extension);
+            	$subresources = coreResourceLibrary::findAll($resource['type'], $resource['name'], $sub_path, $extension);            	
             	foreach ($subresources as $sr_name => $sr_list) {
             		if (!isset($out[$sr_name])) $out[$sr_name] = array();
             		foreach ($sr_list as $sr) $out[$sr_name][] = $sr;
@@ -71,7 +71,7 @@
         
         
         public function findEffectiveSubresourcePath($subresource_type, $subresource_name, $subresource_sub_path=null, $extension='php') {
-        	$subresources = $this->findEffectiveSubresources($subresource_type, $subresource_name, $subresource_sub_path, $extension);
+        	$subresources = $this->findEffectiveSubresources($subresource_type, $subresource_name, $subresource_sub_path, $extension);        	
         	$key_to_check = array_pop(explode('/', $subresource_name));        	
         	return isset($subresources[$key_to_check]) ? $subresources[$key_to_check]->path : null;        	
         }        
@@ -86,6 +86,37 @@
 		
         public static function ngettext($message, $message_plural, $n) {
         	return coreGettextLibrary::ngettext($this, $message, $message_plural, $n);
+        }
+        
+        
+        public function getStaticFilePath($static_dir_relative_path) {
+        	$subresources = $this->findEffectiveSubresources('static', null, $static_dir_relative_path, '');
+        	if (!$subresources) return null;
+        	$subresource = array_shift($subresources);
+        	return $subresource->path;
+        }
+        
+        public function getTemplatePath($template_name = '') {
+        	$template_name_supplied = $template_name != '';
+        	if (!$template_name_supplied) $template_name = $this->getName();
+        	 
+        	$possible_names = array($template_name);
+        	 
+        	if (!$template_name_supplied) {
+        		$parents = class_parents($this);
+        		foreach ($parents as $p) {
+        			$parent_name = coreNameUtilsLibrary::getResourceName($p);
+        			if (in_array($parent_name, $possible_names)) continue;
+        			$possible_names[] = $parent_name;
+        		}
+        	}
+        	 
+        	while($name = @array_shift($possible_names)) {
+        		$path = $this->findEffectiveSubresourcePath('template', $name, null, 'tpl');
+        		if ($path) return $path;
+        	}
+        
+        	return null;
         }
         
         
