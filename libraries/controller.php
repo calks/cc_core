@@ -68,36 +68,6 @@
 			$this->returnResponse();
 		}
 		
-        public function getStaticFilePath($path_relative_to_module) {        	
-        	$subresources = $this->findEffectiveSubresources('static', null, $path_relative_to_module, '');
-        	if (!$subresources) return null;
-        	$subresource = array_shift($subresources);
-        	return $subresource->path; 
-        }
-        
-        public function getTemplatePath($template_name = '') {        	        	
-        	$template_name_supplied = $template_name != '';        	
-        	if (!$template_name_supplied) $template_name = $this->getName();
-        	
-        	$possible_names = array($template_name);
-        	
-        	if (!$template_name_supplied) {
-				$parents = class_parents($this);            
-	            foreach ($parents as $p) {	            	
-	            	$parent_name = coreNameUtilsLibrary::getResourceName($p);	            	
-	            	if (in_array($parent_name, $possible_names)) continue;            	
-	            	$possible_names[] = $parent_name;
-	            }	
-        	}
-        	
-            while($name = @array_shift($possible_names)) {
-            	$path = $this->findEffectiveSubresourcePath('template', $name, null, 'tpl');
-            	if ($path) return $path; 
-            }
-            
-        	return null;
-        }
-		
 		
 	
 	}
