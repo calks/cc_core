@@ -4,7 +4,7 @@
 		
 		
 		public function getError() {	
-			if (!is_null($this->param_value)) {
+			if ($this->param_value) {
 				if (!email_valid($this->param_value)) return "Email в неправильном формате";
 			}			
 		}
