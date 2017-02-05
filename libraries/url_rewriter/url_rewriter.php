@@ -61,9 +61,14 @@
         public function internalToSeo($internal_url) {        	
         	$internal_url = trim($internal_url, ' /');
 
-            $parts = explode('/', $internal_url);
-            $module_name = array_shift($parts);
-            $url = implode('/', $parts); 
+        	$parts = explode('?', $internal_url);
+        	$path = $parts[0];
+        	
+            $path_parts = explode('/', $path);
+            $module_name = array_shift($path_parts);
+            $path = implode('/', $path_parts);
+            $parts[0] = $path;
+            $url = implode('?', $parts);
 
             $rules =& self::getRules();
                         

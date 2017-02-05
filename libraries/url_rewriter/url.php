@@ -21,7 +21,7 @@
                 $get = explode('&', $tmp[1]);
                 foreach ($get as $nvp) {
                     $nvp = explode('=', $nvp);
-                    $this->get[$nvp[0]] = isset( $nvp[1] ) ? $nvp[1] : $nvp[0];
+                    $this->get[$nvp[0]] = isset( $nvp[1] ) ? rawurldecode($nvp[1]) : null;
                 }
             }
 
@@ -80,7 +80,7 @@
                 $get = '';
                 foreach ($this->get as $name => $value) {
                     $get .= empty($get) ? '?' : '&';
-                    $get .= $name.'='.urlencode($value);
+                    $get .= $name.'='.rawurlencode($value);
                 }
                 $url .= $get;
             }            
