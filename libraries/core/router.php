@@ -36,6 +36,9 @@
 			}
 
 			self::$module_params = $url_parts;
+			foreach ($url->getGetParams() as $name=>$value) {
+				self::$module_params[$name] = $value;
+			}
 
 		}
 
