@@ -218,13 +218,16 @@
 			return new $mailer_class();
 		}
 
+		
 		public function getBreadcrumbs() {
 			if (!self::$breadcrumbs) {
-				self::loadLibrary('core/breadcrumbs');
-				self::$breadcrumbs = new Breadcrumbs();
+				$class_name = coreResourceLibrary::getEffectiveClass('service', 'breadcrumbs');
+				self::$breadcrumbs = new $class_name();
 			}
+		
 			return self::$breadcrumbs;
 		}
+		
 		
 		
 		public function getMessageStack() {
