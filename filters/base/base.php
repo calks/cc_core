@@ -8,11 +8,8 @@
 			
 			$this->setMethod('post');
 			if (is_null($this->fields )) $this->fields = array();
-
+			
 			$this->add_fields();
-
-			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_field'));
-			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_direction'));
 			
 			$this->setFieldsCommonName($this->getFieldsGroupName());
 			
@@ -95,7 +92,8 @@
 		}
 		
 		protected function initFieldSet() {
-		
+			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_field'));
+			$this->addField(coreFormElementsLibrary::get('hidden', 'search_order_direction'));
 		}
 		
 
@@ -133,21 +131,21 @@
 	
 		protected function saveToSession() {			
 			$session_key = $this->getSessionKey();
-			foreach (array_keys($this->fields) as $field) {
+			foreach (array_keys($this->fields) as $field) {				
 				$_SESSION[$session_key][$field] = $this->getValue($field);
 			}
 		}
 	
-		protected function loadFromSession() {
+		protected function loadFromSession() {			
 			$session_key = $this->getSessionKey();
-			foreach (array_keys($this->fields) as $field) {
+			foreach (array_keys($this->fields) as $field) {				
 				if (!isset($_SESSION[$session_key][$field])) continue;
 				$this->setValue($field, $_SESSION[$session_key][$field], false);
-			}
+			}			
 		}
 	
 		protected function getSessionKey() {
-			$fields = array_keys($this->fields);
+			$fields = array_keys($this->fields);			
 			$fields_hash = md5(implode('|', $fields).Application::getApplicationName().get_class($this));
 			return "filter_state_$fields_hash";
 		}
