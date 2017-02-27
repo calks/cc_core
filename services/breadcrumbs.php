@@ -1,19 +1,8 @@
 <?php
 
-    class BreadcrumbsNode {
-        public $link;
-        public $text;
-        // if set to true, no additional nodes will be added
-        protected $finalized;
 
-        public function __construct($link, $text) {
-            $this->link = $link;
-            $this->text = $text;
-        }
-    }
-
-
-    class Breadcrumbs {
+    class coreBreadcrumbsService {
+    	
         protected static $path;
 
         public function __construct() {
@@ -26,7 +15,12 @@
         public function addNode($link, $text) {
             if ($this->finalized) return;
             $link = Application::getSeoUrl($link);
-            $this->path[] = new BreadcrumbsNode($link, $text);
+            
+            $node = new stdClass();
+            $node->link = $link;
+            $node->text = $text;            
+            
+            $this->path[] = $node;
         }
 
         public function getPath() {
