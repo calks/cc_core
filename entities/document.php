@@ -75,7 +75,7 @@
 		
 		public function load_list($params=array()) {
 			$params_original = $params;
-
+			
 			// prevent setting parent_id=0 condition
 			// if id requested
 			if (!isset($params['parent'])) {
@@ -107,8 +107,8 @@
 				ON content.document_id = $table.id
 			"; 
 			
-			$params['group_by'][] = 'seq';
-			$params['order_by'][] = 'content.document_id';
+			$params['group_by'][] = 'content.document_id';
+			$params['order_by'][] = 'seq';
 			
 			$list = parent::load_list($params);
 			
