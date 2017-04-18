@@ -10,12 +10,15 @@
 		
 		public function run($params=array()) {
 			
+			$this->back_url = Request::get('back');
+			unset($params['back']);
+			
 			$this->action = @array_shift($params);
 			if (!$this->action) $this->action = 'login';
 			$this->user_session = Application::getUserSession();
 			$this->errors = array();
 			
-			$this->back_url = Request::get('back');
+			
 						
 			$method_name = coreNameUtilsLibrary::underscoredToCamel('task_' . $this->action);			
 			if (!method_exists($this, $method_name)) return $this->terminate();
