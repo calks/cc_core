@@ -40,7 +40,8 @@
 				self::$host = @file_get_contents($host_path);
 			}
 
-			self::$site_url = 'http://'.self::$host;
+			$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http';
+			self::$site_url = $protocol . '://'.self::$host;
 
 			self::$db = null;
 			self::$breadcrumbs = null;
