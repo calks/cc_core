@@ -50,7 +50,7 @@
             foreach ($parent_id as &$id) $id = (int)$id;
             $parent_id = implode(',', $parent_id);
 
-            switch ($this->menu_type) {
+            switch ($type) {
                 case 'top':
                     $menu = 'menu & ' . SITE_MENUS_TOP_MENU;
                     break;

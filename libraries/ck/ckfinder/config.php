@@ -21,7 +21,7 @@
     require $site_root . '/core/libraries/application.php';
     require $site_root . '/core/libraries/seo/rewrite.php';
 
-    Application::init('to_english_admin');
+    Application::init('admin');
     //die('site root: ' . $site_root);
 
 
@@ -42,7 +42,7 @@ function CheckAuthentication()
     // ... where $_SESSION['IsAuthorized'] is set to "true" as soon as the
     // user logs in your system. To be able to use session variables don't
     // forget to add session_start() at the top of this file.
-	$user_session = Application::getUserSession();
+	$user_session = Application::getUserSession();	
 	if (!$user_session->userLogged()) return false;
 	$user_account = $user_session->getUserAccount();	
 	if (!in_array(USER_ROLE_ADMIN, $user_account->roles)) return false;
