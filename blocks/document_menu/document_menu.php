@@ -58,7 +58,7 @@
             $table = $doc->getTableName();
             $content_table = $doc->get_content_table_name();
 
-            switch ($this->menu_type) {
+            switch ($type) {
                 case 'top':
                     $menu = 'menu & ' . SITE_MENUS_TOP_MENU;
                     break;
