@@ -18,8 +18,7 @@
             if (!$template_path) {
             	return $this->terminate();
             } 
-            $data = $this->getMenu($menu_type);
-                        
+            $data = $this->getMenu($this->menu_type);
             $smarty = Application::getSmarty();
             $smarty->assign('menu', $data);            
 			$smarty->assign('block', $this);
@@ -57,7 +56,7 @@
 
             $table = $doc->getTableName();
             $content_table = $doc->get_content_table_name();
-
+            
             switch ($type) {
                 case 'top':
                     $menu = 'menu & ' . SITE_MENUS_TOP_MENU;
