@@ -40,7 +40,7 @@
 				self::$host = @file_get_contents($host_path);
 			}
 
-			self::$site_url = 'http://'.self::$host;
+			self::$site_url = 'https://'.self::$host;
 
 			self::$db = null;
 			self::$breadcrumbs = null;
