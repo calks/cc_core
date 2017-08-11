@@ -33,8 +33,8 @@
         	if(preg_match( "/^http:\/\//i", $url)) {
         		return $url;
         	}  
-        	$url = trim($url, ' /');        	
-        	return $item->open_link ? Application::getSeoUrl("/$url") : Application::getSeoUrl("/textpage/$url");
+        	$url = trim($url, ' /');
+        	return $item->open_link ? "/$url" : Application::getSeoUrl("/textpage/$url");
         }
 
 
@@ -44,7 +44,7 @@
         	
 			foreach ($documents as $doc) {
 				$doc->link = $this->getLink($doc);
-				$doc->active = $doc->link == $current_page_url;
+				$doc->active = $doc->link == $current_page_url;				
 				$this->prepareMenu($doc->children);
 			}
         }
