@@ -13,6 +13,7 @@
 		public function __construct() {			
 			parent::__construct();
 			$this->roles = array();
+			$this->new_pass = null;
 		}
 
 		public function getTableName() {
@@ -227,9 +228,40 @@
 				'caption' => $this->gettext('Is active')				
 			);
 			
+			
+			$out['roles'] = array(
+				'type' => 'user_roles',
+				'caption' => $this->gettext('Roles')
+			);
+				
+			$is_new = !$this->id;
+			
+			if ($is_new) {
+				$out['new_pass'] = array(
+					'type' => 'text',
+					'caption' => $this->gettext('Password'),
+					'required' => true
+				);				
+			}
+			else {
+				$out['new_pass'] = array(
+					'type' => 'text',
+					'caption' => $this->gettext('New password')
+				);
+			}
+			
+				
 			return $out;
 			
-		}			
+		}
+		
+		
+		public function getFields() {
+			$fields = parent::getFields();
+			$fields[] = 'roles';
+			$fields[] = 'new_pass';			
+			return $fields;
+		}
 		
 		
 	}
