@@ -11,9 +11,9 @@
 			return 'settings';
 		}
 		
-		public static function get($full_param_name, $rebuild=false) {	
+		public static function get($full_param_name, $rebuild=false) {
 			if (is_null(self::$tree_nvp)) self::loadTreeNvp();
-			if (isset(self::$tree_nvp[$full_param_name])) {
+			if (isset(self::$tree_nvp[$full_param_name])) {				
 				return self::$tree_nvp[$full_param_name];
 			}
 			elseif (!$rebuild && self::rebuildTree()) {
@@ -74,7 +74,7 @@
 			
 			$db = Application::getDb();
 			$table = self::getTableName();
-			self::$tree_nvp = array();
+			self::$tree_nvp = null;
 			$data = $db->executeSelectAllObjects("
 				SELECT *
 				FROM `$table`

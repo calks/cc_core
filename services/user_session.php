@@ -95,7 +95,8 @@
     		$user = $this->findUserByCredentials($login, $pass);
 
     		if (!$user) return false;
-    		if (!$user->is_active) return false;
+    		$can_login = coreAccessControlLibrary::accessAllowed($user, $user, 'login');    		
+    		if (!$can_login) return false;
     		    		    		
     		self::$user_account = $user;
     		self::$user_id = $user->id;
