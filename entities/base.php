@@ -291,9 +291,17 @@
             $table = implode('.', $table); 
 
             $from = array("$table" );
-
+                        
             if (isset($params['from'])) {
-                $from = array_merge($from, $params['from']);
+            	$joins = array();
+            	foreach ($params['from'] as $join) {            		
+            		$join_normalized = strtolower(preg_replace('/([`\s]+)/is', '', $join));            		
+            		$join_hash = md5($join_normalized);
+            		if (!in_array($join_hash, $joins)) {
+            			$from[] = $join;
+            			$joins[] = $join_hash;
+            		}            		
+            	}                
             }
 
             $from = array_unique($from);
