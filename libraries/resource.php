@@ -124,38 +124,81 @@
 		}
 		
 		
-		protected static function getResourceRoutingRule($resource_type, $resource_name) {
+		protected static function getResourceRoutingRule($resource_type, $resource_name, $strict_rule_match=false) {
+			$strict_rule_match = (int)$strict_rule_match;
+			//echo "\n getResourceRoutingRule('$resource_type', '$resource_name', $strict_rule_match)\n\n";
+			
 			$resource_routing = Application::getResourceRouting();
+						
+			
+			$matched_by_type = array();
+			$matched_by_type_and_name = array();
+			
+			$matched_rules = array();
+			$type_rule_exists = false;
 			foreach ($resource_routing as $matching_resources => $routing_rule) {
+				//echo "$matching_resources";
 				$matching_resources = explode('/', $matching_resources);
+				$matching_resource_type = $matching_resources[0];
+				$matching_resource_name = isset($matching_resources[1]) ? $matching_resources[1] : null;
 				
-				$rule_resource_type = $matching_resources[0];
-				if (!in_array($rule_resource_type, array($resource_type, '*'))) continue;
+				$type_matched = in_array($matching_resource_type, array('*', $resource_type));
+				$name_matched = !$matching_resource_name || !$strict_rule_match && !$resource_name || in_array($matching_resource_name, array('*', $resource_name));
+				$type_rule_exists |= ($matching_resource_type == $resource_type);
 				
-				$rule_resource_name = isset($matching_resources[1]) ? $matching_resources[1] : null;
-				if (!is_null($rule_resource_name) && !in_array($rule_resource_name, array($resource_name, '*'))) continue;
+				if ($type_matched) {
+					$matched_by_type[] = $routing_rule; 					
+				}
 				
-				return $routing_rule;				
+				if ($type_matched && $name_matched) {
+					$matched_by_type_and_name[] = $routing_rule;
+				}
+				
+				/*if ($type_matched) echo " type matched";
+				if ($name_matched) echo " name matched";
+				echo "\n";*/
+				
 			}
 			
-			return $resource_routing['default'];
+			/*echo "by type: \n";
+			print_r($matched_by_type);
+			echo "by type and name: \n";
+			print_r($matched_by_type_and_name);*/
+
+			
+			//$default_rule_applies = !$strict_rule_match || !$matched_by_type;
+			$default_rule_applies = !$strict_rule_match || !$type_rule_exists;
+			
+			
+			if ($resource_name && $matched_by_type_and_name) {
+				$out = array_shift($matched_by_type_and_name);
+			}
+			elseif (!$strict_rule_match && $matched_by_type && $type_rule_exists) {
+				$out = array();
+				foreach ($matched_by_type as $m) {
+					$out = array_merge($out, $m);
+				}
+				$out = array_unique($out);				
+			}
+			elseif($default_rule_applies) {
+				$out = $resource_routing['default'];
+			}
+			else {
+				$out = array();
+			}
+			
+			
+			//print_r($out);
+			return $out;
+
 		}
 		
-		// TODO: Make possible to find all resources with no-php extension (when only type is given)
-		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
-			//echo "findAll('$resource_type', '$resource_name', '$sub_path', '$extension')\n";
-			$cache_key = md5(Application::getApplicationName() . "$resource_type.$resource_name.$sub_path,$extension");
-			if (isset(self::$path_cache[$cache_key])) return self::$path_cache[$cache_key]; 
-						
+		
+		protected static function buildPossiblePathsList($resource_type, $resource_name, $sub_path, $extension, $strict_rule_match=false) {
+			
+			$routing_rule = self::getResourceRoutingRule($resource_type, $resource_name, $strict_rule_match);
+			//print_r($routing_rule);
 			$dir = coreNameUtilsLibrary::getPluralNoun($resource_type);
-			
-			$sub_path = trim($sub_path, ' /');
-			
-			$out = array();
-						
-
-			$routing_rule = self::getResourceRoutingRule($resource_type, $resource_name);
-
 			$paths = array();
 			foreach ($routing_rule as $rule) {
 				if ($rule == APP_RESOURCE_CONTAINER_CORE) {
@@ -179,8 +222,26 @@
 					die("Bad resource routing rule");
 				}
 			}
-
+			
 			$paths = array_unique($paths);
+			return $paths;
+		}
+		
+		
+		// TODO: Make possible to find all resources with no-php extension (when only type is given)
+		public static function findAll($resource_type, $resource_name=null, $sub_path=null, $extension='php') {
+			//echo "findAll('$resource_type', '$resource_name', '$sub_path', '$extension')\n";
+			$cache_key = md5(Application::getApplicationName() . "$resource_type.$resource_name.$sub_path,$extension");
+			if (isset(self::$path_cache[$cache_key])) return self::$path_cache[$cache_key]; 
+						
+			
+			$sub_path = trim($sub_path, ' /');
+			
+			$out = array();
+			
+			
+			$paths = self::buildPossiblePathsList($resource_type, $resource_name, $sub_path, $extension);
+			//print_r($paths);
 
 			foreach ($paths as $path) {
 				$absolute_path = Application::getSitePath() . $path;								
@@ -205,6 +266,16 @@
 					while ($filename = readdir($d)) {
 						if (in_array($filename, array('..', '.'))) continue;
 						
+						$name = pathinfo($filename, PATHINFO_FILENAME);
+						
+						if (!$resource_name) {							
+							$resource_allowed_by_routing_rules = in_array($path, self::buildPossiblePathsList($resource_type, $name, $sub_path, $extension, true));							
+							/*echo "$resource_type/$name";
+							echo $resource_allowed_by_routing_rules ? " allowed\n" : "\n";*/
+							if (!$resource_allowed_by_routing_rules) continue;
+						}
+						
+						
 						$absolute_path_individual_dir = null;						
 						if (is_dir("$absolute_path/$filename")) {
 							if (is_file("$absolute_path/$filename/$filename.$extension")) {
@@ -212,7 +283,6 @@
 							}
 						};
 						
-						$name = pathinfo($filename, PATHINFO_FILENAME);
 						
 						if (is_file("$absolute_path/$name.$extension") && $absolute_path_individual_dir) {
 							throw new Exception("Resource '$name' of type '$resource_type' exists in two places: $path/$name.$extension and $path/$name/$name.$extension", 999);

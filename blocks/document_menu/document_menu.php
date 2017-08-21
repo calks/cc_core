@@ -29,12 +29,17 @@
         }
 
         protected function getLink($item) {
-        	$url = $item->open_link ? $item->open_link : $item->url;
-        	if(preg_match( "/^http:\/\//i", $url)) {
-        		return $url;
-        	}  
-        	$url = trim($url, ' /');
-        	return $item->open_link ? "/$url" : Application::getSeoUrl("/textpage/$url");
+        	
+        	if ($item->open_link && preg_match( "/^https?:\/\//i", $item->open_link)) {        		
+        		$out = $item->open_link;
+        	}
+        	elseif ($item->open_link) {
+        		$out = '/' . trim($item->open_link, ' /');
+        	}
+        	else {
+        		$out = Application::getSeoUrl("/textpage?page_url=$item->url");        		
+        	}
+        	return $out;
         }
 
 

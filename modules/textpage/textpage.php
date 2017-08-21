@@ -3,8 +3,10 @@
     
 
     class coreTextpageModule extends coreBaseModule {
+    	
         public function run($params = array()) {
-            $url = @$params[0] ? $params[0] : 'index';
+                    	
+        	$url = isset($params['page_url']) ? $params['page_url'] : 'index';
 
             $document = Application::getEntityInstance('document');
 
