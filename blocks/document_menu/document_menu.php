@@ -34,7 +34,7 @@
         		$out = $item->open_link;
         	}
         	elseif ($item->open_link) {
-        		$out = '/' . trim($item->open_link, ' /');
+        		$out = Application::getSeoUrl('/' . trim($item->open_link, ' /'));
         	}
         	else {
         		$out = Application::getSeoUrl("/textpage?page_url=$item->url");        		
