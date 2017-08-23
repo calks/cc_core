@@ -3,7 +3,6 @@
 	class corePagenavBlock extends coreBaseBlock {
 		
 		protected $page_link_template;
-		protected $first_page_link_template;
 		protected $items_total = null;
 		protected $items_per_page;
 		protected $current_page;
@@ -30,7 +29,7 @@
 			
 			for($i=$start; $i<=$end; $i++) {				
 				$out[] = $i;
-			}
+			}	
 			
 			return $out;
 			
@@ -48,6 +47,7 @@
 			if (!$this->items_per_page) return 'No items per page';
 						
 			$this->total_pages = ceil($this->items_total/$this->items_per_page);
+			
 			if ($this->current_page > $this->total_pages || $this->current_page < 1) return 'current page is out of page range';
 			
 			$page_numbers = $this->getPageNumbers();
@@ -65,7 +65,8 @@
 				$page_links[] = $this->getLinkObj(1, '&lt;&lt;', 'to_first');
 				$page_links[] = $this->getLinkObj($prev, '&lt;', 'prev');
 			}
-						
+			
+			
 			foreach($page_numbers as $i) {								
 				$page_links[] = $this->getLinkObj($i, $i);
 			}
@@ -103,18 +104,8 @@
 		
 		protected function getLinkObj($page_num, $caption, $type='normal') {
 			$page_num = (int)$page_num;
-			if ($page_num == 1) {
-				$template = $this->first_page_link_template ? $this->first_page_link_template : $this->page_link_template;
-			}
-			else {
-				$template = $this->page_link_template;
-			}
 			
-			$replace = array(
-				'%page%' => $page_num
-			);
-			
-			$link = str_replace(array_keys($replace), $replace, $template);
+			$link = str_replace('%page%', $page_num, $this->page_link_template);
 			
 			$obj = new stdClass();
 			$obj->caption = $caption;

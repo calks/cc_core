@@ -11,7 +11,7 @@
 		private static $request_params;
 		private static $defaultModuleName = 'page404';
 
-		public function route($url) {
+		public static function route($url) {
 			self::$source_url = $url;
 			self::$rewritten_url = coreUrlRewriterLibrary::seoToInternal($url);
 			self::$module_params = array();
@@ -42,27 +42,27 @@
 
 		}
 
-		public function getModuleName() {
+		public static function getModuleName() {
 			return self::$module_name;
 		}
 
-		public function getModuleParams() {
+		public static function getModuleParams() {
 			return self::$module_params;
 		}
 
-		public function getRequestParams() {
+		public static function getRequestParams() {
 			return self::$request_params;
 		}
 
-		public function getSourceUrl() {
+		public static function getSourceUrl() {
 			return self::$source_url;
 		}
 
-		public function getRewrittenUrl() {
+		public static function getRewrittenUrl() {
 			return self::$rewritten_url;
 		}
 
-		public function getRequestParam($name, $default = null) {
+		public static function getRequestParam($name, $default = null) {
 			return isset(self::$request_params[$name]) ? self::$request_params[$name] : $default;
 		}
 
