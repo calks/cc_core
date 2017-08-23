@@ -68,7 +68,7 @@
 				return $url;
 			}
 			else {
-				$url = '/' . ltrim($url, ' /');				
+				$url = '/textpage?page_url=' . ltrim($url, ' /');				
 				return $url;
 			}
 		}
@@ -370,50 +370,13 @@
 			$this->packMenuInfo($this);			
 			$this->menu = (int)$this->menu;
 			$this->open_new_window = (int)$this->open_new_window;
-			$this->language_id = isset($this->language_id) ? $this->language_id : CURRENT_LANGUAGE;
+			$this->language_id = isset($this->language_id) ? (int)$this->language_id : CURRENT_LANGUAGE;
 			$this->is_active = (int)$this->is_active;
 			
-			$db = Application::getDb();
-			$table = $this->getTableName();
-			$table = $this->getTableName();
-			$fields = $this->getFields();
-
-			if (is_null($this->seq)) {			
-				$this->seq = (int)$db->executeScalar("
-					SELECT MAX(seq)+1 FROM $table
-				");
-			}
-			
-
-			$language_id = (int)$this->language_id;
-
-			$id_fieldname = $this->getPrimaryKeyField();
-
-			$insert_fields = "`$id_fieldname`";
-			$insert_values = ((int) $this->$id_fieldname != 0) ? (int) $this->id : 'NULL';
-			$update = "$id_fieldname=LAST_INSERT_ID($id_fieldname)";
-
-			foreach ($fields as $f) {
-				if(strpos($f, 'internal_') === 0) continue;
-				if ($f == $id_fieldname) continue;
-				$val = $this->$f;
-				if (!is_null($val)) $val = addslashes($val);
-				$insert_fields .= ", `$f`";
-				$insert_values .= is_null($val) ? ", NULL" : ", '$val'";
-				$update .= is_null($val) ? ", `$f` = NULL " : ", `$f` = '$val' ";
-			}
-
-			$sql = "
-                INSERT INTO $table ($insert_fields) VALUES ($insert_values)
-                ON DUPLICATE KEY UPDATE $update
-            ";
-
-			$db->execute($sql);
-
-			$id = $db->executeScalar("SELECT LAST_INSERT_ID()");
-			if ($id) $this->id = $id;
+			$id = parent::save();
 
 			$content_table = $this->get_content_table_name();
+			$db = Application::getDb();
 
 			$db->execute("
                 REPLACE INTO $content_table VALUES (
@@ -429,6 +392,7 @@
 			
 			return $id;
 		}
+		
 
 		public function delete() {
 			$db = Application::getDb();
