@@ -611,6 +611,8 @@
         					$item->entity_name = $entity_name;
         					$item->entity_id = $entity_id;
         				}
+        				$delete_condition[] = "`entity_name`='$entity_name'";
+        				$delete_condition[] = "`entity_id`=$entity_id";
         			}
         			else {
         				$foreign_key = $this->getName() . '_id';
@@ -618,7 +620,17 @@
         				foreach ($related as $item) {
         					$item->$foreign_key = $this->id;
         				}
+        				
+        				$delete_condition[] = "`$foreign_key`=$this->id";
         			}
+        			
+        			$delete_condition = implode(' AND ', $delete_condition);
+        			
+        			$db = Application::getDb();
+        			$db->execute("
+        				DELETE FROM $related_entity_table
+        				WHERE $delete_condition
+        			");
         			
         			$related_entity->save_list($related);
         			
