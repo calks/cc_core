@@ -640,7 +640,8 @@
                 $where $group_by $having
             ) AS dataset";
 
-                //echo "<pre>$sql</pre>";
+			if (@$params['show_sql']) echo '<pre>' . $sql . '</pre>'."\n";
+			
             return $db->executeScalar($sql);
         }
 
