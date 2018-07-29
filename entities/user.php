@@ -28,19 +28,6 @@
 			return 'user_role_coupling';
 		}
 		
-		public function mandatory_fields() {
-			return array(
-				'name' => 'Имя',
-				'email' => 'Email',
-				'login' => 'Логин'
-			);
-		}
-
-		public function unique_fields() {
-			return array(
-				'email' => 'Email'
-			);
-		}
 
 		public function order_by() {
 			return '`is_active` ASC, `id` DESC';

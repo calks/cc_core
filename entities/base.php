@@ -31,14 +31,6 @@
 		}
 
 
-		function mandatory_fields() {
-			return array();
-		}
-
-		function unique_fields() {
-			return array();
-		}
-
 		function trim_fields() {
 			return array();
 		}
@@ -68,50 +60,6 @@
 			
 		}
 		
-
-		function validate() {
-			$db = Application::getDb();
-
-			$table = $this->getTableName();
-			$errors = array();
-
-			$trim = $this->trim_fields();
-			foreach ($trim as $key) {
-				$this->$key = trim($this->$key);
-			}
-
-			$mandatory = $this->mandatory_fields();
-			$mandatory_keys = array_keys($mandatory);
-			foreach ($this as $key => $value) {
-				if (in_array($key, $mandatory_keys) && $value == '') {
-					if (isset($mandatory[$key]) && $mandatory[$key] != "") $err_out = $mandatory[$key];
-					else $err_out = $key;
-					$errors[] = $this->gettext("You should fill in &laquo;%s&raquo;", $err_out);
-				}
-			}
-			//if (sizeof($errors) == 0) {
-				$unique = $this->unique_fields();
-				$unique_keys = array_keys($unique);
-
-				$extrasql = "";
-				$pkey = $this->getPrimaryKeyField();
-				if ($this->$pkey) $extrasql = " and $pkey <> ".$this->$pkey;
-				foreach ($this as $key => $value) {
-					if (in_array($key, $unique_keys)) {
-						$query = "select count(*) from ".$table." where ".$key."='".addslashes($value)."' ".$extrasql;						
-						if ($db->executeScalar($query) > 0) {
-							if (isset($unique[$key]) && $unique[$key] != "") $err_out = $unique[$key];
-							else $err_out = $key;
-
-							$errors[] = $this->gettext("Value for &laquo;%s&raquo; field is already used", $err_out);
-						}
-
-					}
-				}
-			//}
-			return $errors;
-		}
-
 		
 		function getId() {
 			$pkey = $this->getPrimaryKeyField();

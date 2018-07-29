@@ -2,11 +2,6 @@
 
 	class coreUserForm extends coreEntityEditForm {
 		
-		protected function isEmailVacant($email) {
-			$user = Application::getEntityInstance('user');
-		//	$existing_user_id = return (int)$user->getIdByEmail($email) == 0;
-		}
-		
 		public function validate() {
 			parent::validate();
 			
