@@ -34,29 +34,38 @@
 			
 		}
 		
-		public static function gettext($resource, $message, $checking_general_translations=false) {
+		
+		public static function gettext($resource, $message) {
 
-			$translated = false;
+			$message = self::findTranslation($resource, $message);
+			        		
+        	$sprintf_params = func_get_args();        	
+        	array_shift($sprintf_params);
+        	$sprintf_params[0] = $message;        	
+        	return call_user_func_array('sprintf', $sprintf_params);
+		}
+		
+		
+		protected static function findTranslation($resource, $message, $checking_general_translations=false) {
+			
 			
 			foreach (self::getTranslationSubresources($resource) as $ts) {				
 				$translation_class = $ts->class;				
 				$translation_object = new $translation_class();
 				$translations = $translation_object->getTranslations();
 				if (isset($translations[$message])) {
-					$message = $translations[$message];
-					$translated = true;
+					return $translations[$message];
 					break;
 				}
 			}
 			
-			if (!$translated && !$checking_general_translations) {
-				return self::gettext(null, $message, true);
+			if (!$checking_general_translations) {
+				return self::findTranslation(null, $message, true);
 			}
-			        		
-        	$sprintf_params = func_get_args();        	
-        	array_shift($sprintf_params);
-        	$sprintf_params[0] = $message;        	
-        	return call_user_func_array('sprintf', $sprintf_params);
+			else {
+				return $message;
+			}
+			
 		}
 		
 		
