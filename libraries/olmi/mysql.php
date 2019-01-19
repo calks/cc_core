@@ -295,7 +295,7 @@ class MysqlDatabase {
       print "<div class=\"debug\">";
       print "<h2>Database error</h2>\n";
       if ($this->lastErrorQuery) {
-        print "<p>".htmlspecialchars($this->lastErrorQuery)."</p>";
+        print "<p>".$this->lastErrorQuery."</p>";
         print "<br>";
       }
       print "<p>".htmlspecialchars($errmsg)."</p>";
@@ -309,7 +309,7 @@ class MysqlDatabase {
    * @return string
    */
   function cutDebugInfo($info) {
-    if (strlen($info) > 4096) return substr($info,0,4096)."...";
+    if (strlen($info) > 14096) return substr($info,0,14096)."...";
     else return $info;
   }
 

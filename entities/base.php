@@ -666,11 +666,10 @@
             $pkey = $this->getPrimaryKeyField();
 
             $sql_fields = array();            
-            $sql_update = array();
+            
 
             foreach ($fields as $field) {            	
-                $sql_fields[] = "`$field`";
-                $sql_update[] = $field==$pkey ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=VALUES(`$field`)";
+                $sql_fields[] = "`$field`";                
             }
             
             $sql_values = array();
@@ -693,7 +692,7 @@
 
             $sql_fields = implode(',', $sql_fields);
             $sql_values = implode(',', $sql_values);
-            $sql_update = implode(',', $sql_update);
+            $sql_update = $this->get_save_sql_update($list);
             
             
             $sql = "
@@ -703,6 +702,20 @@
                         
             return $sql;        	
         }
+        
+        
+        protected function get_save_sql_update($list) {
+        	$sql_update = array();
+        	$pkey = $this->getPrimaryKeyField();
+        	$fields = $this->get_save_fields();
+			foreach ($fields as $field) {
+                $sql_update[] = $field==$pkey ? "$pkey=LAST_INSERT_ID($pkey)" : "`$field`=VALUES(`$field`)";
+            }
+            
+            $sql_update = implode(',', $sql_update);
+            return $sql_update;
+        }
+        
         
         public function save() {
         	$pkey = $this->getPrimaryKeyField();
