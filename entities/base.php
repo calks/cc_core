@@ -691,7 +691,7 @@
             
 
             $sql_fields = implode(',', $sql_fields);
-            $sql_values = implode(',', $sql_values);
+            $sql_values = implode(",\n", $sql_values);
             $sql_update = $this->get_save_sql_update($list);
             
             
