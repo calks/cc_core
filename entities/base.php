@@ -442,6 +442,39 @@
         			}
         			 
         			break;        			
+        		case self::RELATION_MANY_TO_ONE:
+        			$related_entity = Application::getEntityInstance($related_entity_name);
+        			$related_entity_table = $related_entity->getTableName();
+        			$related_entity_pk = $related_entity->getPrimaryKeyField();
+        			$table = $this->getTableName();
+        			
+        			// Пока только для связи по одному полю
+        			
+        			$foreign_key = $related_entity_name . '_id';
+        			
+        			$mapping = array();
+        			foreach ($list as $item) {
+       					$item->$related_entity_name = null;
+        				$mapping[$item->$foreign_key][] = $item;
+        			}
+        			
+        			$ids = array_keys($mapping);
+        			$ids = implode(',', $ids);
+        			
+        			$load_params['where'][] = "`$related_entity_table`.`$related_entity_pk` IN ($ids)"; 
+        			
+        			$related_entity_list = $related_entity->load_list($load_params);
+        			
+        			foreach ($related_entity_list as $re) {
+        				foreach ($mapping[$re->$related_entity_pk] as $item) {
+        					$item->$related_entity_name = $re;	
+        				}
+        			}
+        			
+        			break;
+        			
+        			
+        			
         		default:
         			throw new coreException('unknown relation type');
         	
