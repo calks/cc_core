@@ -455,7 +455,9 @@
         			$mapping = array();
         			foreach ($list as $item) {
        					$item->$related_entity_name = null;
-        				$mapping[$item->$foreign_key][] = $item;
+       					if ($item->$foreign_key) {
+       						$mapping[$item->$foreign_key][] = $item;	
+       					}
         			}
         			
         			$ids = array_keys($mapping);
