@@ -448,8 +448,7 @@
         			$related_entity_pk = $related_entity->getPrimaryKeyField();
         			$table = $this->getTableName();
         			
-        			// Пока только для связи по одному полю
-        			
+        			// Пока только для связи по одному полю        			
         			$foreign_key = $related_entity_name . '_id';
         			
         			$mapping = array();
@@ -460,17 +459,23 @@
        					}
         			}
         			
-        			$ids = array_keys($mapping);
-        			$ids = implode(',', $ids);
+        			$ids = array();
+        			foreach ($mapping as $k=>$v) {        				
+        				if ($k) $ids[] = $k; 	
+        			}
         			
-        			$load_params['where'][] = "`$related_entity_table`.`$related_entity_pk` IN ($ids)"; 
+        			if ($ids) {
+	        			$ids = implode(',', $ids);
         			
-        			$related_entity_list = $related_entity->load_list($load_params);
-        			
-        			foreach ($related_entity_list as $re) {
-        				foreach ($mapping[$re->$related_entity_pk] as $item) {
-        					$item->$related_entity_name = $re;	
-        				}
+	        			$load_params['where'][] = "`$related_entity_table`.`$related_entity_pk` IN ($ids)"; 
+	        			
+	        			$related_entity_list = $related_entity->load_list($load_params);
+	        			
+	        			foreach ($related_entity_list as $re) {
+	        				foreach ($mapping[$re->$related_entity_pk] as $item) {
+	        					$item->$related_entity_name = $re;	
+	        				}
+	        			}
         			}
         			
         			break;
