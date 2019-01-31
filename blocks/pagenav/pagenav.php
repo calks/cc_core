@@ -80,6 +80,7 @@
 			$smarty->assign('page_links', $page_links);
 			$smarty->assign('current_page', $this->current_page);
 			$smarty->assign('total_pages', $this->total_pages);
+			$smarty->assign('block', $this);
 			$template_path = $this->getTemplatePath();
 			
 			return $smarty->fetch($template_path);
