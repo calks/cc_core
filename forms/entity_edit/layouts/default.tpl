@@ -6,7 +6,9 @@
 			{/if}	
 	
 			<div class="col-sm-4 pull-right">
-				<input type="button" class="btn btn-default navbar-btn pull-right back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="{$form->gettext('Back')}">
+				{if $back_link}
+					<a href="{$back_link}" class="btn btn-default navbar-btn pull-right back-button">{$form->gettext('Back')}</a>
+				{/if}	
 				<input type="submit" class="btn btn-primary navbar-btn pull-right apply-button" name="apply" value="{$form->gettext('Apply')}">				
 				<input type="submit" class="btn btn-primary navbar-btn pull-right save-button" name="save" value="{$form->gettext('Save')}">
 			</div>
@@ -29,7 +31,10 @@
 		<div class="form-group">								
 			<input type="submit" class="btn btn-primary navbar-btn save-button" name="save" value="{$form->gettext('Save')}">
 			<input type="submit" class="btn btn-primary navbar-btn apply-button" name="apply" value="{$form->gettext('Apply')}">
-			<input type="button" class="btn btn-default navbar-btn back-button" onclick="javascript:window.location.href='{$back_link}'" name="back" value="{$form->gettext('Back')}">
+			{if $back_link}
+				<a href="{$back_link}" class="btn btn-default navbar-btn pull-right back-button">{$form->gettext('Back')}</a>
+			{/if}	
+
 		</div>
 
 	</form>

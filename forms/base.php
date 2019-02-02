@@ -7,6 +7,7 @@
 		protected $action = '';
 		protected $method = 'get';
 		protected $heading = '';
+		protected $back_link = '';
 		
 		protected $buttons = array();
 		protected $fields_common_name = '';
@@ -15,6 +16,11 @@
 		public function setHeading($heading) {
 			$this->heading = $heading;
 		}
+		
+		public function setBackLink($back_link) {
+			$this->back_link = $back_link;
+		}
+		
 		
 		public function setAction($action) {
 			$this->action = $action;
@@ -158,12 +164,12 @@
 			}			
 		}
 		
-		public function render($layout_name='default') {
-        	            
+		public function render($layout_name='default') {        	            
         	$layout_template_path = $this->findEffectiveSubresourcePath('layout', $layout_name, null, 'tpl');
         	$smarty = Application::getSmarty('form_' . $this->getName());
         	
         	$smarty->assign('action', $this->action);
+        	$smarty->assign('back_link', $this->back_link);
         	$smarty->assign('method', $this->method);
         	$smarty->assign('heading', $this->heading);
         	$smarty->assign('fields', $this->fields);
