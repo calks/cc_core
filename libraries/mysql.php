@@ -1,6 +1,6 @@
 <?php
 
-	class MysqlDatabase {
+	class coreMysqlLibrary {
 	
 		
 		protected $connection;		
@@ -19,7 +19,7 @@
 			$res = @mysqli_query($this->connection, $query);
 			
 			if (!$res) {
-				$this->handleError($query);
+				$this->handleError(mysqli_error($this->connection), $query);
 			}
 			
 			return $res;
@@ -115,7 +115,7 @@
 				print "<div class=\"debug\">";
 				print "<h2>Database error</h2>\n";
 				if ($query) {
-					print "<p>" . $this->$query . "</p>";
+					print "<p>" . $query . "</p>";
 					print "<br>";
 				}
 				print "<p>" . htmlspecialchars($errmsg) . "</p>";

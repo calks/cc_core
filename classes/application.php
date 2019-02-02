@@ -100,9 +100,8 @@
         
 		
 		public function getDb() {
-			if (!self::$db) {
-				self::loadLibrary('olmi/mysql');
-				self::$db = new MySqlDatabase(self::$config['database']['host'], self::$config['database']['name'], self::$config['database']['user'], self::$config['database']['pass']);
+			if (!self::$db) {				
+				self::$db = new coreMysqlLibrary(self::$config['database']['host'], self::$config['database']['name'], self::$config['database']['user'], self::$config['database']['pass']);
 				self::$db->execute("set names utf8");
 			}
 			return self::$db;
