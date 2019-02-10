@@ -126,8 +126,7 @@
 			
 			$db = Application::getDb();
 			$db->execute("TRUNCATE `$table`");
-			$db->execute($sql);
-			return mysql_errno()==0;
+			return $db->execute($sql);
 			
 		}
 		

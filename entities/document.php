@@ -431,9 +431,8 @@
 					language_id = $language_id
 			";
 			
-			$db->execute($sql);
-			
-			return (bool)mysql_errno()==0;
+			return $db->execute($sql);
+
 						
 		}
 

@@ -782,9 +782,8 @@
         	$sql = $this->get_save_sql($list);
         	
             $db = Application::getDb();
-            $db->execute($sql);
+            $succeed = $db->execute($sql);
             
-            $succeed = mysql_errno() == 0;
             if (!$succeed) return false;
 
             if (!$new_items_indexes) return true;
