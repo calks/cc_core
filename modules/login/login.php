@@ -10,7 +10,7 @@
 		
 		public function run($params=array()) {
 			
-			$this->back_url = Request::get('back');
+			$this->back_url = coreRequestLibrary::get('back');
 			unset($params['back']);
 			
 			$this->action = @array_shift($params);
@@ -46,7 +46,7 @@
 			);
 			
 						
-			if (Request::isPostMethod()) {
+			if (coreRequestLibrary::isPostMethod()) {
 				$login = $this->login_form['login']; 
 				$pass = $this->login_form['pass'];
 				
@@ -85,9 +85,9 @@
 			$email = '';
 			
 						
-			if (Request::isPostMethod()) {
+			if (coreRequestLibrary::isPostMethod()) {
 				
-				$email = Request::get('email');
+				$email = coreRequestLibrary::get('email');
 				$email_ok = true;
 				
 				if (!$email) {

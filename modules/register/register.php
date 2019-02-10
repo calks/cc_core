@@ -9,7 +9,7 @@
 		
 		public function run($params=array()) {
 			
-			$this->back_url = Request::get('back');
+			$this->back_url = coreRequestLibrary::get('back');
 			
 			$user_session = Application::getUserSession();
 			if ($user_session->userLogged()) {

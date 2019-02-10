@@ -75,7 +75,7 @@
 	 */
 	class Redirector {
 		public static function redirect($url, $http_code = 303) {
-			if (! headers_sent () && (Request::isHTTP11 () || ! Request::isPostMethod ())) {
+			if (! headers_sent () && (coreRequestLibrary::isHTTP11 () || ! coreRequestLibrary::isPostMethod ())) {
 				Redirector::redirectLocation( $url, $http_code);
 			} else {
 				Redirector::redirectMeta( $url );
@@ -85,7 +85,7 @@
 		
 		private static function redirectLocation($url, $http_code) {
 			$url = Redirector::makeCompleteUrl($url);
-			if (Request::isHTTP11()) {
+			if (coreRequestLibrary::isHTTP11()) {
 				switch ($http_code) {
 					case 301:
 						header ("HTTP/1.1 301 Moved Permanently");
@@ -112,15 +112,15 @@
 				$schema = 'http://';
 				// check if $url is absolute
 			if (substr ($url, 0, 1) == '/') {
-				return $schema . Request::getHostName() . $url;
+				return $schema . coreRequestLibrary::getHostName() . $url;
 			}
 			if (preg_match( "/^((?:\.*\/)+)(.+)$/", $url, $matches)) {
 				// TODO determine protocol (http/https) correctly
 				// TODO process movement (..) to parent directories
 				// TODO use HTTP_HOST or SERVER_NAME which is present
-				return $schema . Request::getHostName() . Request::getScriptPathOnly() . $matches [2];
+				return $schema . coreRequestLibrary::getHostName() . coreRequestLibrary::getScriptPathOnly() . $matches [2];
 			}
-			return $schema . Request::getHostName () . Request::getScriptPathOnly () . $url;
+			return $schema . coreRequestLibrary::getHostName () . coreRequestLibrary::getScriptPathOnly () . $url;
 		}
 		
 		private static function redirectMeta($url, $delay = 0) {

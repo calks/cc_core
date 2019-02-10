@@ -8,7 +8,7 @@
 			
 			$message_stack = Application::getMessageStack();
 			
-			$message_from_request = Request::get('message');
+			$message_from_request = coreRequestLibrary::get('message');
 			if ($message_from_request) {
 				$message_stack->add($message_from_request, 'message');
 			}

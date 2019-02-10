@@ -5,7 +5,7 @@
 		
 		
 		public function SetFromPost($POST) {
-			$checked = Request::isFieldValueSet($this->field_name, $POST);						
+			$checked = coreRequestLibrary::isFieldValueSet($this->field_name, $POST);						
 			$this->SetValue($checked);			
 		}
 		

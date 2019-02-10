@@ -14,7 +14,7 @@
 			$this->commonLogic($params);
 			
 			$task_from_params = @array_shift($params);
-			$task_from_request = Request::get('task');
+			$task_from_request = coreRequestLibrary::get('task');
 			$this->task = $task_from_request ? $task_from_request : $task_from_params;
 			if (!$this->task) $this->task = 'default';
 
@@ -64,7 +64,7 @@
 		protected function getResponse() {
 			if ($this->isAjax()) {				
 				$out = $this->composeAjaxResponse();
-				$callback = Request::get('callback');
+				$callback = coreRequestLibrary::get('callback');
 				if ($callback) {					
 					return $callback . '(' . json_encode($out) . ');';
 				}

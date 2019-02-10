@@ -142,7 +142,7 @@
 			$form = $this->getProfileForm();
 			$form->setValues($this->user);
 			
-			if (Request::isPostMethod()) {
+			if (coreRequestLibrary::isPostMethod()) {
 				$form->LoadFromRequest($_REQUEST);
 				$form->validate();
 				$form_errors = $form->getErrors();			
