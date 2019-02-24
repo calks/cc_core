@@ -369,7 +369,7 @@
         					$item->$list_field = array();
         				}
         				else {
-        					$item->$related_entity_name = null;
+        					$item->$list_field = null;
         				}
         				
         				$mapping[$item->id] = $item;
@@ -388,7 +388,7 @@
         					$re_list[] = $re;        					 
         				}
         				else {
-        					$mapping[$re->$foreign_key]->$related_entity_name = $re; 
+        					$mapping[$re->$foreign_key]->$list_field = $re; 
         				}
         			}
         			
