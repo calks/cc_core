@@ -24,7 +24,8 @@
 			$sort_link_options = $this->getSortLinkOptions();
 			$current_sort_option = $this->getValue('search_order_field');
 			if ($sort_link_options && !array_key_exists($current_sort_option, $sort_link_options)) {
-				$this->setValue('search_order_field', array_shift(array_keys($sort_link_options)));
+				$sort_link_options_keys = array_keys($sort_link_options);
+				$this->setValue('search_order_field', array_shift($sort_link_options_keys));
 				$this->setValue('search_order_direction', null);
 			}
 
