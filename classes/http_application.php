@@ -25,7 +25,7 @@
 				else {
 					$this->stackError($this->gettext('You have no enough permissions to view this page. Please login.'));
 					$user_session->logout();
-					Redirector::redirect($this->getSeoUrl('/login?back=' . Router::getSourceUrl()));
+					Redirector::redirect($this->getSeoUrl('/login?back=' . '/' . Router::getSourceUrl()));
 				}
 			} else {
 				$content = $this->runModule('page404');
