@@ -120,6 +120,9 @@
 				}
 				print "<p>" . htmlspecialchars($errmsg) . "</p>";
 				print "</div>";
+				
+				echo coreDebugLibrary::getTraceSummary();
+				
 				die();
 			}
 		}
