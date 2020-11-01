@@ -20,11 +20,13 @@
 		public static function getLanguages($add_null_item=false, $key='id', $value='english_name') {
 			
 			if (is_null(self::$languages)) {
+				$languages_entity = Application::getEntityInstance('languages');
+				$languages_table = $languages_entity->getTableName();
+				
+				$languages_params['where'][] = "`$languages_table`.`code` IN('ru', 'en', 'uk', 'other')";
+								
 				$db = Application::getDb();
-				self::$languages = $db->executeSelectAllObjects("
-					SELECT * FROM languages
-					WHERE code IN('ru', 'en', 'uk', 'other')
-				");
+				self::$languages = $languages_entity->load_list($languages_params);
 			}
 			
 			$out = get_empty_select($add_null_item);
